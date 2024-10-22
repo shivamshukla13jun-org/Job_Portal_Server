@@ -1,0 +1,17 @@
+Main Master Entry Data:- 
+
+1. Candidate or Jobseeker Registration 
+
+2. Employer Registration With Business Details
+
+3. Job posting form from the admin panel
+
+4. Job Posting form from the employer panel
+
+5. Guest User Job Applying Form
+
+6. Testimonial Form From Admin 
+==> API DONE
+
+7. Recent News Articles Form From Admin 
+==> API DONE

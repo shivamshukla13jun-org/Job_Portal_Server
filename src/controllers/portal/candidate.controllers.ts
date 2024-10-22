@@ -1,0 +1,222 @@
+import { Types } from "mongoose";
+import { NextFunction, Request, Response } from "express";
+
+import { AppError } from "@/middlewares/error";
+import Candidate, { ICandidate } from "@/models/portal/candidate.model";
+import { ICandidateFiles } from "@/types/candidate";
+import { validateCandidate } from "@/validations/candidate";
+
+/**
+ @desc      Create a candidate
+ @route     POST /api/v1/candidate
+ @access    Public
+**/
+const createCandidate = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const payload: ICandidate = req.body;
+
+        console.log(req.body, req.files)
+
+        // payload["userId"] = new Types.ObjectId(res.locals.userId);
+
+        // const candidate = await Candidate.create(payload);
+        // if (!candidate) {
+        //     throw new AppError('Failed to create candidate', 400);
+        // }
+
+        // res.status(201).json({
+        //     success: true,
+        //     message: 'Candidate created!',
+        //     data: candidate
+        // })
+
+    } catch (error) {
+        next(error)
+    }
+};
+
+/**
+ @desc      Get all candidate
+ @route     GET /api/v1/candidate
+ @access    Admin
+**/
+const getCandidates = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { page, limit, ...queries } = req.query
+
+        const pageOptions = {
+            page: parseInt(page as string, 0) || 0,
+            limit: parseInt(limit as string, 10) || 10
+        }
+
+        const matchQueries: { [key: string]: RegExp } = {};
+        const createRegex = (value: string) => new RegExp(`.*${value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}.*`, "gi");
+
+        for (const [key, value] of Object.entries(queries)) {
+            if (typeof value === 'string' && value !== '') {
+                matchQueries[key] = createRegex(value)
+            }
+        }
+
+        const candidates = await Candidate.aggregate([
+            {
+                $match: {
+                    ...matchQueries
+                }
+            },
+            {
+                $facet: {
+                    data: [
+                        { $skip: pageOptions.page * pageOptions.limit },
+                        { $limit: pageOptions.limit }
+                    ],
+                    count: [
+                        { $count: "total" }
+                    ]
+                }
+            }
+        ])
+
+        res.status(200).json({
+            success: true,
+            message: 'Candidate fetched!',
+            data: candidates[0]?.data || [],
+            count: candidates[0]?.total[0]?.count || 0,
+        })
+
+    } catch (error) {
+        next(error)
+    }
+};
+
+/**
+ @desc      Get a candidate
+ @route     GET /api/v1/candidate/:id
+ @access    Private
+**/
+const getCandidate = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const id = req.params.id;
+
+        const candidate = await Candidate.findOne({ userId: id });
+        if (!candidate) {
+            throw new AppError('Failed to find candidate', 400);
+        };
+
+        res.status(200).json({
+            success: true,
+            data: candidate,
+            message: 'Candidate fetched'
+        });
+
+    } catch (error) {
+        next(error)
+    }
+};
+
+/**
+ @desc      Update a candidate
+ @route     PUT /api/v1/candidate/:id
+ @access    Public
+**/
+const updateCandidate = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const payload: ICandidate = JSON.parse(req.body.parse);
+        const files = req.files as unknown as ICandidateFiles;
+
+        // formatting the payload
+        if (typeof payload.contact.permanent_address.pin_code === 'string') {
+            payload.contact.permanent_address.pin_code = parseInt(payload.contact.permanent_address.pin_code);
+        }
+        if (payload.contact.current_address && typeof payload.contact.current_address.pin_code === 'string') {
+            if (payload.contact.current_address.pin_code === '') {
+                delete payload.contact.current_address;
+            } else {
+                payload.contact.current_address.pin_code = parseInt(payload.contact.current_address.pin_code)
+            }
+
+        }
+        payload["email"] = payload?.email?.toLowerCase();
+        payload["email"] = payload?.email?.toLowerCase();
+        payload.cv = files?.upload_cv?.[0] || payload?.cv;
+        payload.profile = files?.profile?.[0] || payload?.profile;
+        payload.registration_certificate = files?.registration_certificate?.[0] || payload?.registration_certificate;
+        let currentEducationFileIndex = 0;
+        payload.education = payload?.education.map((item) => {
+            const hasCertificate = item.certificate && typeof item.certificate === 'object' && Object.keys(item.certificate).length > 0;
+            if (!hasCertificate) {
+                if (files["certificate[]"] && files["certificate[]"][currentEducationFileIndex]) {
+                    item.certificate = files["certificate[]"][currentEducationFileIndex];
+                }
+                currentEducationFileIndex++;
+            }
+            return item;
+        });
+        payload.english_language.score_card = files?.score_card?.[0] || payload?.english_language?.score_card;
+
+
+        // validate the data
+        const check = await validateCandidate(payload);
+        if (!check) {
+            return;
+        }
+
+        const checkCandidate = await Candidate.findOne({ userId: new Types.ObjectId(req.params.id) });
+        if (!checkCandidate) {
+            payload["userId"] = new Types.ObjectId(res.locals.userId);
+            const newCandidate = await Candidate.create(payload);
+            if (!newCandidate) {
+                throw new AppError('Failed to create candidate', 400);
+            }
+            return res.status(201).json({
+                success: true,
+                message: 'Candidate created!',
+                data: newCandidate
+            });
+        };
+
+        const candidate = await Candidate.findByIdAndUpdate(checkCandidate._id, payload, { new: true, runValidators: true })
+        if (!candidate) {
+            throw new AppError('Failed to update candidate', 400)
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Candidate updated!',
+            data: candidate
+        })
+
+    } catch (error) {
+        console.log(error)
+        next(error)
+    }
+};
+
+/**
+ @desc      Delete a candidate
+ @route     DELETE /api/v1/candidate/:id
+ @access    Public
+**/
+const deleteCandidate = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const id = req.params.id;
+
+        const candidate = await Candidate.findByIdAndDelete(id);
+        if (!candidate) {
+            throw new AppError('Failed to find candidate', 400);
+        }
+
+        res.status(200).json({
+            success: true,
+            data: {},
+            message: 'Candidate deleted'
+        });
+
+    } catch (error) {
+        next(error)
+    }
+};
+
+export {
+    createCandidate, getCandidates, getCandidate, updateCandidate, deleteCandidate
+}
