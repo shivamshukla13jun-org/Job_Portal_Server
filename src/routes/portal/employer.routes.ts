@@ -4,6 +4,7 @@ import path from "path";
 import { createEmployer, getEmployers, getEmployer, updateEmployer, deleteEmployer } from "@/controllers/portal/employer.controllers";
 import { verifyUserTypeToken } from "@/middlewares/auth";
 import createMulterMiddleware from "@/libs/multer";
+import { getApplicants,updateStatus,getAllApplicants } from "@/controllers/candidate/application.controller";
 
 const router = Router();
 
@@ -51,5 +52,4 @@ router.route("/:id")
         updateEmployer
     )
     .delete(verifyUserTypeToken(["employer"]), deleteEmployer);
-
 export default router;

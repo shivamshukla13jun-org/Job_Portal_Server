@@ -8,6 +8,8 @@ import { validateJob } from "@/validations/job";
 import User from "@/models/admin/user.model";
 import { generateToken } from "@/middlewares/auth";
 import Candidate from "@/models/portal/candidate.model";
+import Resume from "@/models/candidate/resume.model";
+import { postedatesCondition } from "@/utils/postedadate";
 
 /**
  @desc      Create an job
@@ -70,33 +72,10 @@ const getJobs = async (req: Request, res: Response, next: NextFunction) => {
         const createRegex = (value: string) => new RegExp(`.*${value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}.*`, "gi");
          // Handle date filter
          if (createdAt) {
-            const now = new Date();
-            let startDate: Date | undefined;
-
-            switch (createdAt) {
-                case 'lh':
-                    startDate = new Date(now.getTime() - 60 * 60 * 1000); // Last hour
-                    break;
-                case '24h':
-                    startDate = new Date(now.getTime() - 24 * 60 * 60 * 1000); // Last 24 hours
-                    break;
-                case '7d':
-                    startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000); // Last 7 days
-                    break;
-                case '14d':
-                    startDate = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000); // Last 14 days
-                    break;
-                case '30d':
-                    startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000); // Last 30 days
-                    break;
-                default:
-                    startDate = undefined;
-            }
+            let startDate=postedatesCondition(createdAt  as string )
             if (startDate) {
                 matchQueries['createdAt'] = { $gte: startDate };
             }
-
-               
             
         }
         for (let [key, value] of Object.entries(queries)) {
@@ -151,7 +130,6 @@ const getJobs = async (req: Request, res: Response, next: NextFunction) => {
     if (experience_to && experience_from) {
         matchQueries['candidate_requirement.experience']= {$gte: parseInt(experience_from as string),$lte: parseInt(experience_to as string) }
     }
-    console.log(matchQueries)
         const jobs = await Job.aggregate([
            
             {
@@ -213,7 +191,8 @@ const getJobs = async (req: Request, res: Response, next: NextFunction) => {
 const getJob = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const id = req.params.id;
-
+        
+        const userId = res.locals.userId as Types.ObjectId
         const job = await Job.aggregate([
             {
                 $match: {
@@ -235,69 +214,40 @@ const getJob = async (req: Request, res: Response, next: NextFunction) => {
                 }
             },
             {
-                $unwind: {
-                    path: "$candidate_applied",
-                    preserveNullAndEmptyArrays: true
+                '$lookup': {
+                    'from': 'applications',
+                    'localField': 'applications',
+                    'foreignField': '_id',
+                    'as': 'applications'
                 }
             },
             {
-                $lookup: {
-                    from: "candidates",
-                    localField: "candidate_applied.candidateId",
-                    foreignField: "userId",
-                    as: "candidate_applied.candidateId"
-                }
-            },
-            {
-                $unwind: {
-                    path: "$candidate_applied.candidateId",
-                    preserveNullAndEmptyArrays: true
-                }
-            },
-            {
-                $unwind: {
-                    path: "$candidate_rejected",
-                    preserveNullAndEmptyArrays: true
-                }
-            },
-            {
-                $lookup: {
-                    from: "candidates",
-                    localField: "candidate_rejected.candidateId",
-                    foreignField: "userId",
-                    as: "candidate_rejected.candidateId"
-                }
-            },
-            {
-                $unwind: {
-                    path: "$candidate_rejected.candidateId",
-                    preserveNullAndEmptyArrays: true
-                }
-            },
-            {
-                $unwind: {
-                    path: "$candidate_shortlisted",
-                    preserveNullAndEmptyArrays: true
-                }
-            },
-            {
-                $lookup: {
-                    from: "candidates",
-                    localField: "candidate_shortlisted.candidateId",
-                    foreignField: "userId",
-                    as: "candidate_shortlisted.candidateId"
-                }
-            },
-            {
-                $unwind: {
-                    path: "$candidate_shortlisted.candidateId",
-                    preserveNullAndEmptyArrays: true
-                }
+                $addFields: {
+                    isApplied: {
+                            $gt: [
+                                {
+                                    $size: {
+                                        $filter: {
+                                            input: "$applications",
+                                            as: "item",
+                                            cond: {
+                                                $eq: ["$$item.candidate", userId],
+                                            },
+                                        },
+                                    },
+                                },
+                                0,
+                            ],
+                        
+                      
+                    },
+                },
             },
             {
                 $group: {
                     _id: "$_id",
                     employerId: { $first: "$employerId" },
+                    isApplied: { $first: "$isApplied" },
                     title: { $first: "$title" },
                     location: { $first: "$location" },
                     place: { $first: "$place" },
@@ -317,7 +267,7 @@ const getJob = async (req: Request, res: Response, next: NextFunction) => {
                     age: { $first: "$age" },
                     personal_info: { $first: "$personal_info" },
                     categories: { $first: "$categories" },
-                    jobtype:{ $first: "$jobtype" }
+                    jobtype:{ $first: "$jobtype" },
                 }
             }
         ]);
@@ -387,6 +337,7 @@ const getEmployerJobs = async (req: Request, res: Response, next: NextFunction) 
                     preserveNullAndEmptyArrays: true
                 }
             },
+            
             {
                 $facet: {
                     data: [
@@ -569,12 +520,11 @@ const applyJob = async (req: Request, res: Response, next: NextFunction) => {
         if (!checkUser) {
             throw new AppError('Failed to find user to apply for job!', 400);
         };
-        
-        checkJob["candidate_applied"] = [...(checkJob.candidate_applied || []), {
-            candidateId: new Types.ObjectId(id),
-            date: new Date()
-        }];
-        const updateJob = await Job.findByIdAndUpdate(jobId, checkJob, { runValidators: true, new: true }).session(session);
+        const isResume=await Resume.findOne({candidateId:id})
+        if (!isResume) {
+            throw new AppError('Please fil Resume Details to apply for job!', 400);
+        };
+        const updateJob = await Job.findByIdAndUpdate(jobId, { $addToSet: { applications: id } }, { runValidators: true, new: true }).session(session);
         if (!updateJob) {
             throw new AppError("Failed to update job", 400)
         };
@@ -639,9 +589,9 @@ const acceptCandidateForJob = async (req: Request, res: Response, next: NextFunc
 
         // Check if the candidate is already shortlisted for this job
         const isAlreadyShortlisted = checkUser.shortListedJobs?.some(job => job.jobId.toString() === id);
-        const isAlreadyAccepted = checkJob.candidate_shortlisted?.some(candidate => candidate.candidateId.toString() === checkCandidate.userId.toString());
+        const isAlreadyshortlisted = checkJob.candidate_shortlisted?.some(candidate => candidate.candidateId.toString() === checkCandidate.userId.toString());
 
-        if (isAlreadyShortlisted || isAlreadyAccepted) {
+        if (isAlreadyShortlisted || isAlreadyshortlisted) {
             await session.abortTransaction();
             session.endSession();
             return res.status(200).json({

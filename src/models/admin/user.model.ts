@@ -11,7 +11,7 @@ export interface IUser extends Document {
   name?: string;
   email: string;
   password?: string;
-
+  isresume:boolean,
   candidateId?: Types.ObjectId;
   employerId?: Types.ObjectId;
   jobs?: IJobStatus[];
@@ -40,6 +40,10 @@ const userSchema = new Schema<IUser>({
   candidateId: {
     type: Schema.Types.ObjectId,
     ref: 'Candidate'
+  },
+  isresume:{
+    type:Boolean,
+    default:false,
   },
   employerId: {
     type: Schema.Types.ObjectId,

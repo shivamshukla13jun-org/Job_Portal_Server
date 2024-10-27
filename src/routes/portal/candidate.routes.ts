@@ -4,6 +4,7 @@ import path from "path";
 import { createCandidate, deleteCandidate, getCandidate, getCandidates, updateCandidate } from "@/controllers/portal/candidate.controllers";
 import { verifyUserTypeToken } from "@/middlewares/auth";
 import createMulterMiddleware from "@/libs/multer";
+import { applyJob ,getAppliedJobs} from "@/controllers/candidate/application.controller";
 
 const router = Router();
 
@@ -55,5 +56,6 @@ router.route("/:id")
         updateCandidate
     )
     .delete(verifyUserTypeToken(["candidate"]), deleteCandidate);
-
+router.route('/apply/:id').put(verifyUserTypeToken(["candidate"]),  applyJob);
+router.route('/get').get(verifyUserTypeToken(["candidate"]), getAppliedJobs);
 export default router;

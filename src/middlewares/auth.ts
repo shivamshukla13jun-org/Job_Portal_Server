@@ -55,6 +55,37 @@ const verifyToken = async (req: Request, res: Response, next: NextFunction) => {
         next(error);
     }
 };
+const verifyisCandidateLogin = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const bearer = req.headers["authorization"]
+        if (!bearer) {
+            return next();
+        }
+        const token = bearer?.split(" ")[1];
+
+        let decoded;
+        try {
+            decoded = jwt.verify(token, JWT_SECRET as string);
+        } catch (jwtError) {
+            return next(new AppError("Invalid or expired token", 401));
+        }
+
+        if (!decoded) {
+            return next(new AppError("Unauthorized user", 403));
+        }
+
+        const user = await User.findById((decoded as jwt.JwtPayload).id);
+        if (!user) {
+            return next(new AppError('Unauthorized user', 403));
+        }
+
+        res.locals.userId = user._id as Types.ObjectId;
+        next();
+
+    } catch (error) {
+        next(error);
+    }
+};
 
 const verifyUserTypeToken = (userType: string[]) => {
     return async (req: Request, res: Response, next: NextFunction) => {
@@ -102,5 +133,5 @@ const verifyUserTypeToken = (userType: string[]) => {
 export {
     generateToken,
     verifyUserTypeToken,
-    verifyToken
+    verifyToken,verifyisCandidateLogin
 }

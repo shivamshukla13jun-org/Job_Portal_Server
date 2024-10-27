@@ -1,6 +1,7 @@
 import { Router } from "express";
-import { appliedUserJobs, authenticateByGoogle, callbackByGoogle, deleteUser, forgotUser, getUser, getUsers, loginUser, registerUser, resendOtp, resetAuthenticatedUser, resetUser, shortlistedUserJobs, updateUser, verifyUser } from "@/controllers/admin/user.controllers";
+import {  authenticateByGoogle, callbackByGoogle, deleteUser, forgotUser, getUser, getUsers, loginUser, registerUser, resendOtp, resetAuthenticatedUser, resetUser, shortlistedUserJobs, updateUser, verifyUser } from "@/controllers/admin/user.controllers";
 import { verifyToken } from "@/middlewares/auth";
+import { getAppliedJobs } from "@/controllers/candidate/application.controller";
 
 const router = Router();
 
@@ -15,7 +16,7 @@ router.post("/forgot", forgotUser)
 router.post("/reset",verifyToken, resetUser)
 router.put("/reset/:id", verifyToken, resetAuthenticatedUser)
 
-router.get("/job/applied", verifyToken, appliedUserJobs);
+router.get("/job/applied", verifyToken, getAppliedJobs);
 router.get("/job/shortlisted", verifyToken, shortlistedUserJobs);
 
 router.route("/").get(verifyToken, getUsers)

@@ -12,6 +12,7 @@ import User, { IUser } from "@/models/admin/user.model";
 import { IUserType, UserType } from "@/models/admin/userType.model";
 import Candidate from "@/models/portal/candidate.model";
 import Employer from "@/models/portal/employer.model";
+import { Application } from "@/models/candidate/application.model";
 
 /**
  @desc    Register a new user 
@@ -642,16 +643,10 @@ const appliedUserJobs = async (
 ) => {
   try {
     const userId = res.locals.userId;
-    const checkUser = await User.aggregate([
+    const checkUser = await Application.aggregate([
       {
         $match: {
-          _id: userId,
-        },
-      },
-      {
-        $unwind: {
-          path: "$jobs",
-          preserveNullAndEmptyArrays: true,
+          candidate: userId,
         },
       },
       {

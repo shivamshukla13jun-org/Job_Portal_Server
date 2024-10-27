@@ -6,6 +6,7 @@ import { IResumeAward, IResumeEducation, IResumeWorkExperience } from "@/types/c
 export interface IResume extends Document {
     candidateId: Types.ObjectId;
     description: string;
+    isresume:boolean,
     educations: IResumeEducation[];
     work_experiences: IResumeWorkExperience[];
     portfolio: IFile;
