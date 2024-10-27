@@ -20,6 +20,7 @@ export interface ICandidate extends Document {
     hear_about_us: string[];
     public_resume: boolean;
     companies_resume_visible: Types.ObjectId[];
+    isresume:boolean
 };
 
 const candidateSchema = new Schema<ICandidate>({
@@ -235,7 +236,11 @@ const candidateSchema = new Schema<ICandidate>({
         {
             type: Schema.Types.ObjectId
         }
-    ]
+    ],
+    isresume:{
+        type:Boolean,
+        default:false
+    }
 
 }, { timestamps: true });
 

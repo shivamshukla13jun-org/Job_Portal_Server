@@ -23,8 +23,9 @@ export interface IJob extends Document {
         interview: string;
     }
     company: IJobCompany;
-    candidate_applied?: IJobCandidateStatus[];
     candidate_shortlisted?: IJobCandidateStatus[];
+    applications?: Types.ObjectId[];
+    candidate_applied?: IJobCandidateStatus[];
     candidate_rejected?: IJobCandidateStatus[];
     isActive?: boolean;
     createdBy: Types.ObjectId;
@@ -176,6 +177,12 @@ const jobSchema = new Schema<IJob>({
 
         }
     },
+    applications: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'Application',
+        }
+    ],
     candidate_applied: [
         {
             candidateId: {

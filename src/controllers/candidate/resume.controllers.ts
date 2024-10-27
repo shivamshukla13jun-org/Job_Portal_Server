@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { Types } from "mongoose";
+import mongoose, { Types } from "mongoose";
 
 import Resume, { IResume } from "@/models/candidate/resume.model";
 import { AppError } from "@/middlewares/error";
@@ -14,14 +14,24 @@ import Candidate from "@/models/portal/candidate.model";
  @access    Private
 **/
 const createResume = async (req: Request, res: Response, next: NextFunction) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
     try {
         const payload: IResume = req.body;
-
-        const resume = await Resume.create(payload);
-        if (!Resume) {
+        const userId = res.locals.userId as Types.ObjectId
+        const checkCandidate = await Candidate.findOne({ userId: userId });
+        if (!checkCandidate) {
+            throw new AppError('Failed to find user', 400);
+        }
+        
+        const resume = await Resume.create(payload,{session:session});
+        if (!resume) {
             throw new AppError('Failed to create resume', 400);
         }
-
+        checkCandidate["isresume"] = true
+        await checkCandidate.save()
+        await session.commitTransaction();
+        session.endSession();
         res.status(201).json({
             success: true,
             message: 'Resume created!',
@@ -29,6 +39,8 @@ const createResume = async (req: Request, res: Response, next: NextFunction) => 
         })
 
     } catch (error) {
+     await session.abortTransaction();
+      session.endSession();
         next(error)
     }
 };
@@ -159,7 +171,8 @@ const updateResume = async (req: Request, res: Response, next: NextFunction) => 
 
         // format the payload
         payload["portfolio"] = portfolio || payload["portfolio"];
-
+       
+        
         // validate the data
         const check = await validateResume(payload);
         if (!check) {
@@ -167,24 +180,29 @@ const updateResume = async (req: Request, res: Response, next: NextFunction) => 
         }
 
         const checkResume = await Resume.findOne({ candidateId: checkCandidate._id })
+        checkCandidate["isresume"] = true
+        await checkCandidate.save()
         if (!checkResume) {
             payload["candidateId"] = checkCandidate._id as Types.ObjectId;
             const newResume = await Resume.create(payload);
             if (!newResume) {
                 throw new AppError('Failed to create Resume', 400);
             }
+            checkCandidate["isresume"] = true
+        await checkCandidate.save()
             return res.status(201).json({
                 success: true,
                 message: 'Resume created!',
                 data: newResume
             });
         };
-
+     
         const resume = await Resume.findByIdAndUpdate(checkResume._id, payload, { new: true, runValidators: true })
         if (!resume) {
             throw new AppError('Failed to update Resume', 400)
         }
-
+        checkCandidate["isresume"] = true
+        await checkCandidate.save()
         res.status(200).json({
             success: true,
             message: 'Resume updated!',

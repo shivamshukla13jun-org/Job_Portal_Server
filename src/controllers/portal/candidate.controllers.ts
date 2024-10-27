@@ -5,6 +5,7 @@ import { AppError } from "@/middlewares/error";
 import Candidate, { ICandidate } from "@/models/portal/candidate.model";
 import { ICandidateFiles } from "@/types/candidate";
 import { validateCandidate } from "@/validations/candidate";
+import { Application } from "@/models/candidate/application.model";
 
 /**
  @desc      Create a candidate
@@ -216,7 +217,149 @@ const deleteCandidate = async (req: Request, res: Response, next: NextFunction) 
         next(error)
     }
 };
+interface DashboardData {
+    Applicationdata:any
+}
 
+const   candidateDashboard = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        
+        const userId = res.locals.userId as Types.ObjectId
+        
+        const today: Date = new Date();
+        const lastYear: Date = new Date(today.setFullYear(today.getFullYear() - 1));
+        const monthsArray: string[] = [
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        ];
+
+        const baseStats: any[] = [
+            {
+                $match: {
+                    createdAt: { $gte: lastYear }
+                }
+            },
+            {
+                $group: {
+                    _id: {
+                        year: { $year: "$createdAt" },
+                        month: { $month: "$createdAt" }
+                    },
+                    total: { $sum: 1 }
+                }
+            },
+            {
+                $sort: {
+                    "_id.year": 1,
+                    "_id.month": 1
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    year: "$_id.year",
+                    month: {
+                        $arrayElemAt: [monthsArray, { $subtract: ["$_id.month", 1] }]
+                    },
+                    total: 1
+                }
+            },
+        ];
+
+   
+
+        // Application stats with status-based filtering
+        const [Applicationdata]:any[] = await Application.aggregate([
+            {
+                $match:{
+                    candidate:userId
+              },
+            },
+            {
+                $facet: {
+                    Application: [
+                        { $group: { _id: null, total: { $sum: 1 } } },
+                        { $project: { _id: 0 } }
+                    ],
+                    Shortlist: [
+                        { $match: { status: "shortlisted" } },
+                        { $group: { _id: null, total: { $sum: 1 } } },
+                        { $project: { _id: 0 } }
+                    ],
+                    pendinglist: [
+                        { $match: { status: "pending" } },
+                        { $group: { _id: null, total: { $sum: 1 } } },
+                        { $project: { _id: 0 } }
+                    ],
+                    rejectedlist: [
+                        { $match: { status: "rejected" } },
+                        { $group: { _id: null, total: { $sum: 1 } } },
+                        { $project: { _id: 0 } }
+                    ],
+                    Applicationstats: baseStats,
+                    Shortliststats: [
+                      { $match:{ status: "shortlisted" } } ,// Filtering for accepted
+                        ...baseStats,
+                    ],
+                    pendingstats: [
+                      { $match: { status: "pending" } }, // Filtering for pending
+                        ...baseStats,
+                    ],
+                    rejectedstats: [
+                      { $match: {  status: "rejected" } }, // Filtering for rejected
+                        ...baseStats,
+                    ],
+                },
+            },
+            {
+                $unwind: {
+                    path: "$Application",
+                    preserveNullAndEmptyArrays: true,
+                },
+            },
+            {
+                $unwind: {
+                    path: "$Shortlist",
+                    preserveNullAndEmptyArrays: true,
+                },
+            },
+            {
+                $unwind: {
+                    path: "$pendinglist",
+                    preserveNullAndEmptyArrays: true,
+                },
+            },
+            {
+                $unwind: {
+                    path: "$rejectedlist",
+                    preserveNullAndEmptyArrays: true,
+                },
+            },
+            {
+                $project: {
+                    Application: { $ifNull: ["$Application.total", 0] },
+                    Shortlist: { $ifNull: ["$Shortlist.total", 0] },
+                    pendinglist: { $ifNull: ["$pendinglist.total", 0] },
+                    rejectedlist: { $ifNull: ["$rejectedlist.total", 0] },
+                    Applicationstats: 1,
+                    Shortliststats: 1,
+                    pendingstats: 1,
+                    rejectedstats: 1,
+                },
+            },
+        ]);
+
+      
+
+        let data: DashboardData = {
+            Applicationdata,
+            // users: users,
+        };
+        res.status(200).json({ data, message: "fetch data successful" });
+    } catch (error) {
+        next(error);
+    }
+}
 export {
-    createCandidate, getCandidates, getCandidate, updateCandidate, deleteCandidate
+    createCandidate, getCandidates, getCandidate, updateCandidate, deleteCandidate,candidateDashboard
 }

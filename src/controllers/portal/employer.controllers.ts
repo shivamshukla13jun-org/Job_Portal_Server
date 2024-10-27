@@ -4,6 +4,9 @@ import { NextFunction, Request, Response } from "express";
 import Employer, { IEmployer, IEmployerFiles } from "@/models/portal/employer.model";
 import { AppError } from "@/middlewares/error";
 import { validateEmployer } from "@/validations/employer";
+import Candidate from "@/models/portal/candidate.model";
+import Job from "@/models/portal/job.model";
+import { Application } from "@/models/candidate/application.model";
 
 /**
  @desc      Create an employer
@@ -33,6 +36,207 @@ const createEmployer = async (req: Request, res: Response, next: NextFunction) =
     }
 };
 
+interface DashboardData {
+    jobs: any;
+    // users: any;
+    Applicationdata:any
+}
+
+const EmployerDashboard = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        
+        const userId = res.locals.userId as Types.ObjectId
+        const checkEmployer = await Employer.findOne({ userId: userId });
+        if (!checkEmployer) {
+            throw new AppError(`Failed to find an employer`, 400);
+        }
+        const today: Date = new Date();
+        const lastYear: Date = new Date(today.setFullYear(today.getFullYear() - 1));
+        const monthsArray: string[] = [
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        ];
+
+        const baseStats: any[] = [
+            {
+                $match: {
+                    createdAt: { $gte: lastYear }
+                }
+            },
+            {
+                $group: {
+                    _id: {
+                        year: { $year: "$createdAt" },
+                        month: { $month: "$createdAt" }
+                    },
+                    total: { $sum: 1 }
+                }
+            },
+            {
+                $sort: {
+                    "_id.year": 1,
+                    "_id.month": 1
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    year: "$_id.year",
+                    month: {
+                        $arrayElemAt: [monthsArray, { $subtract: ["$_id.month", 1] }]
+                    },
+                    total: 1
+                }
+            },
+        ];
+
+        // const [users]: any[] = await Candidate.aggregate([
+        //     {
+        //         $facet: {
+        //             users: [
+        //                 { $group: { _id: null, total: { $sum: 1 } } },
+        //                 { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } }
+        //             ],
+        //             stats: baseStats,
+        //         },
+        //     },
+        //     {
+        //         $unwind: {
+        //             path: "$users",
+        //             preserveNullAndEmptyArrays: true,
+        //         },
+        //     },
+        //     {
+        //         $project: {
+        //             total: { $ifNull: ["$users.total", 0] },
+        //             stats: 1,
+        //         },
+        //     },
+        // ]);
+
+        const [totalpostedjobs]: any[] = await Job.aggregate([
+            {
+              $match:{
+                employerId:checkEmployer._id
+              }
+            },
+
+            {
+                $facet: {
+                    postedjobs: [
+                        { $group: { _id: "$employerId", total: { $sum: 1 } } },
+                        { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } }
+                    ],
+                    stats: baseStats,
+                }
+            },
+            {
+                $unwind: {
+                    path: "$postedjobs",
+                    preserveNullAndEmptyArrays: true,
+                },
+            },
+            {
+                $project: {
+                    total: { $ifNull: ["$postedjobs.total", 0] },
+                    stats: 1,
+                }
+            }
+        ]);
+
+        // Application stats with status-based filtering
+        const [Applicationdata]:any[] = await Application.aggregate([
+            {
+                $match:{
+                  employer:checkEmployer._id
+                }
+              },
+            {
+                $facet: {
+                    Application: [
+                        { $group: { _id: null, total: { $sum: 1 } } },
+                        { $project: { _id: 0 } }
+                    ],
+                    Shortlist: [
+                        { $match: { status: "shortlisted" } },
+                        { $group: { _id: null, total: { $sum: 1 } } },
+                        { $project: { _id: 0 } }
+                    ],
+                    pendinglist: [
+                        { $match: { status: "pending" } },
+                        { $group: { _id: null, total: { $sum: 1 } } },
+                        { $project: { _id: 0 } }
+                    ],
+                    rejectedlist: [
+                        { $match: { status: "rejected" } },
+                        { $group: { _id: null, total: { $sum: 1 } } },
+                        { $project: { _id: 0 } }
+                    ],
+                    Applicationstats: baseStats,
+                    Shortliststats: [
+                      { $match:{ status: "shortlisted" } } ,// Filtering for accepted
+                        ...baseStats,
+                    ],
+                    pendingstats: [
+                      { $match: { status: "pending" } }, // Filtering for pending
+                        ...baseStats,
+                    ],
+                    rejectedstats: [
+                      { $match: {  status: "rejected" } }, // Filtering for rejected
+                        ...baseStats,
+                    ],
+                },
+            },
+            {
+                $unwind: {
+                    path: "$Application",
+                    preserveNullAndEmptyArrays: true,
+                },
+            },
+            {
+                $unwind: {
+                    path: "$Shortlist",
+                    preserveNullAndEmptyArrays: true,
+                },
+            },
+            {
+                $unwind: {
+                    path: "$pendinglist",
+                    preserveNullAndEmptyArrays: true,
+                },
+            },
+            {
+                $unwind: {
+                    path: "$rejectedlist",
+                    preserveNullAndEmptyArrays: true,
+                },
+            },
+            {
+                $project: {
+                    Application: { $ifNull: ["$Application.total", 0] },
+                    Shortlist: { $ifNull: ["$Shortlist.total", 0] },
+                    pendinglist: { $ifNull: ["$pendinglist.total", 0] },
+                    rejectedlist: { $ifNull: ["$rejectedlist.total", 0] },
+                    Applicationstats: 1,
+                    Shortliststats: 1,
+                    pendingstats: 1,
+                    rejectedstats: 1,
+                },
+            },
+        ]);
+
+      
+
+        let data: DashboardData = {
+            jobs: totalpostedjobs,
+            Applicationdata,
+            // users: users,
+        };
+        res.status(200).json({ data, message: "fetch data successful" });
+    } catch (error) {
+        next(error);
+    }
+}
 /**
  @desc      Get all employer
  @route     POST /api/v1/employer
@@ -199,5 +403,5 @@ const deleteEmployer = async (req: Request, res: Response, next: NextFunction) =
 };
 
 export {
-    createEmployer, getEmployers, getEmployer, updateEmployer, deleteEmployer
+    createEmployer, getEmployers, getEmployer, updateEmployer, deleteEmployer,EmployerDashboard
 }

@@ -26,7 +26,7 @@ const getEmployer = async (req: Request, res: Response, next: NextFunction) => {
                         jobs: [
                             { $skip: skip },
                             { $limit: limit },
-                            { $project: { title: 1, _id: 0 } }
+                            // { $project: { title: 1, _id: 0 } }
                         ],
                         totalCount: [
                             { $count: 'count' }

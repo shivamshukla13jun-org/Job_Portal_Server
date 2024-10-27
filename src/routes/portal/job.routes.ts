@@ -1,7 +1,8 @@
 import { Router } from "express";
 
-import { createJob, getJobs, getJob, updateJob, deleteJob, getEmployerJobs, getEmployerJob, applyJob, getEmployerJobNamesOnly, acceptCandidateForJob, declineCandidateForJob, getShortlistedCandidatesByEmployer } from "@/controllers/portal/job.controllers";
-import { verifyToken, verifyUserTypeToken } from "@/middlewares/auth";
+import { createJob, getJobs, getJob, updateJob, deleteJob, getEmployerJobs, getEmployerJob, getEmployerJobNamesOnly, acceptCandidateForJob, declineCandidateForJob, getShortlistedCandidatesByEmployer } from "@/controllers/portal/job.controllers";
+import { verifyisCandidateLogin, verifyToken, verifyUserTypeToken } from "@/middlewares/auth";
+import { applyJob } from "@/controllers/candidate/application.controller";
 
 const router = Router();
 
@@ -27,7 +28,7 @@ router.route("/")
     );
 
 router.route("/:id")
-    .get(getJob)
+    .get(verifyisCandidateLogin, getJob)
     .put(
         verifyUserTypeToken(["employer"]),
         updateJob
