@@ -20,6 +20,7 @@ export interface ICandidate extends Document {
     hear_about_us: string[];
     public_resume: boolean;
     companies_resume_visible: Types.ObjectId[];
+    coverletter:string,
     isresume:boolean
 };
 
@@ -240,6 +241,11 @@ const candidateSchema = new Schema<ICandidate>({
     isresume:{
         type:Boolean,
         default:false
+    },
+    coverletter:{
+        type:String,
+        required: [true, 'Cover Letter is requied']
+
     }
 
 }, { timestamps: true });

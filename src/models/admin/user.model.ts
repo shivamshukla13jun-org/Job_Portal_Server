@@ -11,6 +11,7 @@ export interface IUser extends Document {
   name?: string;
   email: string;
   password?: string;
+  subscription:Types.ObjectId;
   isresume:boolean,
   candidateId?: Types.ObjectId;
   employerId?: Types.ObjectId;
@@ -78,6 +79,9 @@ const userSchema = new Schema<IUser>({
   ],
   userType: {
     type: Schema.Types.ObjectId, ref: 'UserType'
+  },
+  subscription: {
+    type: Schema.Types.ObjectId, ref: 'subscriptions'
   },
   user_otp: {
     type: Number

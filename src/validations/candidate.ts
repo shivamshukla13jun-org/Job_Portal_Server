@@ -66,6 +66,7 @@ const candidateSchema = Yup.object().shape({
         score_card: Yup.mixed().required('Score card upload is required'),
     }),
     hear_about_us: Yup.array().of(Yup.string()).required('Please specify how you heard about us'),
+    coverletter:Yup.string().required('Please add cover letter'),
     cv: Yup.mixed().required('CV upload is required'),
     profile: Yup.mixed().required('Profile upload is required'),
     registration_certificate: Yup.mixed().required('Registration certificate is required'),

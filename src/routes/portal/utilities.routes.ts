@@ -6,7 +6,7 @@ const router = Router();
 
 
 
-router.route("/maxsalary")
+router.route("/maxsalaryandexp")
     .get( getEmployer)
 
 export default router;
