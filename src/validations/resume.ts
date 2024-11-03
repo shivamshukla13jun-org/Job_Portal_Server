@@ -24,6 +24,7 @@ const resumeSchema = Yup.object().shape({
         }).required('Work experience entry is required')
     ).required('Work experience is required'),
     portfolio: Yup.mixed().required('Portfolio upload is required').test('is-file-or-object', 'Portfolio upload must be a file', value => value instanceof File || typeof value === 'object'),
+    portfoliolink: Yup.string().url().label("portfolio link"),
     awards: Yup.array().of(
         Yup.object().shape({
             award_name: Yup.string().required('Award name is required'),

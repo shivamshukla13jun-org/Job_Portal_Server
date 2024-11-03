@@ -10,6 +10,7 @@ import { generateToken } from "@/middlewares/auth";
 import Candidate from "@/models/portal/candidate.model";
 import Resume from "@/models/candidate/resume.model";
 import { postedatesCondition } from "@/utils/postedadate";
+import { Subscription } from "@/models/portal/subscription.model";
 
 /**
  @desc      Create an job
@@ -33,15 +34,27 @@ const createJob = async (req: Request, res: Response, next: NextFunction) => {
         if (!check) {
             return;
         }
-
+        const subscription:any = await Subscription.findOne({  userId: payload.createdBy});
+             if (!subscription) {
+                 throw new AppError("Subscribe Package first",400)
+               }
+             if (subscription.jobPostLimit === 0) {
+                   return res.status(400).json({
+                       message: "You have reached the limit of job posts",
+                       success: false
+                   });
+               }
+        payload["subscription"]= subscription._id
         const job = await Job.create(payload);
         if (!job) {
             throw new AppError('Failed to create job', 400);
         }
-
+        subscription.jobPostLimit -= 1;
+        subscription.jobPostsUsed += 1;
+        await subscription.save();
         res.status(201).json({
             success: true,
-            message: 'Job created!',
+            message: 'Job created it is on review after review it will show n our site!',
             data: job
         })
 
@@ -58,6 +71,7 @@ const createJob = async (req: Request, res: Response, next: NextFunction) => {
 const getJobs = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { page: reqPage, limit: reqLimit,createdAt,experience_from,experience_to, ...queries } = req.query;
+        const today = new Date();
 
         // Parse and set page and limit with fallback
         const page =  parseInt(reqPage as string, 10) || 1  // Ensure page is at least 0
@@ -147,7 +161,23 @@ const getJobs = async (req: Request, res: Response, next: NextFunction) => {
                 }
             },
             {
+                $lookup: {
+                    from: "subscriptions",
+                    localField: "subscription",
+                    foreignField: "_id",
+                    as: "subscription"
+                }
+            },
+            {
+                $unwind: {
+                    path: "$subscription",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
                 $match: {
+                    "subscription": { $exists: true },
+                     "subscription.expiresAt": { $gte: today  },
                     isActive: true,
                     ...matchQueries
                 }
@@ -161,6 +191,9 @@ const getJobs = async (req: Request, res: Response, next: NextFunction) => {
             {
                 $facet: {
                     data: [
+                        // {$project:{
+                        //     "subscription":0
+                        // }},
                         { $skip: pageOptions.skip },
                         { $limit: pageOptions.limit }
                     ],

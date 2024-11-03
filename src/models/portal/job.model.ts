@@ -9,6 +9,7 @@ export type IJobCandidateStatus = {
 
 export interface IJob extends Document {
     employerId: Types.ObjectId;
+    subscription:Types.ObjectId;
     title: string;
     location: string;
     place: string;
@@ -212,12 +213,19 @@ const jobSchema = new Schema<IJob>({
     ],
     isActive: {
         type: Boolean,
-        default: true
+        default: false
     },
     createdBy: {
         type: Schema.Types.ObjectId,
         ref: 'User'
     },
+    subscription: {
+        type: Schema.Types.ObjectId,
+        ref: 'subscriptions',
+        unique:true,
+        required:[true,"Package is Required"]
+    },
+
     updatedBy: {
         type: Schema.Types.ObjectId,
         ref: 'User'

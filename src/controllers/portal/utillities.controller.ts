@@ -12,8 +12,9 @@ import Job from "@/models/portal/job.model";
 **/
 const getEmployer = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const [maxsalary,] = await Promise.all([
+        const [maxsalary,maxeperience] = await Promise.all([
             Job.findOne({},{_id:0, 'candidate_requirement.salary_to':1}).sort({ 'candidate_requirement.salary_to': -1 }).lean(),
+            Job.findOne({},{_id:0, 'candidate_requirement.experience':1}).sort({ 'candidate_requirement.experience': -1 }).lean(),
         ]);
 
 
@@ -21,6 +22,7 @@ const getEmployer = async (req: Request, res: Response, next: NextFunction) => {
             success: true,
             data: {
                 maxsalary:maxsalary,
+                maxeperience:maxeperience
             },
             message: 'company and jobs fetched successfully'
         });

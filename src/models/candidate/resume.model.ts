@@ -10,6 +10,7 @@ export interface IResume extends Document {
     educations: IResumeEducation[];
     work_experiences: IResumeWorkExperience[];
     portfolio: IFile;
+    portfoliolink:string,
     awards: IResumeAward[];
     skills: IJobSelect[];
     current_salary: number;
@@ -81,6 +82,10 @@ const resumeSchema = new Schema<IResume>({
     portfolio: {
         type: Object,
         required: [true, 'Portfolio is required']
+    },
+    portfoliolink: {
+        type: String,
+        default:""
     },
     awards: [
         {

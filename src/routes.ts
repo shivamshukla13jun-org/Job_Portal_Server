@@ -16,6 +16,8 @@ import companyRoutes from "@/routes/portal/company.routes";
 import jobRoutes from "@/routes/portal/job.routes";
 import utilitiesRoutes from "@/routes/portal/utilities.routes";
 import dashboardRoutes from "@/routes/portal/dashboard.routes";
+import planRoutes from "@/routes/admin/plan.routes";
+import paymentRoutes from "@/routes/admin/payment.routes";
 
 const router = Router();
 
@@ -36,6 +38,8 @@ router.use("/job", jobRoutes);
 
 router.use("/utilities", utilitiesRoutes);
 router.use("/dashboard", dashboardRoutes)
+router.use("/plan", planRoutes)
+router.use("/payment", paymentRoutes)
 
 
 
