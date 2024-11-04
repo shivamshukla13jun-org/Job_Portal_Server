@@ -707,77 +707,7 @@ const appliedUserJobs = async (
  @route   GET /api/v1/user/job/shortlisted
  @access  Private
  */
-const shortlistedUserJobs = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const userId = res.locals.userId;
-    const checkUser = await User.aggregate([
-      {
-        $match: {
-          _id: userId,
-        },
-      },
-      {
-        $unwind: {
-          path: "$shortListedJobs",
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-      {
-        $lookup: {
-          from: "jobs",
-          localField: "shortListedJobs.jobId",
-          foreignField: "_id",
-          as: "shortListedJobs.jobId",
-        },
-      },
-      {
-        $unwind: {
-          path: "$shortListedJobs.jobId",
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-      {
-        $lookup: {
-          from: "employers",
-          localField: "shortListedJobs.jobId.employerId",
-          foreignField: "_id",
-          as: "shortListedJobs.jobId.employerId",
-        },
-      },
-      {
-        $unwind: {
-          path: "$shortListedJobs.jobId.employerId",
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-      {
-        $group: {
-          _id: "$_id",
-          shortListedJobs: { $push: "$shortListedJobs" },
-          userType: { $first: "$userType" },
-          oauth: { $first: "$oauth" },
-          createdAt: { $first: "$createdAt" },
-          updatedAt: { $first: "$updatedAt" },
-        },
-      },
-    ]);
-    if (!checkUser) {
-      throw new AppError("Failed to find user!", 400);
-    }
 
-    res.status(200).json({
-      success: true,
-      data: checkUser?.[0],
-      message: "Fetched shortlisted jobs of an user!",
-    });
-  } catch (error) {
-    next(error);
-  }
-};
 
 export {
   registerUser,
@@ -794,5 +724,4 @@ export {
   deleteUser,
   resetAuthenticatedUser,
   appliedUserJobs,
-  shortlistedUserJobs,
 };
