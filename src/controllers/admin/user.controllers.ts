@@ -18,6 +18,7 @@ import { SavedJobs } from "@/models/candidate/savedjobs";
 import { Subscription } from "@/models/portal/subscription.model";
 import { JobportalPlan } from "@/models/portal/plan.model";
 import { IJobportalPlan } from "@/types/plan";
+import { date } from "yup";
 
 /**
  @desc    Register a new user 
@@ -79,7 +80,7 @@ const registerUser = async (
      
       // create a free packge
       const  plan=await JobportalPlan.findOne({price:0}).session(session)
-      type.name.toLowerCase()==="employer" && plan && await  Subscription.create([{userId:user._id,plan:plan._id,type:"Free"}],{session:session})
+      type.name.toLowerCase()==="employer" && plan && await  Subscription.create([{userId:user._id,plan_id:plan._id,type:"Free",orderId:"order_free_"+Date.now()}],{session:session})
     res.status(201).json({
       success: true,
       data: userData,
@@ -254,7 +255,7 @@ const callbackByGoogle = async (
       // create a free packge
        // create a free packge
        const  plan=await JobportalPlan.findOne({price:0}).session(session)
-      state.toLowerCase()==="employer" && await  Subscription.create([{userId:newUser._id,type:"Free"}],{session:session})
+      state.toLowerCase()==="employer" && await  Subscription.create([{userId:newUser._id,plan_id:plan?._id,type:"Free",orderId:"order_free_"+Date.now()}],{session:session})
       // Ensure user_verified is included in the response
       const { password, isBlocked, ...userData } = newUser.toObject();
       const token = generateToken(newUser);
