@@ -35,6 +35,8 @@ export const sendEmail = async ({ email, subject, text }: IEmail) => {
 
         return info
     } catch (error) {
-        throw new AppError('Failed to send Email', 500)
+        console.log(error)
+        return error
+        // throw new AppError('Failed to send Email', 500)
     }
 }

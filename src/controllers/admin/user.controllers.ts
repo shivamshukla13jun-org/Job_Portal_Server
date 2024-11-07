@@ -13,6 +13,11 @@ import { IUserType, UserType } from "@/models/admin/userType.model";
 import Candidate from "@/models/portal/candidate.model";
 import Employer from "@/models/portal/employer.model";
 import { Application } from "@/models/candidate/application.model";
+import Job from "@/models/portal/job.model";
+import { SavedJobs } from "@/models/candidate/savedjobs";
+import { Subscription } from "@/models/portal/subscription.model";
+import { JobportalPlan } from "@/models/portal/plan.model";
+import { IJobportalPlan } from "@/types/plan";
 
 /**
  @desc    Register a new user 
@@ -24,6 +29,8 @@ const registerUser = async (
   res: Response,
   next: NextFunction
 ) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
   try {
     const payload: IUser = req.body;
 
@@ -45,6 +52,8 @@ const registerUser = async (
         throw new AppError("User already exist!", 400);
       } else {
         await checkUser.deleteOne({ _id: checkUser._id });
+        type.name.toLowerCase()==="employer" && await  Subscription.deleteOne({userId:checkUser._id},{session:session})
+
       }
     }
 
@@ -67,13 +76,18 @@ const registerUser = async (
     });
 
     const { password, isBlocked, user_verified, ...userData } = user.toObject();
-
+     
+      // create a free packge
+      const  plan=await JobportalPlan.findOne({price:0}).session(session)
+      type.name.toLowerCase()==="employer" && plan && await  Subscription.create([{userId:user._id,plan:plan._id,type:"Free"}],{session:session})
     res.status(201).json({
       success: true,
       data: userData,
       message: "User created, please verify!",
     });
   } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
     next(error);
   }
 };
@@ -151,9 +165,10 @@ const authenticateByGoogle = async (
   res: Response,
   next: NextFunction
 ) => {
+  
   try {
     const { state } = req.query as { state: string };
-
+   
     // Set the redirect URI based on the 'state' parameter
     const redirectUri =
       state === "candidate" || "employer"
@@ -192,8 +207,11 @@ const callbackByGoogle = async (
   next: NextFunction
 ) => {
   const { code, state } = req.query as { code: string; state: string };
+  const session = await mongoose.startSession();
+  session.startTransaction();
   try {
     // Set the redirect URI based on the 'state' parameter
+   
     const redirectUri =
       state === "candidate" || "employer"
         ? process.env.GOOGLE_REDIRECT_URI_REGISTER
@@ -218,28 +236,30 @@ const callbackByGoogle = async (
     if (!data) {
       return new AppError("Failed to login", 400);
     }
-
     const userType = await UserType.find({ forAdmin: false });
-
-    let user = await User.findOne({ email: data.email });
+    let user = await User.findOne({ email: data.email }).session(session)
     if (!user) {
-      let newUser = await User.create({
+      let [newUser] = await User.create([{
         email: data.email,
         oauth: "google",
         user_verified: true,
         userType: userType.find(
           (item) => item.name.toLowerCase() === state.toLowerCase()
         )?._id,
-      });
+      }],{session:session});
 
       if (!newUser) {
         return new AppError("Failed to create user", 400);
       }
-
+      // create a free packge
+       // create a free packge
+       const  plan=await JobportalPlan.findOne({price:0}).session(session)
+      state.toLowerCase()==="employer" && await  Subscription.create([{userId:newUser._id,type:"Free"}],{session:session})
       // Ensure user_verified is included in the response
       const { password, isBlocked, ...userData } = newUser.toObject();
       const token = generateToken(newUser);
-
+      await session.commitTransaction();
+      session.endSession();
       return res.status(201).json({
         success: true,
         data: userData,
@@ -253,7 +273,8 @@ const callbackByGoogle = async (
     // Ensure user_verified is included in the response
     const { password, isBlocked, ...userData } = user.toObject();
     userData.user_verified = user.user_verified; // Add user_verified to the response
-
+    await session.commitTransaction();
+    session.endSession();
     res.status(200).json({
       success: true,
       data: userData,
@@ -261,7 +282,9 @@ const callbackByGoogle = async (
       message: "User fetched!",
     });
   } catch (error) {
-    console.log(error);
+    await session.abortTransaction();
+    session.endSession();
+    console.log({error});
     next(error);
   }
 };
@@ -413,6 +436,7 @@ const getUser = async (req: Request, res: Response, next: NextFunction) => {
     }
 
     let userTypeValue;
+    console.log([user])
     if ((user?.userType as IUserType).name.toLowerCase() === "employer") {
       userTypeValue = await Employer.findOne({ userId: user._id });
     }
@@ -547,55 +571,60 @@ const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
   session.startTransaction();
 
   try {
-    const id = req.params.id;
-    const checkUser = await User.findById(id)
-      .populate("userType")
-      .session(session);
-    if (!checkUser) {
-      throw new AppError("Failed to find user!", 400);
-    }
+    const { id } = req.params;
+    
+    // Check if the user exists with populated userType
+    const user = await User.findById(id).populate("userType").session(session);
+    if (!user) throw new AppError("User not found!", 400);
 
-    const user = await User.findByIdAndDelete(req.params.id).session(session);
-    if (!user) {
-      throw new AppError("Failed to delete user!", 400);
-    }
-
-    if ((checkUser.userType as IUserType)?.name === "Candidate") {
-      const checkCandidate = await Candidate.findOne({
-        userId: checkUser._id,
-      }).session(session);
-      if (checkCandidate) {
-        const deleteCandidateRef = await Candidate.findByIdAndDelete(
-          checkCandidate._id
-        ).session(session);
-        if (!deleteCandidateRef) {
-          throw new AppError("Failed to delete user's Candidate profile!", 400);
+    // Check if the user is a Candidate
+    if ((user.userType as IUserType)?.name === "Candidate") {
+      const candidate = await Candidate.findOneAndDelete({ userId: user._id }).session(session);
+      await SavedJobs.findOneAndDelete({ userId: user._id }).session(session);
+      if (candidate) {
+        // Delete candidate applications and remove references in jobs
+        const candidateApplications = await Application.find({ candidate: id }).session(session);
+        const candidateApplicationIds = candidateApplications.map((app) => app._id);
+        
+        if (candidateApplicationIds.length > 0) {
+          await Job.updateMany(
+            { applications: { $in: candidateApplicationIds } },
+            { $pull: { applications: { $in: candidateApplicationIds } } }
+          ).session(session);
         }
+        
+        await Application.deleteMany({ candidate: id }).session(session);
       }
     }
-    if ((checkUser.userType as IUserType)?.name === "Employer") {
-      const checkEmployer = await Employer.findOne({
-        userId: checkUser._id,
-      }).session(session);
-      if (checkEmployer) {
-        const deleteEmployeeRef = await Employer.findByIdAndDelete(
-          checkEmployer._id
-        ).session(session);
-        if (!deleteEmployeeRef) {
-          throw new AppError("Failed to delete user's Employee profile!", 400);
-        }
+
+    // Check if the user is an Employer
+    if ((user.userType as IUserType)?.name === "Employer") {
+
+      const employer = await Employer.findOneAndDelete({ userId: user._id }).session(session);
+      
+      if (employer) {
+        // Delete employer-related applications and jobs
+        await Subscription.deleteOne({ userId:id }).session(session);
+        await Application.deleteMany({ employer: employer._id }).session(session);
+        await Job.deleteMany({ employerId: employer._id }).session(session);
       }
     }
+
+    // Finally, delete the user
+    await User.findByIdAndDelete(id).session(session);
+
     await session.commitTransaction();
-    session.endSession();
-
-    res.status(200).json({ success: true, data: {}, message: "User deleted!" });
+    await session.endSession()
+    res.status(200).json({ success: true, message: "User deleted successfully" });
   } catch (error) {
     await session.abortTransaction();
-    session.endSession();
+    await session.endSession()
     next(error);
+  } finally {
+    session.endSession();
   }
 };
+
 
 /**
  @desc    Reset password by comparing old password

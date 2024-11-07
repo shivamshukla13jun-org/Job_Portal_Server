@@ -1,0 +1,102 @@
+<!-- templates/jobApplicationEmail.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Job Application</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f9f9f9;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        p {
+            color: #555;
+        }
+
+        ul {
+            list-style-type: disc;
+            padding-left: 20px;
+        }
+
+        li {
+            background: #e8e8e8;
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        a {
+            color: #2a7ae2;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .signature {
+            margin-top: 20px;
+        }
+
+        .section-title {
+            font-weight: bold;
+            color: #333;
+            margin-top: 15px;
+        }
+
+        .skills,
+        .experience {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Dear <%= recruiterName %>,</h1>
+
+    <p>I hope this message finds you well. I am writing to apply for the <strong>
+            <%= jobTitle %>
+        </strong> position at <strong>
+            <%= company %>
+        </strong>, as listed on your job portal. I believe that my qualifications and experience would make me a great
+        fit for your team.</p>
+
+    <div class="skills">
+        <p class="section-title">Relevant Skills:</p>
+        <ul>
+            <% relevantSkills?.forEach(item=> { %>
+                <li>
+                    <%= item?.skill %> ( <%= item?.proficiency %>)
+                </li>
+                <% }); %>
+        </ul>
+    </div>
+
+    <div class="experience">
+        <p class="section-title">Relevant Experience:</p>
+        <p>
+            <%= relevantExperience %> years of experience in related fields.
+        </p>
+    </div>
+
+    <p>Please find my attached resume for your review. I would love the opportunity to discuss how I can contribute to
+        <%= company %> further.
+    </p>
+
+    <p>Thank you for your time and consideration, and I look forward to hearing from you soon.</p>
+    <p> Browse More Jobs at <a href="<%=link%>"></a></p>
+    <p class="signature">Best regards,<br>
+        <%= applicantName %><br>Email: <%= applicantEmail %>
+    </p>
+</body>
+
+</html>
