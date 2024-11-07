@@ -10,11 +10,12 @@ import Employer from '@/models/portal/employer.model';
 import { postedatesCondition } from '@/utils/postedadate';
 
 const applyJob = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  // const session = await mongoose.startSession();
-  // session.startTransaction();
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
   try {
     const userId = res.locals.userId as Types.ObjectId;
+    console.log("UserId",userId)
     const jobId: Types.ObjectId = new mongoose.Types.ObjectId(req.params.id);
 
     if (!jobId) {
@@ -24,9 +25,9 @@ const applyJob = async (req: Request, res: Response, next: NextFunction): Promis
 
     // Check candidate and resume
     const checkUser = await Candidate.findOne({ userId: userId }).populate("userId")
-    // .session(session);
+    .session(session);
     if (!checkUser) {
-      throw new AppError('Failed to find user to apply for job!', 400);
+      throw new AppError('Please Complete Your Profile  to apply for job!', 400);
     }
     if (!checkUser.isresume) {
       throw new AppError('Please fill Resume Details to apply for job!', 400);
@@ -34,14 +35,14 @@ const applyJob = async (req: Request, res: Response, next: NextFunction): Promis
 
     // Fetch the job details and employer
     const job: any = await Job.findById(jobId).populate('employerId')
-    // .session(session);
+    .session(session);
     if (!job) {
       throw new AppError('Failed to find job!', 400);
     }
 
     // Check if the user has already applied for this job
     const existingApplication = await Application.findOne({ job: jobId, candidate: checkUser._id })
-    // .session(session);
+    .session(session);
     if (existingApplication) {
       throw new AppError('You have already applied for this job!', 400);
     }
@@ -52,14 +53,14 @@ const applyJob = async (req: Request, res: Response, next: NextFunction): Promis
       employer: job.employerId._id,
       candidate: userId ,
     }], 
-    // { session }
+    { session }
   );
 
     // Update the job's applications array
     await Job.updateOne(
       { _id: jobId },
       { $addToSet: { applications: newApplication._id } },
-      // { session }
+      { session }
     );
 
     // Send email notification
@@ -70,16 +71,16 @@ const applyJob = async (req: Request, res: Response, next: NextFunction): Promis
     // });
 
 
-    // await session.commitTransaction();
-    // session.endSession();
+    await session.commitTransaction();
+    session.endSession();
 
     res.status(200).json({
       success: true,
       message: 'Job applied successfully!',
     });
   } catch (error) {
-    // await session.abortTransaction();
-    // session.endSession();
+    await session.abortTransaction();
+    session.endSession();
     console.log(error);
     next(error);
   }
@@ -234,8 +235,16 @@ const getAllApplicants = async (req: Request, res: Response, next: NextFunction)
       {
         $lookup: {
           from: "candidates",
-          localField: "candidate",
-          foreignField: "userId",
+          let: { candidateId: "$candidate" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ["$userId", "$$candidateId"],
+                },
+              },
+            },
+          ],
           as: "candidate",
         },
       },
@@ -331,8 +340,16 @@ const getApplicants = async (req: Request, res: Response, next: NextFunction): P
       {
         $lookup: {
           from: "candidates",
-          localField: "candidate",
-          foreignField: "userId",
+          let: { candidateId: "$candidate" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ["$userId", "$$candidateId"],
+                },
+              },
+            },
+          ],
           as: "candidate",
         },
       },
@@ -436,7 +453,7 @@ const updateStatus = async (req: Request, res: Response, next: NextFunction): Pr
     ]);
 
     if (!result) {
-      res.status(404).json({
+      res.status(400).json({
         message: "Application not found.",
         success: false,
       });
@@ -465,11 +482,66 @@ const updateStatus = async (req: Request, res: Response, next: NextFunction): Pr
     // }
 
     res.status(200).json({
-      message: "Status updated successfully.",
+      message: `Apllicant  ${status.charAt(0).toUpperCase() +status.slice(1)} successfully.`,
       success: true,
     });
   } catch (error) {
     console.log(error);
+    next(error);
+  }
+};
+const deleteapplication = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  const session = await mongoose.startSession();
+   session.startTransaction();
+    try {
+    const applicationId: Types.ObjectId = new mongoose.Types.ObjectId(req.params.applicationId);
+    const jobId: Types.ObjectId = new mongoose.Types.ObjectId(req.params.jobId);
+    const result = await Application.findById(applicationId).session(session)
+    const jobresult = await Job.findById(jobId).session(session)
+
+    if (!result) {
+      res.status(400).json({
+        message: "Application not found.",
+        success: false,
+      });
+      return;
+    }
+    if (!jobresult) {
+      res.status(400).json({
+        message: "Job  not found.",
+        success: false,
+      });
+      return;
+    }
+
+    await Application.findByIdAndDelete(applicationId).session(session)
+    await Job.findByIdAndUpdate(jobId,{$pull:{applications:applicationId}}).session(session)
+    await session.commitTransaction();
+    session.endSession();
+    // if (result?.applicant?.email) {
+    //   let text: string = status === 'rejected' ? 'Update on Your Job Decline Application for the Position of' : 'Update on Your Application for the Position of';
+    //   sendEmail({
+    //     to: result?.applicant?.email,
+    //     subject: `${text}  ${result.job.title}`,
+    //     template: "jobSeekerEmail",
+    //     data: {
+    //       link: process.env.clienturl,
+    //       name: result.applicant?.personalDetails?.first_name,
+    //       jobTitle: result.job.title,
+    //       company: result?.company?.name,
+    //       status: status,
+    //     },
+    //   });
+    // }
+
+    res.status(200).json({
+      message: `Apllicant  deleted successfully.`,
+      success: true,
+    });
+  } catch (error) {
+    console.log(error);
+    await session.abortTransaction();
+    session.endSession();
     next(error);
   }
 };
@@ -539,6 +611,6 @@ export {
   applyJob,
   getAppliedJobs,
   getApplicants,
-  updateStatus,
+  updateStatus,deleteapplication,
   getAllApplicants,getEmployerJobNamesOnly
 };

@@ -5,12 +5,10 @@ import Job, { IJob } from "@/models/portal/job.model";
 import { AppError } from "@/middlewares/error";
 import Employer from "@/models/portal/employer.model";
 import { validateJob } from "@/validations/job";
-import User from "@/models/admin/user.model";
 import { generateToken } from "@/middlewares/auth";
-import Candidate from "@/models/portal/candidate.model";
-import Resume from "@/models/candidate/resume.model";
 import { postedatesCondition } from "@/utils/postedadate";
 import { Subscription } from "@/models/portal/subscription.model";
+import { Application } from "@/models/candidate/application.model";
 
 /**
  @desc      Create an job
@@ -177,7 +175,7 @@ const getJobs = async (req: Request, res: Response, next: NextFunction) => {
             {
                 $match: {
                     "subscription": { $exists: true },
-                     "subscription.expiresAt": { $gte: today  },
+                    "subscription.expiresAt": { $gte: today  },
                     isActive: true,
                     ...matchQueries
                 }
@@ -293,10 +291,7 @@ const getJob = async (req: Request, res: Response, next: NextFunction) => {
                     createdAt: { $first: "$createdAt" },
                     updatedAt: { $first: "$updatedAt" },
                     __v: { $first: "$__v" },
-                    candidate_applied: { $push: "$candidate_applied" },
-                    candidate_rejected: { $push: "$candidate_rejected" },
-                    candidate_shortlisted: { $push: "$candidate_shortlisted" },
-                    updatedBy: { $first: "$updatedBy" },
+                  updatedBy: { $first: "$updatedBy" },
                     age: { $first: "$age" },
                     personal_info: { $first: "$personal_info" },
                     categories: { $first: "$categories" },
@@ -515,6 +510,7 @@ const deleteJob = async (req: Request, res: Response, next: NextFunction) => {
         const id = req.params.id;
 
         const job = await Job.findByIdAndDelete(id);
+        await Application.deleteMany({job:id})
         if (!job) {
             throw new AppError('Failed to find job', 400);
         }
@@ -535,332 +531,27 @@ const deleteJob = async (req: Request, res: Response, next: NextFunction) => {
  @route     PUT /api/v1/job/apply/:id
  @access    Employer
  */
-const applyJob = async (req: Request, res: Response, next: NextFunction) => {
 
-    const session = await mongoose.startSession();
-    session.startTransaction();
-
-    try {
-        const id = req.params.id;
-        const { jobId } = req.body;
-
-        const checkJob = await Job.findById(jobId).session(session);
-        if (!checkJob) {
-            throw new AppError('Failed to find job!', 400);
-        }
-
-        const checkUser = await User.findById(id).session(session);
-        if (!checkUser) {
-            throw new AppError('Failed to find user to apply for job!', 400);
-        };
-        const isResume=await Resume.findOne({candidateId:id})
-        if (!isResume) {
-            throw new AppError('Please fil Resume Details to apply for job!', 400);
-        };
-        const updateJob = await Job.findByIdAndUpdate(jobId, { $addToSet: { applications: id } }, { runValidators: true, new: true }).session(session);
-        if (!updateJob) {
-            throw new AppError("Failed to update job", 400)
-        };
-
-        checkUser["jobs"] = [...(checkUser.jobs || []), {
-            jobId: new Types.ObjectId(jobId),
-            date: new Date()
-        }];
-
-        const updateUser = await User.findByIdAndUpdate(id, checkUser, { runValidators: true, new: true }).session(session);
-        if (!updateUser) {
-            throw new AppError("Failed to update user", 400)
-        };
-
-        const token = generateToken(updateUser);
-
-        await session.commitTransaction();
-        session.endSession();
-
-        res.status(200).json({
-            success: true,
-            data: updateUser,
-            token,
-            message: 'Job applied!'
-        })
-
-    } catch (error) {
-        await session.abortTransaction();
-        session.endSession();
-        next(error);
-    }
-};
 
 /**
  @desc    Accept the candidate for the job
  @route   PUT /api/v1/user/job/shortlist/:id
  @access  Private
  */
-const acceptCandidateForJob = async (req: Request, res: Response, next: NextFunction) => {
 
-    const session = await mongoose.startSession();
-    session.startTransaction();
-
-    try {
-        const id = req.params.id;
-        const { candidateId } = req.body;
-
-        const checkJob = await Job.findById(id).session(session);
-        if (!checkJob) {
-            throw new AppError('Failed to find job', 400);
-        }
-
-        const checkCandidate = await Candidate.findById(candidateId).session(session);
-        if (!checkCandidate) {
-            throw new AppError('Failed to find candidate', 400);
-        };
-
-        const checkUser = await User.findById(checkCandidate.userId).session(session);
-        if (!checkUser) {
-            throw new AppError('Failed to find user', 400);
-        };
-
-        // Check if the candidate is already shortlisted for this job
-        const isAlreadyShortlisted = checkUser.shortListedJobs?.some(job => job.jobId.toString() === id);
-        const isAlreadyshortlisted = checkJob.candidate_shortlisted?.some(candidate => candidate.candidateId.toString() === checkCandidate.userId.toString());
-
-        if (isAlreadyShortlisted || isAlreadyshortlisted) {
-            await session.abortTransaction();
-            session.endSession();
-            return res.status(200).json({
-                success: true,
-                message: 'Candidate is already shortlisted!.'
-            });
-        }
-
-        checkUser["rejectedJobs"] = checkUser.rejectedJobs?.filter(item => item.jobId.toString() !== id);
-        checkUser["shortListedJobs"] = [...(checkUser.shortListedJobs || []), {
-            jobId: new Types.ObjectId(id),
-            date: new Date()
-        }];
-
-        const updateUser = await User.findByIdAndUpdate(checkCandidate.userId, checkUser, { new: true, runValidators: true }).session(session);
-        if (!updateUser) {
-            throw new AppError('Failed to update user', 400);
-        };
-
-        checkJob["candidate_rejected"] = checkJob.candidate_rejected?.filter(item => item.candidateId.toString() !== checkCandidate.userId.toString());
-        checkJob["candidate_shortlisted"] = [...(checkJob.candidate_shortlisted || []), {
-            candidateId: new Types.ObjectId(checkCandidate.userId),
-            date: new Date()
-        }];
-
-        const updateJob = await Job.findByIdAndUpdate(id, checkJob, { new: true, runValidators: true }).session(session);
-        if (!updateJob) {
-            throw new AppError('Failed to update job', 400);
-        };
-
-        await session.commitTransaction();
-        session.endSession();
-
-        res.status(200).json({
-            success: true,
-            data: checkJob,
-            message: 'Candidate shortlisted!'
-        })
-
-    } catch (error) {
-        await session.abortTransaction();
-        session.endSession();
-        next((error))
-    }
-};
 
 /**
  @desc    Decline the candidate for the job
  @route   PUT /api/v1/user/job/decline/:id
  @access  Private
  */
-const declineCandidateForJob = async (req: Request, res: Response, next: NextFunction) => {
-
-    const session = await mongoose.startSession();
-    session.startTransaction();
-
-    try {
-        const id = req.params.id;
-        const { candidateId } = req.body;
-
-        const checkJob = await Job.findById(id).session(session);
-        if (!checkJob) {
-            throw new AppError('Failed to find job', 400);
-        }
-
-        const checkCandidate = await Candidate.findById(candidateId).session(session);
-        if (!checkCandidate) {
-            throw new AppError('Failed to find candidate', 400);
-        };
-
-        const checkUser = await User.findById(checkCandidate.userId).session(session);
-        if (!checkUser) {
-            throw new AppError('Failed to find user', 400);
-        };
-
-        // Check if the candidate is already shortlisted for this job
-        const isAlreadyRejectedUser = checkUser.rejectedJobs?.some(job => job.jobId.toString() === id);
-        const isAlreadyRejected = checkJob.candidate_rejected?.some(candidate => candidate.candidateId.toString() === checkCandidate.userId.toString());
-
-        if (isAlreadyRejectedUser || isAlreadyRejected) {
-            await session.abortTransaction();
-            session.endSession();
-            return res.status(200).json({
-                success: true,
-                message: 'Candidate is already rejected!.'
-            });
-        }
-
-        checkUser["shortListedJobs"] = checkUser.shortListedJobs?.filter(item => item.jobId.toString() !== id);
-        checkUser["rejectedJobs"] = [...(checkUser.rejectedJobs || []), {
-            jobId: new Types.ObjectId(id),
-            date: new Date()
-        }];
-
-        const updateUser = await User.findByIdAndUpdate(checkCandidate.userId, checkUser, { new: true, runValidators: true }).session(session);
-        if (!updateUser) {
-            throw new AppError('Failed to update user', 400);
-        };
-
-        checkJob["candidate_shortlisted"] = checkJob.candidate_shortlisted?.filter(item => item.candidateId.toString() !== checkCandidate.userId.toString());
-        checkJob["candidate_rejected"] = [...(checkJob.candidate_rejected || []), {
-            candidateId: new Types.ObjectId(checkCandidate.userId),
-            date: new Date()
-        }];
-        const updateJob = await Job.findByIdAndUpdate(id, checkJob, { new: true, runValidators: true }).session(session);
-        if (!updateJob) {
-            throw new AppError('Failed to update job', 400);
-        };
-
-        await session.commitTransaction();
-        session.endSession();
-
-        res.status(200).json({
-            success: true,
-            data: checkJob,
-            message: 'Candidate rejected!'
-        })
-
-    } catch (error) {
-        console.log(error)
-        await session.abortTransaction();
-        session.endSession();
-        next((error))
-    }
-};
 
 /**
  @desc    Get every shortlisted candidate from a job created by an employer
  @route   GET /api/v1/user/job/shortlistedCandidate/:id
  @access  Private
  */
-const getShortlistedCandidatesByEmployer = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        let id = req.params.id;
-        const { page, limit, ...queries } = req.query;
-
-        const checkEmployer = await Employer.findOne({ userId: id });
-        if (!checkEmployer) {
-            throw new AppError(`Failed to find an employer`, 400);
-        }
-
-        const pageOptions = {
-            page: parseInt(page as string, 0) || 0,
-            limit: parseInt(limit as string, 10) || 10
-        };
-
-        const matchQueries: { [key: string]: RegExp } = {};
-        const createRegex = (value: string) => new RegExp(`.*${value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}.*`, "gi");
-
-        for (const [key, value] of Object.entries(queries)) {
-            if (typeof value === 'string' && value !== '') {
-                if (key === 'name') {
-                    matchQueries['candidate_shortlisted.candidateId.name'] = createRegex(value);
-                } else {
-                    matchQueries[key] = createRegex(value);
-                }
-            }
-        }
-
-        const jobAggregate = await Job.aggregate([
-            {
-                $match: {
-                    employerId: checkEmployer._id,
-                }
-            },
-            {
-                $project: {
-                    candidate_shortlisted: 1
-                }
-            },
-            {
-                $unwind: {
-                    path: "$candidate_shortlisted",
-                    preserveNullAndEmptyArrays: true
-                }
-            },
-            {
-                $lookup: {
-                    from: "candidates",
-                    localField: "candidate_shortlisted.candidateId",
-                    foreignField: "userId",
-                    as: "candidate_shortlisted.candidateId"
-                }
-            },
-            {
-                $unwind: {
-                    path: "$candidate_shortlisted.candidateId",
-                    preserveNullAndEmptyArrays: true
-                }
-            },
-            {
-                $match: {
-                    "candidate_shortlisted": { $ne: null },
-                    "candidate_shortlisted.candidateId": { $ne: null }
-                }
-            },
-            {
-                $match: {
-                    ...matchQueries
-                }
-            },
-            {
-                $group: {
-                    _id: null,
-                    candidate_shortlisted: {
-                        $addToSet: "$candidate_shortlisted"
-                    }
-                }
-            },
-            {
-                $facet: {
-                    data: [
-                        { $skip: pageOptions.page * pageOptions.limit },
-                        { $limit: pageOptions.limit }
-                    ],
-                    count: [
-                        {
-                            $project: { count: { $size: "$candidate_shortlisted" } }
-                        }
-                    ]
-                }
-            }
-        ]);
-
-        res.status(200).json({
-            success: true,
-            message: 'Shortlisted candidate fetched!',
-            data: jobAggregate?.[0]?.data?.[0]?.candidate_shortlisted || [],
-            count: jobAggregate?.[0]?.count?.[0]?.count || 0,
-        })
-
-    } catch (error) {
-        next((error))
-    }
-};
 
 export {
-    createJob, getJobs, getJob, getEmployerJobs, getEmployerJobNamesOnly, getEmployerJob, updateJob, deleteJob, applyJob, acceptCandidateForJob, declineCandidateForJob, getShortlistedCandidatesByEmployer
+    createJob, getJobs, getJob, getEmployerJobs, getEmployerJobNamesOnly, getEmployerJob, updateJob, deleteJob, 
 }

@@ -1,0 +1,100 @@
+<!-- templates/jobSeekerEmail.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Application Update</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f9f9f9;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        p {
+            color: #555;
+        }
+
+        ul {
+            list-style-type: disc;
+            padding-left: 20px;
+        }
+
+        li {
+            background: #e8e8e8;
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        a {
+            color: #2a7ae2;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .signature {
+            margin-top: 20px;
+        }
+
+        .section-title {
+            font-weight: bold;
+            color: #333;
+            margin-top: 15px;
+        }
+
+        .skills,
+        .experience {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Dear <%= name %>,</h1>
+    <% if (status==='accepted' ) { %>
+        <p>Thank you for applying for the position of<strong>
+                <%= jobTitle %>
+            </strong> at <strong>
+                <%= company %>
+            </strong>, We are pleased to inform you that your application has been accepted. Our recruitment team will
+            be in
+            touch with you
+            shortly to discuss the next steps.</p>
+        <p>
+            We appreciate your interest in using our job portal. If you have any further queries, feel free to reach us.
+        </p>
+        <% } else if (status==='rejected' ) { %>
+            <p>Thank you for applying for the position of<strong>
+                    <%= jobTitle %>
+                </strong> at <strong>
+                    <%= company %>
+                </strong>. After careful consideration, we regret to inform you that your profile has been declined. As
+                your profile
+                does not match
+                with our expectation, we have decided to move forward with other candidates. We encourage you to check
+                other
+                available
+                positions on our platform that may suit your profile.</p>
+            <p>
+                Thank you for using our job portal, and we wish you the best in your job search.
+            </p>
+            <% } else { %>
+                <p>Your application is still under review. We'll update you on any changes.</p>
+                <% } %>
+                    <p class="signature">Best regards,<br>
+                        The Job Portal Team</p>
+                    </p>
+</body>
+
+</html>

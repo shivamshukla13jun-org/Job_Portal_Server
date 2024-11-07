@@ -22,7 +22,7 @@ const subscriptionSchema = new mongoose.Schema<ISubscription>({
     },
     type: {
         type: String,
-        enum: ['monthly', 'quarterly', 'yearly', 'lifetime'],
+        enum: ['monthly', 'quarterly', 'yearly', 'Free'],
         required: true
     },
     jobPostLimit: {

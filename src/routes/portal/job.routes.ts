@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import { createJob, getJobs, getJob, updateJob, deleteJob, getEmployerJobs, getEmployerJob, getEmployerJobNamesOnly, acceptCandidateForJob, declineCandidateForJob, getShortlistedCandidatesByEmployer } from "@/controllers/portal/job.controllers";
+import { createJob, getJobs, getJob, updateJob, deleteJob, getEmployerJobs, getEmployerJob, getEmployerJobNamesOnly,  } from "@/controllers/portal/job.controllers";
 import { verifyisCandidateLogin, verifyToken, verifyUserTypeToken } from "@/middlewares/auth";
 import { applyJob } from "@/controllers/candidate/application.controller";
 
@@ -15,10 +15,7 @@ router.get("/employer/name", verifyUserTypeToken(["employer"]), getEmployerJobNa
 router.route("/employer/:id")
     .get(verifyUserTypeToken(["employer"]), getEmployerJob);
 
-router.put("/shortlist/:id", verifyToken, acceptCandidateForJob);
-router.put("/decline/:id", verifyToken, declineCandidateForJob);
 
-router.get("/shortlistedCandidate/:id", verifyUserTypeToken(["employer"]), getShortlistedCandidatesByEmployer)
 
 router.route("/")
     .get(getJobs)

@@ -80,8 +80,8 @@ const getSubscription = async (req: Request, res: Response, next: NextFunction)=
             throw new Error("Subscription not found.");
         }
 
-        if (data.type === 'lifetime') {
-            message = "Your subscription is lifetime";
+        if (data.type === 'Free') {
+            message = "Your subscription is Free";
         } else if (data.expiresAt < new Date()) {
             message = "Your subscription has expired";
             isRequired = true;
