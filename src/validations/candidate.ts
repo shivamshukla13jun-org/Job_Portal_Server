@@ -1,5 +1,5 @@
 import { AppError } from "@/middlewares/error";
-import { ICandidate } from "@/models/portal/candidate.model";
+import { ICandidate ,IContactUs} from "@/models/portal/candidate.model";
 import { NextFunction, Request, Response } from "express";
 import * as Yup from "yup"
 
@@ -98,5 +98,17 @@ const validateCandidate = async (payload: ICandidate) => {
         }
     }
 };
+const validateCantactUs = async (payload: IContactUs) => {
+    try {
+        await candidateSchema.validate(payload, { abortEarly: true });
+        return true;
+    } catch (error) {
+        if (error instanceof Yup.ValidationError) {
+            throw new AppError(error.message, 400);
+        } else {
+            throw new AppError("An unexpected error occurred", 500);
+        }
+    }
+};
 
-export { validateCandidateApi, validateCandidate };
+export { validateCandidateApi, validateCandidate ,validateCantactUs};

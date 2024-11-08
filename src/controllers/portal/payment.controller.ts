@@ -35,7 +35,7 @@ const createOrder = async (req: Request, res: Response,next:NextFunction) => {
       // Prepare subscription request options
       // Call the reusable createRazorpaySubscription function
       const subscription = await createSubscription('razorpay', {
-        amount: plan.price,
+        amount: plan.price===0?2:plan.price,
         currency: 'INR',
         description: 'Plan Subscription',
         user,
