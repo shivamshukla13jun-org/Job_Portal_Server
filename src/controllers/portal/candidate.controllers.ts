@@ -218,21 +218,26 @@ const deleteCandidate = async (req: Request, res: Response, next: NextFunction) 
     }
 };
 interface DashboardData {
-    Applicationdata:any
+    Applicationdata:object,
+    user:object
+
 }
 
 const   candidateDashboard = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         
         const userId = res.locals.userId as Types.ObjectId
-        
+        const checkCandidate = await Candidate.findOne({ userId: userId });
+        if (!checkCandidate) {
+            throw new AppError(`Failed to find an Candidate Please Complete Your Profile`, 400);
+        }
         const today: Date = new Date();
         const lastYear: Date = new Date(today.setFullYear(today.getFullYear() - 1));
         const monthsArray: string[] = [
             "January", "February", "March", "April", "May", "June",
             "July", "August", "September", "October", "November", "December"
         ];
-
+    
         const baseStats: any[] = [
             {
                 $match: {
@@ -353,6 +358,7 @@ const   candidateDashboard = async (req: Request, res: Response, next: NextFunct
 
         let data: DashboardData = {
             Applicationdata,
+            user:checkCandidate
             // users: users,
         };
         res.status(200).json({ data, message: "fetch data successful" });

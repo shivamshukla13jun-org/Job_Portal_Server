@@ -11,6 +11,7 @@ export interface ICandidate extends Document {
     marital_status: 'Married' | 'Unmarried';
     profile: IFile;
     cv: IFile;
+    designation:string;
     contact: IUserContact;
     education: IUserEducation[];
     registration_certificate: IFile;
@@ -22,6 +23,12 @@ export interface ICandidate extends Document {
     companies_resume_visible: Types.ObjectId[];
     coverletter:string,
     isresume:boolean
+};
+export interface IContactUs extends Document {
+    username: string;
+    email: string;
+    subject:string;
+    message:string,
 };
 
 const candidateSchema = new Schema<ICandidate>({
@@ -54,6 +61,7 @@ const candidateSchema = new Schema<ICandidate>({
     },
     profile: { type: Object },
     cv: { type: Object },
+    designation:{type:String,required: [true, 'Designation is required'],},
     contact: {
         email: {
             type: String,

@@ -4,7 +4,6 @@ import { NextFunction, Request, Response } from "express";
 import Employer, { IEmployer, IEmployerFiles } from "@/models/portal/employer.model";
 import { AppError } from "@/middlewares/error";
 import { validateEmployer } from "@/validations/employer";
-import Candidate from "@/models/portal/candidate.model";
 import Job from "@/models/portal/job.model";
 import { Application } from "@/models/candidate/application.model";
 
@@ -37,9 +36,10 @@ const createEmployer = async (req: Request, res: Response, next: NextFunction) =
 };
 
 interface DashboardData {
-    jobs: any;
+    jobs: object;
+    business_name:string
     // users: any;
-    Applicationdata:any
+    Applicationdata:object
 }
 
 const EmployerDashboard = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -89,31 +89,6 @@ const EmployerDashboard = async (req: Request, res: Response, next: NextFunction
                 }
             },
         ];
-
-        // const [users]: any[] = await Candidate.aggregate([
-        //     {
-        //         $facet: {
-        //             users: [
-        //                 { $group: { _id: null, total: { $sum: 1 } } },
-        //                 { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } }
-        //             ],
-        //             stats: baseStats,
-        //         },
-        //     },
-        //     {
-        //         $unwind: {
-        //             path: "$users",
-        //             preserveNullAndEmptyArrays: true,
-        //         },
-        //     },
-        //     {
-        //         $project: {
-        //             total: { $ifNull: ["$users.total", 0] },
-        //             stats: 1,
-        //         },
-        //     },
-        // ]);
-
         const [totalpostedjobs]: any[] = await Job.aggregate([
             {
               $match:{
@@ -230,6 +205,8 @@ const EmployerDashboard = async (req: Request, res: Response, next: NextFunction
         let data: DashboardData = {
             jobs: totalpostedjobs,
             Applicationdata,
+            business_name: checkEmployer.business_name,  // Added business_name
+
             // users: users,
         };
         res.status(200).json({ data, message: "fetch data successful" });

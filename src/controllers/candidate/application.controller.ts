@@ -27,7 +27,7 @@ const applyJob = async (req: Request, res: Response, next: NextFunction): Promis
     const checkUser = await Candidate.findOne({ userId: userId }).populate("userId")
     .session(session);
     if (!checkUser) {
-      throw new AppError('Please Complete Your Profile  to apply for job!', 400);
+      throw new AppError('Please Complete Your Profile and Resume Section to apply for job!', 400);
     }
     if (!checkUser.isresume) {
       throw new AppError('Please fill Resume Details to apply for job!', 400);
@@ -194,11 +194,10 @@ const getAllApplicants = async (req: Request, res: Response, next: NextFunction)
                 matchQueriesupper['createdAt'] = { $gte: startDate };
               }   
             }
-            if (createdAt) {
               if (status) {
                 matchQueriesupper['status'] =  status
               }   
-            }
+            
     for (const [key, value] of Object.entries(queries)) {
             if (typeof value === 'string' && value !== '' && !['createdAt', 'status',"name" ].includes(key)) {
               matchQueries[key] = createRegex(value)
@@ -249,6 +248,23 @@ const getAllApplicants = async (req: Request, res: Response, next: NextFunction)
         },
       },
       { $unwind:{path: "$candidate",preserveNullAndEmptyArrays:true} },
+      {
+        $lookup: {
+          from: "resumes",
+          let: { candidateId: "$candidate._id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ["$candidateId", "$$candidateId"],
+                },
+              },
+            },
+          ],
+          as: "resume",
+        },
+      },
+      { $unwind:{path: "$resume",preserveNullAndEmptyArrays:true} },
       {
         $match: {
             ...matchQueries
@@ -354,7 +370,23 @@ const getApplicants = async (req: Request, res: Response, next: NextFunction): P
         },
       },
       { $unwind: {path:"$candidate",preserveNullAndEmptyArrays:true} },
-     
+      {
+        $lookup: {
+          from: "resumes",
+          let: { candidateId: "$candidate._id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ["$candidateId", "$$candidateId"],
+                },
+              },
+            },
+          ],
+          as: "resume",
+        },
+      },
+      { $unwind:{path: "$resume",preserveNullAndEmptyArrays:true} },
       { $match: applicationMatchStage },
       {
         $facet: {
