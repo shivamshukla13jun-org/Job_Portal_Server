@@ -141,7 +141,7 @@ const updateCandidate = async (req: Request, res: Response, next: NextFunction) 
         payload["email"] = payload?.email?.toLowerCase();
         payload.cv = files?.upload_cv?.[0] || payload?.cv;
         payload.profile = files?.profile?.[0] || payload?.profile;
-        payload.registration_certificate = files?.registration_certificate?.[0] || payload?.registration_certificate;
+        // payload.registration_certificate = files?.registration_certificate?.[0] || payload?.registration_certificate;
         let currentEducationFileIndex = 0;
         payload.education = payload?.education.map((item) => {
             const hasCertificate = item.certificate && typeof item.certificate === 'object' && Object.keys(item.certificate).length > 0;

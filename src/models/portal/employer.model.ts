@@ -1,6 +1,7 @@
 import { Schema, Document, Types, model } from "mongoose";
 import { IUserContactAddress } from "@/types/user";
 import { IFile } from "@/types/file";
+import { IJobSelect } from "@/types/company";
 
 export interface IEmployer extends Document {
     userId: Types.ObjectId;
@@ -8,7 +9,7 @@ export interface IEmployer extends Document {
     name: string;
     email: string;
     business_gst: string;
-    pan_card: string;
+    categories: IJobSelect[];
     phone_area: string;
     phone: string;
     address: IUserContactAddress;
@@ -52,10 +53,19 @@ const employerSchema = new Schema<IEmployer>({
         type: String,
         required: [true, 'Business gst is required']
     },
-    pan_card: {
-        type: String,
-        required: [true, 'Pan card is required']
-    },
+    categories: [
+        {
+            value: {
+                type: String,
+                required: [true, "Job Sector value is required in candidate requirement."]
+            },
+            label: {
+                type: String,
+                required: [true, "Job Sector label is required in candidate requirement."]
+            }
+        }
+    ],
+    
     phone_area: {
         type: String,
         required: [true, 'Phone area is required']

@@ -14,7 +14,6 @@ export interface ICandidate extends Document {
     designation:string;
     contact: IUserContact;
     education: IUserEducation[];
-    registration_certificate: IFile;
     employment: IUserEmployment[];
     references: IUserReference[];
     english_language: IUserTestScore;
@@ -150,7 +149,7 @@ const candidateSchema = new Schema<ICandidate>({
             }
         }
     ],
-    registration_certificate: { type: Object },
+    // registration_certificate: { type: Object },
     employment: [
         {
             name: {

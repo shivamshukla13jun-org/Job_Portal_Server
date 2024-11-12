@@ -35,7 +35,7 @@ router.route("/")
         upload.fields([
             { name: 'upload_cv', maxCount: 1 },
             { name: 'profile', maxCount: 1 },
-            { name: 'registration_certificate', maxCount: 1 },
+            // { name: 'registration_certificate', maxCount: 1 },
             { name: 'score_card', maxCount: 1 },
             { name: 'certificate[]', maxCount: 5 }
         ]),
@@ -49,7 +49,7 @@ router.route("/:id")
         upload.fields([
             { name: 'upload_cv', maxCount: 1 },
             { name: 'profile', maxCount: 1 },
-            { name: 'registration_certificate', maxCount: 1 },
+            // { name: 'registration_certificate', maxCount: 1 },
             { name: 'score_card', maxCount: 1 },
             { name: 'certificate[]', maxCount: 5 }
         ]),

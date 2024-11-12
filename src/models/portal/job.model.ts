@@ -15,7 +15,6 @@ export interface IJob extends Document {
     place: string;
     opening: number;
     jobtype:string,
-    age: number;
     candidate_requirement: IJobCandidate;
     categories: IJobSelect[];
     personal_info: IJobPersonal[];
@@ -47,11 +46,11 @@ const jobSchema = new Schema<IJob>({
         {
             value: {
                 type: String,
-                required: [true, "Category value is required in candidate requirement."]
+                required: [true, "Job Sector value is required in candidate requirement."]
             },
             label: {
                 type: String,
-                required: [true, "Category label is required in candidate requirement."]
+                required: [true, "Job Sector label is required in candidate requirement."]
             }
         }
     ],
@@ -68,10 +67,10 @@ const jobSchema = new Schema<IJob>({
         enum:[ "freelancer", "full-time", "part-time", "temporary" ],
         required: [true, "Job Type is required"]
     },
-    age: {
-        type: Number,
-        required: [true, 'Age is required']
-    },
+    // age: {
+    //     type: Number,
+    //     required: [true, 'Age is required']
+    // },
     candidate_requirement: {
         experience: {
             type: Number,
@@ -79,11 +78,13 @@ const jobSchema = new Schema<IJob>({
         },
         salary_from: {
             type: Number,
-            required: [true, "Salary from is required"]
+            default:null
+            // required: [true, "Salary from is required"]
         },
         salary_to: {
             type: Number,
-            required: [true, "Salary to is required"]
+            default:null
+            // required: [true, "Salary to is required"]
         },
         bonus: {
             type: Boolean,
@@ -126,55 +127,55 @@ const jobSchema = new Schema<IJob>({
             ]
         }
     ],
-    timing: {
-        job: {
-            type: String,
-            required: [true, "Job timing is required"]
-        },
-        interview: {
-            type: String,
-            required: [true, "Interview timing is required"]
-        }
-    },
-    company: {
-        name: {
-            type: String,
-            required: [true, "Name is required"]
-        },
-        contact_person: {
-            type: String,
-            required: [true, "Contact person is required"]
-        },
-        phone: {
-            type: String,
-            required: [true, "Phone is required"]
-        },
-        email: {
-            type: String,
-            required: [true, "Email is required"]
-        },
-        contact_person_profile: {
-            type: String,
-            required: [true, "Contact person profile is required"]
-        },
-        size_of_org: {
-            type: Number,
-            required: [true, "Size of organisation is required"]
-        },
-        job_address: {
-            type: String,
-            required: [true, "Job address is required"]
-        },
-        vacancy: {
-            type: String,
-            required: [true, "Vacancy is required"]
-        },
-        id:{
-            type:Schema.Types.UUID,
-            default: () => crypto.randomUUID(),  // Generate a UUID using crypto
+    // timing: {
+    //     job: {
+    //         type: String,
+    //         required: [true, "Job timing is required"]
+    //     },
+    //     interview: {
+    //         type: String,
+    //         required: [true, "Interview timing is required"]
+    //     }
+    // },
+    // company: {
+    //     name: {
+    //         type: String,
+    //         required: [true, "Name is required"]
+    //     },
+    //     contact_person: {
+    //         type: String,
+    //         required: [true, "Contact person is required"]
+    //     },
+    //     phone: {
+    //         type: String,
+    //         required: [true, "Phone is required"]
+    //     },
+    //     email: {
+    //         type: String,
+    //         required: [true, "Email is required"]
+    //     },
+    //     contact_person_profile: {
+    //         type: String,
+    //         required: [true, "Contact person profile is required"]
+    //     },
+    //     size_of_org: {
+    //         type: Number,
+    //         required: [true, "Size of organisation is required"]
+    //     },
+    //     job_address: {
+    //         type: String,
+    //         required: [true, "Job address is required"]
+    //     },
+    //     vacancy: {
+    //         type: String,
+    //         required: [true, "Vacancy is required"]
+    //     },
+    //     id:{
+    //         type:Schema.Types.UUID,
+    //         default: () => crypto.randomUUID(),  // Generate a UUID using crypto
 
-        }
-    },
+    //     }
+    // },
     applications: [
         {
             type: Schema.Types.ObjectId,

@@ -69,7 +69,7 @@ const candidateSchema = Yup.object().shape({
     coverletter:Yup.string().required('Please add cover letter'),
     cv: Yup.mixed().required('CV upload is required'),
     profile: Yup.mixed().required('Profile upload is required'),
-    registration_certificate: Yup.mixed().required('Registration certificate is required'),
+    // registration_certificate: Yup.mixed().required('Registration certificate is required'),
 });
 
 
