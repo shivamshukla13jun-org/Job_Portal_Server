@@ -17,10 +17,10 @@ export type IUserContact = {
 
 export type IUserEducation = {
     name: string;
-    from: Date;
+    // from: Date;
     to: Date;
     qualification: string;
-    certificate?: IFile;
+    // certificate?: IFile;
 };
 
 export type IUserEmployment = {

@@ -143,17 +143,17 @@ const updateCandidate = async (req: Request, res: Response, next: NextFunction) 
         payload.profile = files?.profile?.[0] || payload?.profile;
         // payload.registration_certificate = files?.registration_certificate?.[0] || payload?.registration_certificate;
         let currentEducationFileIndex = 0;
-        payload.education = payload?.education.map((item) => {
-            const hasCertificate = item.certificate && typeof item.certificate === 'object' && Object.keys(item.certificate).length > 0;
-            if (!hasCertificate) {
-                if (files["certificate[]"] && files["certificate[]"][currentEducationFileIndex]) {
-                    item.certificate = files["certificate[]"][currentEducationFileIndex];
-                }
-                currentEducationFileIndex++;
-            }
-            return item;
-        });
-        payload.english_language.score_card = files?.score_card?.[0] || payload?.english_language?.score_card;
+        // payload.education = payload?.education.map((item) => {
+        //     const hasCertificate = item.certificate && typeof item.certificate === 'object' && Object.keys(item.certificate).length > 0;
+        //     if (!hasCertificate) {
+        //         if (files["certificate[]"] && files["certificate[]"][currentEducationFileIndex]) {
+        //             item.certificate = files["certificate[]"][currentEducationFileIndex];
+        //         }
+        //         currentEducationFileIndex++;
+        //     }
+        //     return item;
+        // });
+        // payload.english_language.score_card = files?.score_card?.[0] || payload?.english_language?.score_card;
 
 
         // validate the data
