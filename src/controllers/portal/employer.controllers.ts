@@ -313,6 +313,7 @@ const updateEmployer = async (req: Request, res: Response, next: NextFunction) =
             }
         }
         // formatting the payload
+        console.log(files)
         payload.logo = files?.logo?.[0] || payload?.logo;
         payload.videos = files?.["video[]"]?.[0] || payload?.videos;
         payload.pictures = files?.["picture[]"]?.[0] || payload?.pictures;

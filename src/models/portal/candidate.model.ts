@@ -7,6 +7,7 @@ export interface ICandidate extends Document {
     userId: Types.ObjectId;
     name: string;
     email: string;
+    achievement:object;
     gender: 'Male' | 'Female' | 'Other';
     dob: Date;
     categories: IJobSelect[];
@@ -186,7 +187,7 @@ const candidateSchema = new Schema<ICandidate>({
                 }
             ],
             scope: {
-                type: Date,
+                type: String,
                 required: [true, 'scope is required']
             },
             to: {
@@ -196,6 +197,11 @@ const candidateSchema = new Schema<ICandidate>({
             // certificate: {
             //     type: Object,
             // }
+        }
+    ],
+    achievement: [
+        {
+            type: Object
         }
     ],
     references: [
