@@ -166,7 +166,7 @@ class SubEmployerController {
             console.log('Meeting Created:', newMeeting);
     
             // Render the EJS template
-            const templatePath = path.join(__dirname, '../../views/meeting-email.ejs');
+            const templatePath = path.join(process.cwd(), 'views','meeting-email.ejs');
             const emailContent = await ejs.renderFile(templatePath, {
                 date,
                 time,
