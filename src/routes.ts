@@ -10,6 +10,7 @@ import WhishListRoutes from "@/routes/candidate/savedjobs.routes";
 import cvRoutes from "@/routes/candidate/cv.routes";
 
 import employerRoutes from "@/routes/portal/employer.routes";
+import subemployerRoutes from "@/routes/portal/subemployer.routes";
 import candidateRoutes from "@/routes/portal/candidate.routes";
 import applicationRoutes from "@/routes/portal/application.routes";
 import companyRoutes from "@/routes/portal/company.routes";
@@ -33,6 +34,7 @@ router.use("/cv", cvRoutes);
 router.use("/candidate", candidateRoutes);
 router.use("/application", applicationRoutes);
 router.use("/employer", employerRoutes);
+router.use("/sub-employers", subemployerRoutes);
 router.use("/company", companyRoutes);
 router.use("/job", jobRoutes);
 

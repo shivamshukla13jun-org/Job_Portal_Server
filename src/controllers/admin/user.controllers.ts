@@ -81,6 +81,8 @@ const registerUser = async (
       // create a free packge
       const  plan=await JobportalPlan.findOne({price:0}).session(session)
       type.name.toLowerCase()==="employer" && plan && await  Subscription.create([{userId:user._id,plan_id:plan._id,type:"Free",orderId:"order_free_"+Date.now()}],{session:session})
+      await session.commitTransaction()
+      await session.endSession();
     res.status(201).json({
       success: true,
       data: userData,
@@ -88,7 +90,7 @@ const registerUser = async (
     });
   } catch (error) {
     await session.abortTransaction();
-    session.endSession();
+   await session.endSession();
     next(error);
   }
 };

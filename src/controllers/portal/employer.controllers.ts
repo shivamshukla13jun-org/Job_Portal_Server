@@ -45,8 +45,8 @@ interface DashboardData {
 const EmployerDashboard = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         
-        const userId = res.locals.userId as Types.ObjectId
-        const checkEmployer = await Employer.findOne({ userId: userId });
+        const userId =req.params.id 
+        const checkEmployer = await Employer.findOne({ _id: userId });
         if (!checkEmployer) {
             throw new AppError(`Failed to find an employer`, 400);
         }

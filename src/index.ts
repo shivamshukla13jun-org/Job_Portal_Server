@@ -20,7 +20,7 @@ const corsConfig = {
 };
 app.use(cors(corsConfig));
 app.options("*", cors(corsConfig));
-
+app.set("view engine","ejs")
 // parse the data
 app.use(express.json());
 app.use(

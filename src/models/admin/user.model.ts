@@ -15,9 +15,11 @@ export interface IUser extends Document {
   isresume:boolean,
   candidateId?: Types.ObjectId;
   employerId?: Types.ObjectId;
-  jobs?: IJobStatus[];
-  shortListedJobs?: IJobStatus[];
-  rejectedJobs?: IJobStatus[];
+  parentEmployerId?: Types.ObjectId;
+  subEmployerId?: Types.ObjectId;
+  // jobs?: IJobStatus[];
+  // shortListedJobs?: IJobStatus[];
+  // rejectedJobs?: IJobStatus[];
 
   userType: Types.ObjectId | IUserType;
   user_otp: number;
@@ -50,33 +52,33 @@ const userSchema = new Schema<IUser>({
     type: Schema.Types.ObjectId,
     ref: 'Employer'
   },
-  jobs: [
-    {
-      jobId: {
-        type: Schema.Types.ObjectId,
-        ref: 'Job'
-      },
-      date: { type: Date, required: true }
-    }
-  ],
-  shortListedJobs: [
-    {
-      jobId: {
-        type: Schema.Types.ObjectId,
-        ref: 'Job'
-      },
-      date: { type: Date, required: true }
-    }
-  ],
-  rejectedJobs: [
-    {
-      jobId: {
-        type: Schema.Types.ObjectId,
-        ref: 'Job'
-      },
-      date: { type: Date, required: true }
-    }
-  ],
+  parentEmployerId: {
+    type: Schema.Types.ObjectId,
+    ref: 'Employer'
+  },
+  subEmployerId: {
+    type: Schema.Types.ObjectId,
+    ref: 'SubEmployer'
+  },
+  
+  // shortListedJobs: [
+  //   {
+  //     jobId: {
+  //       type: Schema.Types.ObjectId,
+  //       ref: 'Job'
+  //     },
+  //     date: { type: Date, required: true }
+  //   }
+  // ],
+  // rejectedJobs: [
+  //   {
+  //     jobId: {
+  //       type: Schema.Types.ObjectId,
+  //       ref: 'Job'
+  //     },
+  //     date: { type: Date, required: true }
+  //   }
+  // ],
   userType: {
     type: Schema.Types.ObjectId, ref: 'UserType'
   },
