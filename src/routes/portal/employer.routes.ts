@@ -1,7 +1,7 @@
 import { Router } from "express";
 import path from "path";
 
-import { createEmployer, getEmployers, getEmployer, updateEmployer, deleteEmployer } from "@/controllers/portal/employer.controllers";
+import { createEmployer, getEmployers, getEmployer, updateEmployer, deleteEmployer, ForwardCV, getSubEmployers } from "@/controllers/portal/employer.controllers";
 import { verifyUserTypeToken } from "@/middlewares/auth";
 import createMulterMiddleware from "@/libs/multer";
 import { getApplicants,updateStatus,getAllApplicants } from "@/controllers/candidate/application.controller";
@@ -27,7 +27,8 @@ const upload = createMulterMiddleware({
     ],
     maxFileSize: 1024 * 1024 * 10
 });
-
+router.route("/forwardcv").post(verifyUserTypeToken(["employer"]),ForwardCV)
+router.route("/getSubEmployers/:id").get(verifyUserTypeToken(["employer"]),getSubEmployers)
 // routes
 router.route("/")
     .get(verifyUserTypeToken(["employer"]), getEmployers)

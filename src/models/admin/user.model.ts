@@ -9,6 +9,7 @@ export type IJobStatus = {
 
 export interface IUser extends Document {
   name?: string;
+  isActive:boolean;
   email: string;
   password?: string;
   subscription:Types.ObjectId;
@@ -88,6 +89,10 @@ const userSchema = new Schema<IUser>({
   user_otp: {
     type: Number
   },
+  isActive: {
+    type: Boolean,
+    default: true
+},
   user_verified: {
     type: Boolean,
     default: false

@@ -13,14 +13,14 @@ router.route("/").post(
     verifyUserTypeToken(["employer"]), 
     SubEmployerController.getSubEmployers
 );
-router.route('/shortlistcvs').get( verifyUserTypeToken(["subemployer"]),getAllShortlistApplicants);
+router.route('/shortlistcvs').get( verifyUserTypeToken(["subemployer"]),SubEmployerController.getForwardedCVs);
 router.route('/meetings').post( verifyUserTypeToken(["subemployer"]),SubEmployerController.CreateMeetingLink);
 // Update sub-employer
 router.route("/:id")
 .get(verifyToken,SubEmployerController.getSubEmployersDetails)
 .put(
     verifyUserTypeToken(["employer"]), 
-    SubEmployerController.updateSubEmployerPermissions
+    SubEmployerController.updateSubEmployer
 );
 
 

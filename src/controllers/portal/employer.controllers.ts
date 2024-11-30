@@ -6,6 +6,9 @@ import { AppError } from "@/middlewares/error";
 import { validateEmployer } from "@/validations/employer";
 import Job from "@/models/portal/job.model";
 import { Application } from "@/models/candidate/application.model";
+import SubEmployer from "@/models/portal/SubEmployer.model";
+import Candidate from "@/models/portal/candidate.model";
+import ForwardedCV, { ForwardCVBody, ForwardingResult, ForwardingStatus, IForwardedCV } from "@/models/portal/Forwarwardedcv.model";
 
 /**
  @desc      Create an employer
@@ -292,6 +295,71 @@ const getEmployer = async (req: Request, res: Response, next: NextFunction) => {
         next(error)
     }
 };
+const getSubEmployers =async (req: Request, res: Response, next: NextFunction)=> {
+    try {
+        const userId = req.params.id
+
+        const subEmployers = await SubEmployer.find({ 
+            parentEmployerId:userId 
+        }).select("name")
+
+        res.status(200).json({sucesess:true,data:subEmployers});
+    } catch (error) {
+        next(error);
+    }
+}
+const ForwardCV = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        // Get the current user's ID from locals
+        const userId = new Types.ObjectId(res.locals.userId);
+
+        // Destructure request body
+        const { candidateId, subEmployerIds, notes } = req.body as ForwardCVBody;
+
+        // Validate candidate ID
+        const candidate = await Candidate.findById(candidateId);
+        if (!candidate) {
+            throw new AppError('Candidate not found', 404);
+        }
+
+        // Prepare forwarding results
+        const forwardingResults: Array<ForwardingResult> = [];
+        if (subEmployerIds && subEmployerIds.length > 0 && candidateId) {
+            for (const subEmployerId of subEmployerIds) {
+                    // Check if already forwarded
+                    const alreadyForwarded = await ForwardedCV.isAlreadyForwarded(
+                        candidateId,
+                        subEmployerId
+                    );
+                    if (!alreadyForwarded) {
+                        // Create new forwarding record
+                        await ForwardedCV.create({
+                            candidateId,
+                            fromEmployerId: userId,
+                            toSubEmployerId: subEmployerId,
+                            status: ForwardingStatus.PENDING,
+                            additionalNotes: notes || undefined,
+                        });
+                    }
+            }
+        } else {
+            throw new AppError('Sub-employer IDs or candidate ID missing', 400);
+        }
+
+        // Respond with results
+        res.status(200).json({
+            success: true,
+            data: {
+                candidateId,
+                forwardedTo: subEmployerIds,
+                forwardingResults,
+            },
+            message: 'CV forwarding process completed',
+        });
+    } catch (error) {
+        next(error);
+    }
+};
 
 /**
  @desc      Update an employer
@@ -381,5 +449,5 @@ const deleteEmployer = async (req: Request, res: Response, next: NextFunction) =
 };
 
 export {
-    createEmployer, getEmployers, getEmployer, updateEmployer, deleteEmployer,EmployerDashboard
+    createEmployer, getEmployers, getEmployer, updateEmployer, deleteEmployer,EmployerDashboard,ForwardCV,getSubEmployers
 }

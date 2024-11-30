@@ -10,12 +10,12 @@ import { sendEmail } from '@/services/emails';
 import { validateMeeting } from '@/validations/subemployer';
 import path from 'path';
 import ejs from "ejs"
+import ForwardedCV from '@/models/portal/Forwarwardedcv.model';
 
 class SubEmployerController {
     async  createSubEmployer(req: Request, res: Response, next: NextFunction) {
         const session = await mongoose.startSession();
         session.startTransaction();
-    
         try {
             const { 
                 name, 
@@ -71,12 +71,12 @@ class SubEmployerController {
             newUser.subEmployerId=newSubEmployer._id as Types.ObjectId
             await newUser.save({ session });
             await newSubEmployer.save({ session });
-           console.log({password})
+           console.log({user_otp:newUser.user_otp})
             // Step 8: Send Activation Email
             await sendEmail({
                 email,
                 subject: "Account Activation",
-                text: `Your OTP is: ${activationOTP}   and your Password for Loginis ${password}`,
+                text: `Your  Password for Login is ${password}`,
             });
     
             await session.commitTransaction();
@@ -92,6 +92,74 @@ class SubEmployerController {
             next(error);
         } finally {
            await session.endSession();
+        }
+    }
+    async updateSubEmployer(req: Request, res: Response, next: NextFunction) {
+        const session = await mongoose.startSession();
+        session.startTransaction();
+        try {
+            const { 
+                name, 
+                email, 
+                phone, 
+                dashboardPermissions 
+            } = req.body;
+            const subEmployerId=req.params.id
+            console.log({subEmployerId})
+            // Step 1: Find Existing SubEmployer
+            const existingSubEmployer = await SubEmployer.findById(subEmployerId);
+            if (!existingSubEmployer) {
+                throw new AppError("Sub-employer not found", 404);
+            }
+    
+            // Step 2: Verify Parent Employer Authorization
+            const parentEmployer = await Employer.findOne({ userId: res.locals.userId });
+            if (!parentEmployer || 
+                !existingSubEmployer.parentEmployerId===parentEmployer._id) {
+                throw new AppError("Unauthorized to update this sub-employer", 403);
+            }
+            // Step 3: Check if Email is Already in Use by Another User
+            if (email && email !== existingSubEmployer.email) {
+                const existingUser = await User.findOne({ email });
+                if (existingUser) {
+                    throw new AppError("Email already in use", 400);
+                }
+            }
+    
+            // Step 4: Update User Details
+            const userUpdateData: any = {};
+            if (name) userUpdateData.name = name;
+            if (email) userUpdateData.email = email;
+            if (phone) userUpdateData.phone = phone;
+    
+            if (Object.keys(userUpdateData).length > 0) {
+                await User.findByIdAndUpdate(existingSubEmployer.userId, userUpdateData, {runValidators:true, session });
+            }
+    
+            // Step 5: Update SubEmployer Details
+            const subEmployerUpdateData: any = {};
+            if (name) subEmployerUpdateData.name = name;
+            if (email) subEmployerUpdateData.email = email;
+            if (phone) subEmployerUpdateData.phone = phone;
+            if (dashboardPermissions) subEmployerUpdateData.dashboardPermissions = dashboardPermissions;
+    
+            const updatedSubEmployer = await SubEmployer.findByIdAndUpdate(
+                subEmployerId, 
+                subEmployerUpdateData, 
+                { session,runValidators:true, new: true }
+            );
+    
+            await session.commitTransaction();
+            res.status(200).json({
+                message: "Sub-employer updated successfully",
+                data: updatedSubEmployer,
+                success: true,
+            });
+        } catch (error) {
+            await session.abortTransaction();
+            next(error);
+        } finally {
+            await session.endSession();
         }
     }
     async getSubEmployers(req: Request, res: Response, next: NextFunction) {
@@ -118,23 +186,6 @@ class SubEmployerController {
             }).populate('userId dashboardPermissions', 'name email isActive');
 
             res.status(200).json({sucesess:true,data:subEmployers});
-        } catch (error) {
-            next(error);
-        }
-    }
-
-    async updateSubEmployerPermissions(req: Request, res: Response, next: NextFunction) {
-        try {
-            const { id } = req.params;
-            const { dashboardPermissions } = req.body;
-
-            const subEmployer = await SubEmployer.findByIdAndUpdate(
-                id, 
-                req.body, 
-                { new: true }
-            );
-
-            res.status(200).json({sucesess:true,data:subEmployer});
         } catch (error) {
             next(error);
         }
@@ -186,6 +237,26 @@ class SubEmployerController {
             return res.status(201).json({
                 message: 'Meeting scheduled successfully',
                 data: newMeeting,
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+    async getForwardedCVs(req: Request, res: Response, next: NextFunction) {
+        try {
+            const SubEmployerdata = await SubEmployer.findOne({ userId: res.locals.userId });
+            if(!SubEmployerdata){
+                throw new AppError("Employer not found", 400);
+            }
+            const data = await ForwardedCV.find({ toSubEmployerId: SubEmployerdata._id }).populate('candidateId',)
+            if(!SubEmployerdata){
+                throw new AppError("Employer not found", 400);
+            }
+
+            // Respond with the created meeting details
+            return res.status(200).json({
+                message: 'Meeting scheduled successfully',
+                data: data,
             });
         } catch (error) {
             next(error);
