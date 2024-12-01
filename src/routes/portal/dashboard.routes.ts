@@ -15,7 +15,7 @@ router.route("/employer/:id")
 router.route("/subemployer/:id")
     .get(verifyToken, EmployerDashboard)
 router.route("/candidate")
-    .get(verifyUserTypeToken(["candidate"]), candidateDashboard)
+    .get(verifyUserTypeToken(["candidate","admin"]), candidateDashboard)
 // router.route("/dashboard/employer")
 //     .get(verifyUserTypeToken(["employer"]), EmployerDashboard)
 export default router;

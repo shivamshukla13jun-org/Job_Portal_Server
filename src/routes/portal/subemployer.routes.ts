@@ -7,10 +7,10 @@ const router = express.Router();
 
 // Create a new sub-employer
 router.route("/").post( 
-    verifyUserTypeToken(["employer"]), 
+    verifyUserTypeToken(["employer","admin"]), 
     SubEmployerController.createSubEmployer
 ).get( 
-    verifyUserTypeToken(["employer"]), 
+    verifyUserTypeToken(["employer","admin"]), 
     SubEmployerController.getSubEmployers
 );
 router.route('/shortlistcvs').get( verifyUserTypeToken(["subemployer"]),SubEmployerController.getForwardedCVs);
@@ -19,7 +19,7 @@ router.route('/meetings').post( verifyUserTypeToken(["subemployer"]),SubEmployer
 router.route("/:id")
 .get(verifyToken,SubEmployerController.getSubEmployersDetails)
 .put(
-    verifyUserTypeToken(["employer"]), 
+    verifyUserTypeToken(["employer","admin"]), 
     SubEmployerController.updateSubEmployer
 );
 

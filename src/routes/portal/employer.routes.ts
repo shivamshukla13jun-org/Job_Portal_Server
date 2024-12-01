@@ -27,13 +27,13 @@ const upload = createMulterMiddleware({
     ],
     maxFileSize: 1024 * 1024 * 10
 });
-router.route("/forwardcv").post(verifyUserTypeToken(["employer"]),ForwardCV)
-router.route("/getSubEmployers/:id").get(verifyUserTypeToken(["employer"]),getSubEmployers)
+router.route("/forwardcv").post(verifyUserTypeToken(["employer","admin"]),ForwardCV)
+router.route("/getSubEmployers/:id").get(verifyUserTypeToken(["employer","admin"]),getSubEmployers)
 // routes
 router.route("/")
-    .get(verifyUserTypeToken(["employer"]), getEmployers)
+    .get(verifyUserTypeToken(["employer","admin"]), getEmployers)
     .post(
-        verifyUserTypeToken(["employer"]),
+        verifyUserTypeToken(["employer","admin"]),
         upload.fields([
             { name: 'logo', maxCount: 1 },
             { name: 'videos[]', maxCount: 5 },
@@ -43,9 +43,9 @@ router.route("/")
     );
 
 router.route("/:id")
-    .get(verifyUserTypeToken(["employer"]), getEmployer)
+    .get(verifyUserTypeToken(["employer","admin"]), getEmployer)
     .put(
-        verifyUserTypeToken(["employer"]),
+        verifyUserTypeToken(["employer","admin"]),
         upload.fields([
             { name: 'logo', maxCount: 1 },
             { name: 'videos[]', maxCount: 5 },
@@ -53,5 +53,5 @@ router.route("/:id")
         ]),
         updateEmployer
     )
-    .delete(verifyUserTypeToken(["employer"]), deleteEmployer);
+    .delete(verifyUserTypeToken(["employer","admin"]), deleteEmployer);
 export default router;
