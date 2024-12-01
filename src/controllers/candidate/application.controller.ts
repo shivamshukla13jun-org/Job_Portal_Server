@@ -575,7 +575,6 @@ const getApplicants = async (req: Request, res: Response, next: NextFunction): P
 
 
     ]);
-    console.log("stats",stats)
     const application = results[0]?.application || [];
     const totalApplications: number = results[0]?.total[0]?.count || 0;
 

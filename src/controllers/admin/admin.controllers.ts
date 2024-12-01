@@ -447,11 +447,64 @@ export const getAllApplicants = async (req: Request, res: Response, next: NextFu
         },
       },
     ]);
+    const stats = await Application.aggregate([
+     
+     
+      { 
+        $match: matchQueriesupper
+       },
+      {
+        $facet: {
+          totals: [
+            {
+              $match:{status:"pending"}
+            },
+            {
+              $group:{
+                _id:null,
+               total:{$sum:1}
+              }
+            },
+            { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } }
+          ],
+          approved: [
+            {
+              $match:{status:"shortlisted"}
+            },
+            {
+              $group:{
+                _id:null,
+                total:{$sum:1}
+              }
+            },
+            { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } }
+          ],
+          rejected: [
+            {
+              $match:{status:"rejected"}
+            },
+            {
+              $group:{
+                _id:null,
+                total:{$sum:1}
+              }
+            },
+            { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } }
+          ],
+        },
+      },
+      { $unwind: {path:"$totals",preserveNullAndEmptyArrays:true} },
+      { $unwind: {path:"$approved",preserveNullAndEmptyArrays:true} },
+      { $unwind: {path:"$rejected",preserveNullAndEmptyArrays:true} },
+
+
+    ]);
     const application = results[0]?.application || [];
     const totalApplications: number = results[0]?.total[0]?.count || 0;
 
     res.status(200).json({
       data: application,
+      stats:stats[0],
       currentPage: pageOptions.page,
       totalPages: Math.ceil(totalApplications / pageOptions.limit),
       count: totalApplications,
