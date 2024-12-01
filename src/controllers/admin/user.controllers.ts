@@ -19,6 +19,7 @@ import { Subscription } from "@/models/portal/subscription.model";
 import { JobportalPlan } from "@/models/portal/plan.model";
 import { IJobportalPlan } from "@/types/plan";
 import { date } from "yup";
+import SubEmployer from "@/models/portal/SubEmployer.model";
 
 /**
  @desc    Register a new user 
@@ -583,6 +584,24 @@ const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
     // Check if the user is a Candidate
     if ((user.userType as IUserType)?.name === "Candidate") {
       const candidate = await Candidate.findOneAndDelete({ userId: user._id }).session(session);
+      await SavedJobs.findOneAndDelete({ userId: user._id }).session(session);
+      if (candidate) {
+        // Delete candidate applications and remove references in jobs
+        const candidateApplications = await Application.find({ candidate: id }).session(session);
+        const candidateApplicationIds = candidateApplications.map((app) => app._id);
+        
+        if (candidateApplicationIds.length > 0) {
+          await Job.updateMany(
+            { applications: { $in: candidateApplicationIds } },
+            { $pull: { applications: { $in: candidateApplicationIds } } }
+          ).session(session);
+        }
+        
+        await Application.deleteMany({ candidate: id }).session(session);
+      }
+    }
+    if ((user.userType as IUserType)?.name === "Subemployer") {
+      const candidate = await SubEmployer.findOneAndDelete({ userId: user._id }).session(session);
       await SavedJobs.findOneAndDelete({ userId: user._id }).session(session);
       if (candidate) {
         // Delete candidate applications and remove references in jobs

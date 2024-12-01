@@ -30,6 +30,6 @@ router.route("/:id")
         verifyUserTypeToken(["employer"]),
         updateJob
     )
-    .delete(verifyUserTypeToken(["employer"]), deleteJob);
+    .delete(verifyUserTypeToken(["employer","admin"]), deleteJob);
 
 export default router;
