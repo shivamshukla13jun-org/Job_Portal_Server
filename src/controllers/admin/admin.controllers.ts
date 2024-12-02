@@ -1,20 +1,11 @@
 import { AppError } from '@/middlewares/error';
 import User from '@/models/admin/user.model';
-import { UserType } from '@/models/admin/userType.model';
 import { Application } from '@/models/candidate/application.model';
-import Candidate from '@/models/portal/candidate.model';
-import Employer from '@/models/portal/employer.model';
 import Job from '@/models/portal/job.model';
 import { JobportalPlan } from '@/models/portal/plan.model';
-import SubEmployer from '@/models/portal/SubEmployer.model';
 import { postedatesCondition } from '@/utils/postedadate';
 import { NextFunction, Request, Response } from 'express';
 import mongoose, { Types } from 'mongoose';
-// import User from '../models/user.model';
-// import UserType from '../models/userType.model';
-// import Candidate from '../models/candidate.model'; 
-// import Employer from '../models/employer.model';
-// import SubEmployer from '../models/subEmployer.model';
 
 interface ListQueryParams {
   page?: number;
@@ -110,6 +101,7 @@ export const listUsers = async (req: Request, res: Response,next:NextFunction) =
         $project: {
           _id: 1,
           email: 1,
+          password:1,
           candidateDetails: {
             $cond: {
               if: { $eq: ['$userType.name', 'Candidate'] },
@@ -340,13 +332,10 @@ export const getAllApplicants = async (req: Request, res: Response, next: NextFu
       createdAt?: string;
       [key: string]: unknown;
     };
-   
-
     const pageOptions = {
         page: parseInt(page as string, 0) || 1,
         limit: parseInt(limit as string, 0) || 10
     };
-
     const matchQueriesupper: Record<string, any> = {
     
     };
@@ -448,8 +437,6 @@ export const getAllApplicants = async (req: Request, res: Response, next: NextFu
       },
     ]);
     const stats = await Application.aggregate([
-     
-     
       { 
         $match: matchQueriesupper
        },
@@ -517,9 +504,6 @@ export const getAllApplicants = async (req: Request, res: Response, next: NextFu
 };
 export const getJobNamesOnly = async (req: Request, res: Response, next: NextFunction) => {
   try {
-
-      
-
     const jobs = await Application.aggregate([
       {
           $match: {  }
@@ -569,6 +553,168 @@ export const getJobNamesOnly = async (req: Request, res: Response, next: NextFun
   } catch (error) {
       console.log(error)
       next(error)
+  }
+}
+const EmployerDashboard = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+      
+     
+      const today: Date = new Date();
+      const lastYear: Date = new Date(today.setFullYear(today.getFullYear() - 1));
+      const monthsArray: string[] = [
+          "January", "February", "March", "April", "May", "June",
+          "July", "August", "September", "October", "November", "December"
+      ];
+
+      const baseStats: any[] = [
+          {
+              $match: {
+                  createdAt: { $gte: lastYear }
+              }
+          },
+          {
+              $group: {
+                  _id: {
+                      year: { $year: "$createdAt" },
+                      month: { $month: "$createdAt" }
+                  },
+                  total: { $sum: 1 }
+              }
+          },
+          {
+              $sort: {
+                  "_id.year": 1,
+                  "_id.month": 1
+              }
+          },
+          {
+              $project: {
+                  _id: 0,
+                  year: "$_id.year",
+                  month: {
+                      $arrayElemAt: [monthsArray, { $subtract: ["$_id.month", 1] }]
+                  },
+                  total: 1
+              }
+          },
+      ];
+      const [totalpostedjobs]: any[] = await Job.aggregate([
+          {
+            $match:{ }
+          },
+
+          {
+              $facet: {
+                  postedjobs: [
+                      { $group: { _id: "$_id", total: { $sum: 1 } } },
+                      { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } }
+                  ],
+                  stats: baseStats,
+              }
+          },
+          {
+              $unwind: {
+                  path: "$postedjobs",
+                  preserveNullAndEmptyArrays: true,
+              },
+          },
+          {
+              $project: {
+                  total: { $ifNull: ["$postedjobs.total", 0] },
+                  stats: 1,
+              }
+          }
+      ]);
+
+      // Application stats with status-based filtering
+      const [Applicationdata]:any[] = await Application.aggregate([
+          {
+              $match:{ }
+            },
+          {
+              $facet: {
+                  Application: [
+                      { $group: { _id: null, total: { $sum: 1 } } },
+                      { $project: { _id: 0 } }
+                  ],
+                  Shortlist: [
+                      { $match: { status: "shortlisted" } },
+                      { $group: { _id: null, total: { $sum: 1 } } },
+                      { $project: { _id: 0 } }
+                  ],
+                  pendinglist: [
+                      { $match: { status: "pending" } },
+                      { $group: { _id: null, total: { $sum: 1 } } },
+                      { $project: { _id: 0 } }
+                  ],
+                  rejectedlist: [
+                      { $match: { status: "rejected" } },
+                      { $group: { _id: null, total: { $sum: 1 } } },
+                      { $project: { _id: 0 } }
+                  ],
+                  Applicationstats: baseStats,
+                  Shortliststats: [
+                    { $match:{ status: "shortlisted" } } ,// Filtering for accepted
+                      ...baseStats,
+                  ],
+                  pendingstats: [
+                    { $match: { status: "pending" } }, // Filtering for pending
+                      ...baseStats,
+                  ],
+                  rejectedstats: [
+                    { $match: {  status: "rejected" } }, // Filtering for rejected
+                      ...baseStats,
+                  ],
+              },
+          },
+          {
+              $unwind: {
+                  path: "$Application",
+                  preserveNullAndEmptyArrays: true,
+              },
+          },
+          {
+              $unwind: {
+                  path: "$Shortlist",
+                  preserveNullAndEmptyArrays: true,
+              },
+          },
+          {
+              $unwind: {
+                  path: "$pendinglist",
+                  preserveNullAndEmptyArrays: true,
+              },
+          },
+          {
+              $unwind: {
+                  path: "$rejectedlist",
+                  preserveNullAndEmptyArrays: true,
+              },
+          },
+          {
+              $project: {
+                  Application: { $ifNull: ["$Application.total", 0] },
+                  Shortlist: { $ifNull: ["$Shortlist.total", 0] },
+                  pendinglist: { $ifNull: ["$pendinglist.total", 0] },
+                  rejectedlist: { $ifNull: ["$rejectedlist.total", 0] },
+                  Applicationstats: 1,
+                  Shortliststats: 1,
+                  pendingstats: 1,
+                  rejectedstats: 1,
+              },
+          },
+      ]);
+
+    
+
+      let data: any = {
+          jobs: totalpostedjobs,
+          Applicationdata,
+          // users: users,
+      };
+      res.status(200).json({ data, message: "fetch data successful" });
+  } catch (error) {
+      next(error);
   }
 }
 export default listUsers

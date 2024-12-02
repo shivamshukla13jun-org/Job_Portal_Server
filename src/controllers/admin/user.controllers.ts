@@ -20,7 +20,8 @@ import { JobportalPlan } from "@/models/portal/plan.model";
 import { IJobportalPlan } from "@/types/plan";
 import { date } from "yup";
 import SubEmployer from "@/models/portal/SubEmployer.model";
-
+import path from "path";
+import ejs from "ejs"
 /**
  @desc    Register a new user 
  @route   POST /api/v1/user/register
@@ -479,18 +480,23 @@ const forgotUser = async (req: Request, res: Response, next: NextFunction) => {
     // Create JWT reset token
     const token = generateToken(checkUser, "10m");
     const resetURL = `${process.env.CLIENT_URL}/resetPassword?token=${token}`;
-    const message = `You requested a password reset. Click the link below to reset your password:\n\n${resetURL}\n\nIf you did not request this, please ignore this email.`;
-       
+    // Path to the EJS file
+    const templatePath = path.join(process.cwd(), "views", "resetPasswordEmail.ejs");
+        
+    // Render the EJS template
+    const htmlContent = await ejs.renderFile(templatePath, { resetURL });
     sendEmail({
         email: checkUser.email,
         subject: 'Password Reset Token (Valid for 10 minutes)',
-        text:message,
+        html:htmlContent,
     })
     res.status(200).json({
       status: "success",
+      success:true,
       message: "Password Reset Token (Valid for 10 minutes) to email!",
     });
   } catch (error) {
+    console.log(error)
     next(error);
   }
 };
