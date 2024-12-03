@@ -206,6 +206,7 @@ const getJobs = async (req: Request, res: Response, next: NextFunction) => {
             message: 'Job fetched!',
             data: jobs[0]?.data || [],
             count: jobs[0]?.count[0]?.total || 0,
+            totalpages: Math.ceil(jobs[0]?.count[0]?.total / pageOptions.limit)
         })
 
     } catch (error) {
@@ -369,7 +370,7 @@ const getEmployerJobs = async (req: Request, res: Response, next: NextFunction) 
             {
                 $facet: {
                     data: [
-                        { $skip: pageOptions.page * pageOptions.limit },
+                        { $skip: (pageOptions.page-1) * pageOptions.limit },
                         { $limit: pageOptions.limit },
                         {
                             $sort: { createdAt: -1 }
@@ -388,6 +389,7 @@ const getEmployerJobs = async (req: Request, res: Response, next: NextFunction) 
             message: 'Candidate fetched!',
             data: jobs[0]?.data || [],
             count: jobs[0]?.count?.[0]?.total || 0,
+            totalpages: Math.ceil(jobs[0]?.count[0]?.total / pageOptions.limit)
         })
 
     } catch (error) {
