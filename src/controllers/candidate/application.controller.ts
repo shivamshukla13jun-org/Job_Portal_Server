@@ -8,6 +8,7 @@ import { AppError } from '@/middlewares/error';
 import { generateToken } from "@/middlewares/auth";
 import Employer from '@/models/portal/employer.model';
 import { postedatesCondition } from '@/utils/postedadate';
+import SubEmployer from '@/models/portal/SubEmployer.model';
 
 const applyJob = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const session = await mongoose.startSession();
@@ -295,6 +296,132 @@ const getAllApplicants = async (req: Request, res: Response, next: NextFunction)
     next(error);
   }
 };
+const getAllShortlistApplicants = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const userId = res.locals.userId as Types.ObjectId
+    const { page, limit,status, createdAt,...queries } = req.query;
+
+    const checkEmployer = await SubEmployer.findOne({ userId: userId });
+    if (!checkEmployer) {
+        throw new AppError(`Failed to find an employer`, 400);
+    }
+
+    const pageOptions = {
+        page: parseInt(page as string, 0) || 1,
+        limit: parseInt(limit as string, 0) || 10
+    };
+
+    const matchQueriesupper: Record<string, any> = {
+      employer: checkEmployer.parentEmployerId,
+      status:"shortlisted"
+    };
+    const matchQueries: Record<string, any> = {};
+    const createRegex = (value: string) => new RegExp(`.*${value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}.*`, "gi");
+    // Handle date filter
+            if (createdAt) {
+              let startDate=postedatesCondition(createdAt  as string )
+              if (startDate) {
+                matchQueriesupper['createdAt'] = { $gte: startDate };
+              }   
+            } 
+            
+    for (const [key, value] of Object.entries(queries)) {
+            if (typeof value === 'string' && value !== '' && !['createdAt', 'status',"name" ].includes(key)) {
+              matchQueries[key] = createRegex(value)
+          };
+        if (typeof value === 'string' && value !== '') {
+            if (key === 'name') {
+                matchQueries['candidate.name'] = createRegex(value);
+            } 
+        }
+    }
+ console.log({matchQueries,matchQueriesupper})
+    const results = await Application.aggregate([
+      {
+        $match: matchQueriesupper
+    },
+      {
+        $lookup: {
+          from: "jobs",
+          let: { jobId: "$job" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ["$_id", "$$jobId"],
+                },
+              },
+            },
+          ],
+          as: "job",
+        },
+      },
+      { $unwind:{ path:"$job",preserveNullAndEmptyArrays:true} },
+     
+      {
+        $lookup: {
+          from: "candidates",
+          let: { candidateId: "$candidate" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ["$userId", "$$candidateId"],
+                },
+              },
+            },
+          ],
+          as: "candidate",
+        },
+      },
+      { $unwind:{path: "$candidate",preserveNullAndEmptyArrays:true} },
+      {
+        $lookup: {
+          from: "resumes",
+          let: { candidateId: "$candidate._id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ["$candidateId", "$$candidateId"],
+                },
+              },
+            },
+          ],
+          as: "resume",
+        },
+      },
+      { $unwind:{path: "$resume",preserveNullAndEmptyArrays:true} },
+      {
+        $match: {
+            ...matchQueries
+        }
+    },     
+      {
+        $facet: {
+          total: [{ $count: "count" }],
+          application: [
+            { $skip: (pageOptions.page - 1) * pageOptions.limit },
+            { $limit: pageOptions.limit },
+          ],
+        },
+      },
+    ]);
+    const application = results[0]?.application || [];
+    const totalApplications: number = results[0]?.total[0]?.count || 0;
+
+    res.status(200).json({
+      data: application,
+      currentPage: pageOptions.page,
+      totalPages: Math.ceil(totalApplications / pageOptions.limit),
+      count: totalApplications,
+      success: true,
+    });
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
 
 const getApplicants = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
@@ -448,7 +575,6 @@ const getApplicants = async (req: Request, res: Response, next: NextFunction): P
 
 
     ]);
-    console.log("stats",stats)
     const application = results[0]?.application || [];
     const totalApplications: number = results[0]?.total[0]?.count || 0;
 
@@ -644,5 +770,5 @@ export {
   getAppliedJobs,
   getApplicants,
   updateStatus,deleteapplication,
-  getAllApplicants,getEmployerJobNamesOnly
+  getAllApplicants,getEmployerJobNamesOnly,getAllShortlistApplicants
 };

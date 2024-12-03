@@ -1,7 +1,7 @@
 import { Router } from "express";
 import path from "path";
 
-import { createEmployer, getEmployers, getEmployer, updateEmployer, deleteEmployer } from "@/controllers/portal/employer.controllers";
+import { createEmployer, getEmployers, getEmployer, updateEmployer, deleteEmployer, ForwardCV, getSubEmployers } from "@/controllers/portal/employer.controllers";
 import { verifyUserTypeToken } from "@/middlewares/auth";
 import createMulterMiddleware from "@/libs/multer";
 import { getApplicants,updateStatus,getAllApplicants } from "@/controllers/candidate/application.controller";
@@ -12,8 +12,9 @@ const upload = createMulterMiddleware({
     destination: path.join(__dirname, '../../../uploads/employer'),
     allowedFileTypes: [
         'image/jpeg',
-        'image/jpg',
+        'image/jpg', 'video/mp4',
         'image/ico',
+        'image/avif',
         'image/png',
         'image/gif',
         'image/webp',
@@ -26,30 +27,31 @@ const upload = createMulterMiddleware({
     ],
     maxFileSize: 1024 * 1024 * 10
 });
-
+router.route("/forwardcv").post(verifyUserTypeToken(["employer","admin"]),ForwardCV)
+router.route("/getSubEmployers/:id").get(verifyUserTypeToken(["employer","admin"]),getSubEmployers)
 // routes
 router.route("/")
-    .get(verifyUserTypeToken(["employer"]), getEmployers)
+    .get(verifyUserTypeToken(["employer","admin"]), getEmployers)
     .post(
-        verifyUserTypeToken(["employer"]),
+        verifyUserTypeToken(["employer","admin"]),
         upload.fields([
             { name: 'logo', maxCount: 1 },
-            { name: 'video[]', maxCount: 5 },
-            { name: 'picture[]', maxCount: 5 },
+            { name: 'videos[]', maxCount: 5 },
+            { name: 'pictures[]', maxCount: 5 },
         ]),
         createEmployer
     );
 
 router.route("/:id")
-    .get(verifyUserTypeToken(["employer"]), getEmployer)
+    .get(verifyUserTypeToken(["employer","admin"]), getEmployer)
     .put(
-        verifyUserTypeToken(["employer"]),
+        verifyUserTypeToken(["employer","admin"]),
         upload.fields([
             { name: 'logo', maxCount: 1 },
-            { name: 'video[]', maxCount: 5 },
-            { name: 'picture[]', maxCount: 5 },
+            { name: 'videos[]', maxCount: 5 },
+            { name: 'pictures[]', maxCount: 5 },
         ]),
         updateEmployer
     )
-    .delete(verifyUserTypeToken(["employer"]), deleteEmployer);
+    .delete(verifyUserTypeToken(["employer","admin"]), deleteEmployer);
 export default router;

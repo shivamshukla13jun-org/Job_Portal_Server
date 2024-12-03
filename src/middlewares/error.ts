@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { Error as MongooseError } from "mongoose";
 import { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
 import { ValidationError as YupValidationError } from "yup";
+import multer from "multer";
 
 // Custom error class
 class AppError extends Error {
@@ -71,7 +72,10 @@ const errorHandler = (
   if (!(error instanceof AppError)) {
     error = new AppError(error.message || "Server Error", 500);
   }
-
+  if (err instanceof multer.MulterError) {
+    // Multer-specific error handling
+    res.status(400).json({ message: err.message });
+}
   res.status((error as AppError).statusCode).json({
     success: false,
     error: (error as AppError).message,

@@ -370,7 +370,11 @@ const getEmployerJobs = async (req: Request, res: Response, next: NextFunction) 
                 $facet: {
                     data: [
                         { $skip: pageOptions.page * pageOptions.limit },
-                        { $limit: pageOptions.limit }
+                        { $limit: pageOptions.limit },
+                        {
+                            $sort: { createdAt: -1 }
+                         }
+                        
                     ],
                     count: [
                         { $count: "total" }
@@ -412,6 +416,7 @@ const getEmployerJobNamesOnly = async (req: Request, res: Response, next: NextFu
                     employerId: checkEmployer._id
                 }
             },
+
             {
                 $project: {
                     title: 1

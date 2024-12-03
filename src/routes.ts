@@ -10,6 +10,7 @@ import WhishListRoutes from "@/routes/candidate/savedjobs.routes";
 import cvRoutes from "@/routes/candidate/cv.routes";
 
 import employerRoutes from "@/routes/portal/employer.routes";
+import subemployerRoutes from "@/routes/portal/subemployer.routes";
 import candidateRoutes from "@/routes/portal/candidate.routes";
 import applicationRoutes from "@/routes/portal/application.routes";
 import companyRoutes from "@/routes/portal/company.routes";
@@ -17,6 +18,7 @@ import jobRoutes from "@/routes/portal/job.routes";
 import utilitiesRoutes from "@/routes/portal/utilities.routes";
 import dashboardRoutes from "@/routes/portal/dashboard.routes";
 import planRoutes from "@/routes/admin/plan.routes";
+import adminRoutes from "@/routes/admin/admin.routes";
 import paymentRoutes from "@/routes/admin/payment.routes";
 
 const router = Router();
@@ -33,12 +35,14 @@ router.use("/cv", cvRoutes);
 router.use("/candidate", candidateRoutes);
 router.use("/application", applicationRoutes);
 router.use("/employer", employerRoutes);
+router.use("/sub-employers", subemployerRoutes);
 router.use("/company", companyRoutes);
 router.use("/job", jobRoutes);
 
 router.use("/utilities", utilitiesRoutes);
 router.use("/dashboard", dashboardRoutes)
 router.use("/plan", planRoutes)
+router.use("/admin", adminRoutes)
 router.use("/payment", paymentRoutes)
 
 

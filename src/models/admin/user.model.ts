@@ -9,15 +9,18 @@ export type IJobStatus = {
 
 export interface IUser extends Document {
   name?: string;
+  isActive:boolean;
   email: string;
   password?: string;
   subscription:Types.ObjectId;
   isresume:boolean,
   candidateId?: Types.ObjectId;
   employerId?: Types.ObjectId;
-  jobs?: IJobStatus[];
-  shortListedJobs?: IJobStatus[];
-  rejectedJobs?: IJobStatus[];
+  parentEmployerId?: Types.ObjectId;
+  subEmployerId?: Types.ObjectId;
+  // jobs?: IJobStatus[];
+  // shortListedJobs?: IJobStatus[];
+  // rejectedJobs?: IJobStatus[];
 
   userType: Types.ObjectId | IUserType;
   user_otp: number;
@@ -50,33 +53,33 @@ const userSchema = new Schema<IUser>({
     type: Schema.Types.ObjectId,
     ref: 'Employer'
   },
-  jobs: [
-    {
-      jobId: {
-        type: Schema.Types.ObjectId,
-        ref: 'Job'
-      },
-      date: { type: Date, required: true }
-    }
-  ],
-  shortListedJobs: [
-    {
-      jobId: {
-        type: Schema.Types.ObjectId,
-        ref: 'Job'
-      },
-      date: { type: Date, required: true }
-    }
-  ],
-  rejectedJobs: [
-    {
-      jobId: {
-        type: Schema.Types.ObjectId,
-        ref: 'Job'
-      },
-      date: { type: Date, required: true }
-    }
-  ],
+  parentEmployerId: {
+    type: Schema.Types.ObjectId,
+    ref: 'Employer'
+  },
+  subEmployerId: {
+    type: Schema.Types.ObjectId,
+    ref: 'SubEmployer'
+  },
+  
+  // shortListedJobs: [
+  //   {
+  //     jobId: {
+  //       type: Schema.Types.ObjectId,
+  //       ref: 'Job'
+  //     },
+  //     date: { type: Date, required: true }
+  //   }
+  // ],
+  // rejectedJobs: [
+  //   {
+  //     jobId: {
+  //       type: Schema.Types.ObjectId,
+  //       ref: 'Job'
+  //     },
+  //     date: { type: Date, required: true }
+  //   }
+  // ],
   userType: {
     type: Schema.Types.ObjectId, ref: 'UserType'
   },
@@ -86,6 +89,10 @@ const userSchema = new Schema<IUser>({
   user_otp: {
     type: Number
   },
+  isActive: {
+    type: Boolean,
+    default: true
+},
   user_verified: {
     type: Boolean,
     default: false

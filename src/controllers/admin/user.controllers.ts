@@ -18,7 +18,10 @@ import { SavedJobs } from "@/models/candidate/savedjobs";
 import { Subscription } from "@/models/portal/subscription.model";
 import { JobportalPlan } from "@/models/portal/plan.model";
 import { IJobportalPlan } from "@/types/plan";
-
+import { date } from "yup";
+import SubEmployer from "@/models/portal/SubEmployer.model";
+import path from "path";
+import ejs from "ejs"
 /**
  @desc    Register a new user 
  @route   POST /api/v1/user/register
@@ -80,6 +83,8 @@ const registerUser = async (
       // create a free packge
       const  plan=await JobportalPlan.findOne({price:0}).session(session)
       type.name.toLowerCase()==="employer" && plan && await  Subscription.create([{userId:user._id,plan_id:plan._id,type:"Free",orderId:"order_free_"+Date.now()}],{session:session})
+      await session.commitTransaction()
+      await session.endSession();
     res.status(201).json({
       success: true,
       data: userData,
@@ -87,7 +92,7 @@ const registerUser = async (
     });
   } catch (error) {
     await session.abortTransaction();
-    session.endSession();
+   await session.endSession();
     next(error);
   }
 };
@@ -475,18 +480,23 @@ const forgotUser = async (req: Request, res: Response, next: NextFunction) => {
     // Create JWT reset token
     const token = generateToken(checkUser, "10m");
     const resetURL = `${process.env.CLIENT_URL}/resetPassword?token=${token}`;
-    const message = `You requested a password reset. Click the link below to reset your password:\n\n${resetURL}\n\nIf you did not request this, please ignore this email.`;
-       
+    // Path to the EJS file
+    const templatePath = path.join(process.cwd(), "views", "resetPasswordEmail.ejs");
+        
+    // Render the EJS template
+    const htmlContent = await ejs.renderFile(templatePath, { resetURL });
     sendEmail({
         email: checkUser.email,
         subject: 'Password Reset Token (Valid for 10 minutes)',
-        text:message,
+        html:htmlContent,
     })
     res.status(200).json({
       status: "success",
+      success:true,
       message: "Password Reset Token (Valid for 10 minutes) to email!",
     });
   } catch (error) {
+    console.log(error)
     next(error);
   }
 };
@@ -580,6 +590,24 @@ const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
     // Check if the user is a Candidate
     if ((user.userType as IUserType)?.name === "Candidate") {
       const candidate = await Candidate.findOneAndDelete({ userId: user._id }).session(session);
+      await SavedJobs.findOneAndDelete({ userId: user._id }).session(session);
+      if (candidate) {
+        // Delete candidate applications and remove references in jobs
+        const candidateApplications = await Application.find({ candidate: id }).session(session);
+        const candidateApplicationIds = candidateApplications.map((app) => app._id);
+        
+        if (candidateApplicationIds.length > 0) {
+          await Job.updateMany(
+            { applications: { $in: candidateApplicationIds } },
+            { $pull: { applications: { $in: candidateApplicationIds } } }
+          ).session(session);
+        }
+        
+        await Application.deleteMany({ candidate: id }).session(session);
+      }
+    }
+    if ((user.userType as IUserType)?.name === "Subemployer") {
+      const candidate = await SubEmployer.findOneAndDelete({ userId: user._id }).session(session);
       await SavedJobs.findOneAndDelete({ userId: user._id }).session(session);
       if (candidate) {
         // Delete candidate applications and remove references in jobs

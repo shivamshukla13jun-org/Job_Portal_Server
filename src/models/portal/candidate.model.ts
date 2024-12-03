@@ -1,20 +1,23 @@
 import { Schema, Document, Types, model } from "mongoose";
 import { IUserContact, IUserEducation, IUserEmployment, IUserReference, IUserTestScore } from "@/types/user";
 import { IFile } from "@/types/file";
+import { IJobSelect } from "@/types/company";
 
 export interface ICandidate extends Document {
     userId: Types.ObjectId;
     name: string;
     email: string;
+    achievement:object;
     gender: 'Male' | 'Female' | 'Other';
     dob: Date;
+    categories: IJobSelect[];
+    scope: string;
     marital_status: 'Married' | 'Unmarried';
     profile: IFile;
     cv: IFile;
     designation:string;
     contact: IUserContact;
     education: IUserEducation[];
-    registration_certificate: IFile;
     employment: IUserEmployment[];
     references: IUserReference[];
     english_language: IUserTestScore;
@@ -61,6 +64,7 @@ const candidateSchema = new Schema<ICandidate>({
     },
     profile: { type: Object },
     cv: { type: Object },
+  
     designation:{type:String,required: [true, 'Designation is required'],},
     contact: {
         email: {
@@ -132,25 +136,25 @@ const candidateSchema = new Schema<ICandidate>({
                 type: String,
                 required: [true, 'Education name is required']
             },
-            from: {
-                type: Date,
-                required: [true, 'From is required']
-            },
+            // from: {
+            //     type: Date,
+            //     required: [true, 'From is required']
+            // },
             to: {
                 type: Date,
-                required: [true, 'To is required']
+                required: [true, 'Passing Year is required']
             },
             qualification: {
                 type: String,
                 required: [true, 'Qualification is required']
             },
-            certificate: {
-                type: Object,
-                required: [true, 'Certificate is required']
-            }
+            // certificate: {
+            //     type: Object,
+            //     required: [true, 'Certificate is required']
+            // }
         }
     ],
-    registration_certificate: { type: Object },
+    // registration_certificate: { type: Object },
     employment: [
         {
             name: {
@@ -165,17 +169,39 @@ const candidateSchema = new Schema<ICandidate>({
                 type: String,
                 required: [true, 'Department is required']
             },
+            
             from: {
                 type: Date,
                 required: [true, 'From is required']
+            },
+            categories: [
+                {
+                    value: {
+                        type: String,
+                        required: [true, "Job Sector value is required in candidate requirement."]
+                    },
+                    label: {
+                        type: String,
+                        required: [true, "Job Sector label is required in candidate requirement."]
+                    }
+                }
+            ],
+            scope: {
+                type: String,
+                required: [true, 'scope is required']
             },
             to: {
                 type: Date,
                 required: [true, 'To is required']
             },
-            certificate: {
-                type: Object,
-            }
+            // certificate: {
+            //     type: Object,
+            // }
+        }
+    ],
+    achievement: [
+        {
+            type: Object
         }
     ],
     references: [
@@ -198,39 +224,39 @@ const candidateSchema = new Schema<ICandidate>({
             }
         }
     ],
-    english_language: {
-        certification_attempted: {
-            type: String,
-            required: [true, 'Certification attempted is required']
-        },
-        recent_test: {
-            type: Date,
-            required: [true, 'Recent test is required']
-        },
-        test_score: {
-            listening: {
-                type: Number,
-                required: [true, 'Listening is required']
-            },
-            reading: {
-                type: Number,
-                required: [true, 'Reading is required']
-            },
-            writing: {
-                type: Number,
-                required: [true, 'Writing is required']
-            },
-            speaking: {
-                type: Number,
-                required: [true, 'Speaking is required']
-            },
-            overall: {
-                type: Number,
-                required: [true, 'Overall is required']
-            }
-        },
-        score_card: { type: Object }
-    },
+    // english_language: {
+    //     certification_attempted: {
+    //         type: String,
+    //         required: [true, 'Certification attempted is required']
+    //     },
+    //     recent_test: {
+    //         type: Date,
+    //         required: [true, 'Recent test is required']
+    //     },
+    //     test_score: {
+    //         listening: {
+    //             type: Number,
+    //             required: [true, 'Listening is required']
+    //         },
+    //         reading: {
+    //             type: Number,
+    //             required: [true, 'Reading is required']
+    //         },
+    //         writing: {
+    //             type: Number,
+    //             required: [true, 'Writing is required']
+    //         },
+    //         speaking: {
+    //             type: Number,
+    //             required: [true, 'Speaking is required']
+    //         },
+    //         overall: {
+    //             type: Number,
+    //             required: [true, 'Overall is required']
+    //         }
+    //     },
+    //     score_card: { type: Object }
+    // },
     hear_about_us: [
         {
             type: String,
@@ -250,11 +276,11 @@ const candidateSchema = new Schema<ICandidate>({
         type:Boolean,
         default:false
     },
-    coverletter:{
-        type:String,
-        required: [true, 'Cover Letter is requied']
+    // coverletter:{
+    //     type:String,
+    //     required: [true, 'Cover Letter is requied']
 
-    }
+    // }
 
 }, { timestamps: true });
 

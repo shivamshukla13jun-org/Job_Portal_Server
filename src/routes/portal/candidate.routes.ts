@@ -29,13 +29,13 @@ const upload = createMulterMiddleware({
 
 // routes
 router.route("/")
-    .get(verifyUserTypeToken(["candidate"]), getCandidates)
+    .get(verifyUserTypeToken(["candidate","admin"]), getCandidates)
     .post(
-        verifyUserTypeToken(["candidate"]),
+        verifyUserTypeToken(["candidate","admin"]),
         upload.fields([
             { name: 'upload_cv', maxCount: 1 },
             { name: 'profile', maxCount: 1 },
-            { name: 'registration_certificate', maxCount: 1 },
+            // { name: 'registration_certificate', maxCount: 1 },
             { name: 'score_card', maxCount: 1 },
             { name: 'certificate[]', maxCount: 5 }
         ]),
@@ -43,19 +43,19 @@ router.route("/")
     );
 
 router.route("/:id")
-    .get(verifyUserTypeToken(["candidate", "employer"]), getCandidate)
+    .get(verifyUserTypeToken(["candidate","admin", "employer"]), getCandidate)
     .put(
-        verifyUserTypeToken(["candidate"]),
+        verifyUserTypeToken(["candidate","admin"]),
         upload.fields([
             { name: 'upload_cv', maxCount: 1 },
             { name: 'profile', maxCount: 1 },
-            { name: 'registration_certificate', maxCount: 1 },
+            // { name: 'registration_certificate', maxCount: 1 },
             { name: 'score_card', maxCount: 1 },
             { name: 'certificate[]', maxCount: 5 }
         ]),
         updateCandidate
     )
-    .delete(verifyUserTypeToken(["candidate"]), deleteCandidate);
-router.route('/apply/:id').put(verifyUserTypeToken(["candidate"]),  applyJob);
-router.route('/get').get(verifyUserTypeToken(["candidate"]), getAppliedJobs);
+    .delete(verifyUserTypeToken(["candidate","admin"]), deleteCandidate);
+router.route('/apply/:id').put(verifyUserTypeToken(["candidate","admin"]),  applyJob);
+router.route('/get').get(verifyUserTypeToken(["candidate","admin"]), getAppliedJobs);
 export default router;

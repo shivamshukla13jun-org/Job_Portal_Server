@@ -3,7 +3,7 @@ import { IFile } from "./file"
 export type ICandidateFiles = {
     upload_cv: IFile[],
     profile: IFile[];
-    registration_certificate: IFile[],
+    // registration_certificate: IFile[],
     score_card: IFile[],
     "certificate[]": IFile[];
 };

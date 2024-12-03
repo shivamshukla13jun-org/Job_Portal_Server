@@ -10,26 +10,26 @@ const router = Router();
 router.put("/apply/:id", verifyToken, applyJob);
 
 router.route("/employer")
-    .get(verifyUserTypeToken(["employer"]), getEmployerJobs);
-router.get("/employer/name", verifyUserTypeToken(["employer"]), getEmployerJobNamesOnly);
+    .get(verifyUserTypeToken(["employer","admin"]), getEmployerJobs);
+router.get("/employer/name", verifyUserTypeToken(["employer","admin"]), getEmployerJobNamesOnly);
 router.route("/employer/:id")
-    .get(verifyUserTypeToken(["employer"]), getEmployerJob);
+    .get(verifyUserTypeToken(["employer","admin"]), getEmployerJob);
 
 
 
 router.route("/")
     .get(getJobs)
     .post(
-        verifyUserTypeToken(["employer"]),
+        verifyUserTypeToken(["employer","admin"]),
         createJob
     );
 
 router.route("/:id")
     .get(verifyisCandidateLogin, getJob)
     .put(
-        verifyUserTypeToken(["employer"]),
+        verifyUserTypeToken(["employer","admin"]),
         updateJob
     )
-    .delete(verifyUserTypeToken(["employer"]), deleteJob);
+    .delete(verifyUserTypeToken(["employer","admin"]), deleteJob);
 
 export default router;

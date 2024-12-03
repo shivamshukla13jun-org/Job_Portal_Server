@@ -2,8 +2,8 @@ import { UUID } from "crypto";
 
 export type IJobCandidate = {
     experience: string;
-    salary_from: number;
-    salary_to: number;
+    salary_from: number | null;
+    salary_to: number | null;
     bonus: boolean;
     job_info: string;
     skills: IJobSelect[];

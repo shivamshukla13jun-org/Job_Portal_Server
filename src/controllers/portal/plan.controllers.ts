@@ -1,16 +1,11 @@
 import { NextFunction, Request, Response } from 'express';
 import { JobportalPlan } from '@/models/portal/plan.model';
-import { IJobportalPlan, IRazorPayPlan } from '@/types/plan';
+import { IJobportalPlan } from '@/types/plan';
 import { AppError } from '@/middlewares/error';
 
-interface PlanPayload {
-    name: string;
-    [key: string]: any;
-}
-
 interface QueryParams {
-    page?: string;
-    limit?: string;
+    page?: string | number;
+    limit?: string | number;
 }
 const month: Record<string, number> = {
     "quarterly": 3,
@@ -46,25 +41,16 @@ export default {
 
     planList: async (req: Request, res: Response,next:NextFunction) => {
         try {
-            const { page, limit }: QueryParams = req.query;
-            if (page || limit) {
-                const planData = await JobportalPlan.find({isActive:true})
+            const { page=1, limit =10}: QueryParams = req.query;
+           
+                const planData = await JobportalPlan.find()
                     .skip((Number(page) - 1) * Number(limit))
                     .limit(Number(limit));
                 let count = await JobportalPlan.countDocuments();
-                if (planData) {
-                    return res.status(200).json({ status: 200, message: "data found", data: planData, total: count });
-                } else {
-                    return res.status(400).json({ status: 400, message: 'No data found' });
-                }
-            } else {
-                const planData = await JobportalPlan.find({ status: 1 });
-                if (planData) {
-                    return res.status(200).json({ status: 200, message: "data found", data: planData });
-                } else {
-                    return res.status(400).json({ status: 400, message: 'No data found' });
-                }
-            }
+               
+             return res.status(200).json({ status: 200, message: "data found", data: planData ||[], total: count });
+                
+            
         } catch (error) {
             next(error)
         }

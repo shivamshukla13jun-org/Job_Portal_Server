@@ -8,10 +8,11 @@ dotenv.config()
 export interface IEmail {
     email: string;
     subject: string;
-    text: string
+    text?: string;
+    html?: string;
 }
 
-export const sendEmail = async ({ email, subject, text }: IEmail) => {
+export const sendEmail = async ({ email, subject, text, html }: IEmail) => {
     try {
         const transporter = nodemailer.createTransport({
             service: process.env.MAIL_HOST,
@@ -29,14 +30,15 @@ export const sendEmail = async ({ email, subject, text }: IEmail) => {
             to: email,
             subject: subject,
             text: text,
+            html: html  // Added HTML option
         }
 
         const info = await transporter.sendMail(mailOptions)
 
         return info
     } catch (error) {
-        console.log(error)
-        return error
+        console.error('Email sending error:', error);
         throw new AppError('Failed to send Email', 500)
     }
 }
+

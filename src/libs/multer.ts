@@ -1,3 +1,4 @@
+
 import multer from 'multer';
 import path from 'path';
 
@@ -25,8 +26,11 @@ const createMulterMiddleware = (options: MulterOptions) => {
     });
 
     const fileFilter = (req: Express.Request, file: ExtendedMulterFile, cb: multer.FileFilterCallback) => {
+        console.log("file.mimetype ",file.mimetype )
         if (options.allowedFileTypes && !options.allowedFileTypes.includes(file.mimetype || file.type!)) {
-            return cb(new Error('File type not allowed'));
+            console.log('File type not allowed')
+            return cb(new Error('File type not allowed'))
+
         }
         cb(null, true);
     };
