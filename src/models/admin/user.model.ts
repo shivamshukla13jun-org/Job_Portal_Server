@@ -27,7 +27,7 @@ export interface IUser extends Document {
   oauth: 'email' | 'google';
   user_verified?: boolean;
   isBlocked?: boolean;
-  matchPassword: (pass: string) => Promise<boolean>;
+  matchPassword: (pass: string) =>boolean;
 }
 
 const userSchema = new Schema<IUser>({

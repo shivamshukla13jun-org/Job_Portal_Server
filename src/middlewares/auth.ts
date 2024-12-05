@@ -2,6 +2,7 @@
 import { Request, Response, NextFunction } from "express"
 import jwt from "jsonwebtoken"
 import { Types } from "mongoose";
+import {IAdmin} from '@/models/admin/admin.model';
 
 import { AppError } from "./error"
 import User, { IUser } from "@/models/admin/user.model";
@@ -19,7 +20,7 @@ declare global {
     }
 }
 
-const generateToken = (user: IUser,expiresIn?:string) => {
+const generateToken = (user: IUser| IAdmin,expiresIn?:string) => {
     const token = jwt.sign({ id: user._id }, JWT_SECRET!, { expiresIn: expiresIn || JWT_EXPIRE });
     return token;
 };

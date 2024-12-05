@@ -1,4 +1,6 @@
+import { generateToken } from '@/middlewares/auth';
 import { AppError } from '@/middlewares/error';
+import Admin from '@/models/admin/admin.model';
 import User from '@/models/admin/user.model';
 import { Application } from '@/models/candidate/application.model';
 import Job from '@/models/portal/job.model';
@@ -14,7 +16,184 @@ interface ListQueryParams {
   userType?: string;
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
+  fromdate?:Date;
+  todate?:Date;
 }
+interface PaginatedResult {
+  data: {
+    label: string;
+    value: string;
+  }[];
+  totalCount: number;
+  currentPage: number;
+  totalPages: number;
+  success: boolean;
+}
+
+export const getAllLocations = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const page: number = parseInt(req.query.page as string) || 1;
+    const limit: number = parseInt(req.query.limit as string) || 10;
+
+    const result = await Job.aggregate([
+      { $group: { _id: "$location" } },
+
+      {
+        $project: {
+          label: "$_id",
+          value: "$_id"
+        }
+      },
+      {
+        $facet: {
+          data: [
+            { $skip: (page - 1) * limit },
+            { $limit: limit }
+          ],
+          totalCount: [
+            { $count: "count" }
+          ]
+        }
+      }
+    ]);
+
+    const locations = result[0]?.data || [];
+    const totalCount = result[0]?.totalCount[0]?.count || 0
+
+    const response: PaginatedResult = {
+      data: locations,
+      totalCount,
+      currentPage: page,
+      totalPages: Math.ceil(totalCount / limit),
+      success: true
+    };
+
+    res.status(200).json(response);
+  } catch (error) {
+    next(error);
+  }
+};
+export const loginUser = async (req: Request, res: Response) => {
+  const { email, password } = req.body;
+
+  const user = await Admin.findOne({ email });
+  
+  if (user ) {
+    const isMatch = await user.matchPassword(password as string);
+    if (!isMatch) {
+      throw new AppError("Invalid credentials", 400);
+    }
+    const token = generateToken(user);
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      token,
+    });
+  } else {
+    throw new AppError('Invalid email or password',401);
+  }
+}
+import { PipelineStage } from 'mongoose';
+
+export const dashboard= (
+  matchQueries: any,
+  userTypeMatch: any
+): PipelineStage[] => {
+  const baseStats:any= [
+    {
+      $group: {
+        _id: {
+          year: { $year: '$createdAt' },
+          month: { $month: '$createdAt' }
+        },
+        total: { $sum: 1 }
+      }
+    },
+    {
+      $project: {
+        _id: 0,
+        year: '$_id.year',
+        month: '$_id.month',
+        total: 1
+      }
+    },
+    { $sort: { year: 1, month: 1 } }
+  ];
+
+  return [
+    { $match: matchQueries },
+
+    // Lookup user types
+    {
+      $lookup: {
+        from: 'usertypes',
+        localField: 'userType',
+        foreignField: '_id',
+        as: 'userType'
+      }
+    },
+    { $unwind: '$userType' },
+
+    // Filter based on userType (Candidate, Employer, Subemployer)
+    { $match: userTypeMatch },
+
+    // Add further detail joins based on user type
+    {
+      $facet: {
+        candidateStats: [
+          { $match: { 'userType.name': 'Candidate' } },
+          {
+            $lookup: {
+              from: 'candidates',
+              localField: '_id',
+              foreignField: 'userId',
+              as: 'candidateDetails'
+            }
+          },
+          { $unwind: { path: '$candidateDetails', preserveNullAndEmptyArrays: true } },
+          ...baseStats
+        ],
+        employerStats: [
+          { $match: { 'userType.name': 'Employer' } },
+          {
+            $lookup: {
+              from: 'employers',
+              localField: '_id',
+              foreignField: 'userId',
+              as: 'employerDetails'
+            }
+          },
+          { $unwind: { path: '$employerDetails', preserveNullAndEmptyArrays: true } },
+          ...baseStats
+        ],
+        subEmployerStats: [
+          { $match: { 'userType.name': 'Subemployer' } },
+          {
+            $lookup: {
+              from: 'subemployers',
+              localField: '_id',
+              foreignField: 'userId',
+              as: 'subEmployerDetails'
+            }
+          },
+          { $unwind: { path: '$subEmployerDetails', preserveNullAndEmptyArrays: true } },
+          ...baseStats
+        ],
+        // Total Users Summary
+        totalUserStats: [
+          {
+            $group: {
+              _id: '$userType.name',
+              count: { $sum: 1 }
+            }
+          },
+          { $project: { userType: '$_id', count: 1, _id: 0 } }
+        ]
+      }
+    }
+  ];
+};
 
 export const listUsers = async (req: Request, res: Response,next:NextFunction) => {
   try {
@@ -24,27 +203,39 @@ export const listUsers = async (req: Request, res: Response,next:NextFunction) =
       search = '', 
       userType,
       sortBy = 'createdAt',
-      sortOrder = 'desc'
+      sortOrder = 'desc',
+      fromdate,todate
     } = req.query as ListQueryParams;
 
     // Parse page and limit, ensure they are numbers
     const pageNumber = Math.max(1, Number(page));
     const limitNumber = Math.max(1, Number(limit));
     const skip = (pageNumber - 1) * limitNumber;
-
+    const matchQueries: Record<string, any> = {};
+    const searchMatch: Record<string, any> = {};
+    const userTypeMatch: Record<string, any> = {};
+    const createRegex = (value: string) => new RegExp(`.*${value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}.*`, "gi");
+     // Handle date filter
     // Prepare search match stage
-    const searchMatch = search ? {
-      $or: [
+    if(search){
+      searchMatch["$or"]=[
         { name: { $regex: search, $options: 'i' } },
         { email: { $regex: search, $options: 'i' } }
       ]
-    } : {};
+    }
+    if(userType){
+      userTypeMatch['userType.name']= userType
+    }
+    if (fromdate || todate) {
+      matchQueries["createdAt"]={}
 
-    // Prepare user type match stage
-    const userTypeMatch = userType 
-      ? { 'userType.name': userType } 
-      : {};
-
+  }
+    if (fromdate) {
+        matchQueries["createdAt"] ["$gte"]=  new Date(fromdate)
+    }
+       if (todate) {
+        matchQueries["createdAt"] ["$lte"]=  new Date(todate)
+    }
     // Prepare sort stage
     const sortStage = {
       [sortBy]: sortOrder === 'asc' ? 1 : -1
@@ -52,6 +243,7 @@ export const listUsers = async (req: Request, res: Response,next:NextFunction) =
 
     // Aggregation pipeline
     const aggregationPipeline: any[] = [
+      {$match:matchQueries},
       // Join with UserType
       {
         $lookup: {
@@ -147,7 +339,7 @@ export const listUsers = async (req: Request, res: Response,next:NextFunction) =
         { $count: 'total' }
       ])
     ]);
-
+    
     // Calculate total pages
     const total = totalCount[0]?.total || 0;
     const totalPages = Math.ceil(total / limitNumber);
@@ -254,23 +446,84 @@ export const planList=async (req: Request, res: Response,next:NextFunction) => {
 }
 export const getJobs = async (req: Request, res: Response, next: NextFunction) => {
   try {
-      const { page, limit, ...queries } = req.query
+    const { page: reqPage,fromdate, todate, limit: reqLimit,createdAt,experience_from,experience_to, ...queries } = req.query;
+    const today = new Date();
 
-     
+    // Parse and set page and limit with fallback
+    const page =  parseInt(reqPage as string, 10) || 1  // Ensure page is at least 0
+    const limit =  parseInt(reqLimit as string, 10) ||10  // Ensure limit is at least 1
 
-      const pageOptions = {
-          page: parseInt(page as string, 0) || 0,
-          limit: parseInt(limit as string, 10) || 10
-      }
+    // Pagination options
+    const pageOptions = {
+        skip: (page-1) * limit,
+        limit: limit
+    };
+    const matchQueries: Record<string, any> = {};
+    const createRegex = (value: string) => new RegExp(`.*${value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}.*`, "gi");
+     // Handle date filter
+     if (fromdate || todate) {
+      matchQueries["createdAt"]={}
 
-      const matchQueries: { [key: string]: RegExp } = {};
-      const createRegex = (value: string) => new RegExp(`.*${value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}.*`, "gi");
+  }
+     if (fromdate) {
+      matchQueries["createdAt"] ["$gte"]=  new Date(fromdate as string)
 
-      for (const [key, value] of Object.entries(queries)) {
-          if (typeof value === 'string' && value !== '') {
-              matchQueries[key] = createRegex(value)
-          }
-      }
+  }
+     if (todate) {
+      matchQueries["createdAt"] ["$lte"]=  new Date(todate as string)
+  }
+    for (let [key, value] of Object.entries(queries)) {
+        if (typeof value === 'string' && value !== '' && !['keyword', 'sort', 'location', 'categories','jobtype'].includes(key)) {
+            matchQueries[key] = createRegex(value)
+        };
+        if (typeof value === 'string' && value !== '' && key === 'keyword') {
+            matchQueries["$and"] = [
+              {"$or":[
+                {
+                    title: createRegex(value)
+                },
+                {
+                    "company.name": createRegex(value)
+                },
+                {
+                    "employerId.keywords": createRegex(value)
+                },
+              ]}
+            ]
+        };
+
+        if (typeof value === 'string' && value !== '' && key === 'location') {
+            matchQueries["$or"] = [
+                {
+                    location: createRegex(value)
+                },
+                {
+                    place: createRegex(value)
+                },
+            ]
+        };
+
+        if (typeof value === 'string' && value !== '' && key === 'categories') {
+            matchQueries["categories.label"] = createRegex(value)
+        }
+        if (typeof value === 'string' && value !== '' && key === 'jobtype') {
+            matchQueries["jobtype"] = {$in:value.split(",")}
+        }
+       // Salary range filter
+       if (key === 'candidate_requirement.salary_from' && value) {
+        matchQueries['candidate_requirement.salary_from']= {$gte: parseInt(value as string)} 
+    }
+    if (key === 'candidate_requirement.salary_to' && value) {
+        matchQueries['candidate_requirement.salary_to']= {$lte: parseInt(value as string) }
+    }
+    if (key === 'candidate_requirement.experience' && value) {
+        matchQueries['candidate_requirement.experience']= {$lte: parseInt(value as string) }
+    }
+}
+
+if (experience_to && experience_from) {
+    matchQueries['candidate_requirement.experience']= {$gte: parseInt(experience_from as string),$lte: parseInt(experience_to as string) }
+}
 
       const jobs = await Job.aggregate([
           {
@@ -292,11 +545,15 @@ export const getJobs = async (req: Request, res: Response, next: NextFunction) =
                   preserveNullAndEmptyArrays: true
               }
           },
+          {
+         $addFields:{applicants_count: { $cond: { if: { $isArray: "$applications" }, then: { $size: "$applications" }, else: "NA"} }
+        }
+          },
           
           {
               $facet: {
                   data: [
-                      { $skip: pageOptions.page * pageOptions.limit },
+                      { $skip:pageOptions.skip },
                       { $limit: pageOptions.limit },
                       {
                           $sort: { createdAt: -1 }
@@ -717,4 +974,62 @@ const EmployerDashboard = async (req: Request, res: Response, next: NextFunction
       next(error);
   }
 }
+
+// Create Admin
+export const createAdmin = async (req: Request, res: Response) => {
+  const { name, email, password } = req.body;
+
+  const adminExists = await Admin.findOne({ email });
+  if (adminExists) {
+
+    throw new AppError('Admin already exists',400);
+  }
+
+  const admin = await Admin.create({ name, email, password });
+  res.status(201).json({ message: 'Admin created successfully', admin });
+}
+
+// Get All Admins
+export const getAdmins = async (req: Request, res: Response) => {
+  const admins = await Admin.find({});
+  res.json(admins);
+}
+
+// Update Admin
+export const updateAdmin = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const admin = await Admin.findById(id);
+
+  if (!admin) {
+    throw new AppError('Admin not found',404);
+  }
+
+  admin.name = req.body.name || admin.name;
+  admin.email = req.body.email || admin.email;
+
+  if (req.body.password) {
+    admin.password = req.body.password;
+  }
+
+  const updatedAdmin = await admin.save();
+  res.json({ message: 'Admin updated successfully', updatedAdmin });
+}
+
+// Delete Admin
+export const deleteAdmin = async (req: Request, res: Response) => {
+ try {
+  const { id } = req.params;
+  const admin = await Admin.findById(id);
+
+  if (!admin) {
+    res.status(404);
+    throw new AppError('Admin not found',404);
+  }
+
+  await Admin.deleteOne({_id:id})
+  res.json({ message: 'Admin deleted successfully' });
+ } catch (error) {
+  
+ }
+};
 export default listUsers
