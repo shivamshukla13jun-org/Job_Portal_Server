@@ -1,4 +1,4 @@
-import { Types } from "mongoose";
+import mongoose, { Types } from "mongoose";
 import { NextFunction, Request, Response } from "express";
 
 import Employer, { IEmployer, IEmployerFiles } from "@/models/portal/employer.model";
@@ -448,6 +448,127 @@ const deleteEmployer = async (req: Request, res: Response, next: NextFunction) =
     }
 };
 
+
+
+ const CandidatesForEmployer = async (req: Request, res: Response) => {
+    try {
+        const employerId =new Types.ObjectId(res.locals.userId);
+        // Execute the aggregation
+        const result= await Job.aggregate([
+            // Stage 1: Fetch employer's jobs
+            {
+                $match: { 
+                    employerId:employerId
+                }
+            },
+            // Stage 2: Extract all job categories and skills
+            {
+                $project: {
+                    jobCategories: '$categories.value',
+                    jobSkills: '$candidate_requirement.skills.value'
+                }
+            },
+            // Stage 3: Aggregate categories and skills
+            {
+                $group: {
+                    _id: null,
+                    allCategories: { $addToSet: '$jobCategories' },
+                    allSkills: { $addToSet: '$jobSkills' }
+                }
+            },
+            // Stage 4: Lookup candidates matching job requirements
+            {
+                $lookup: {
+                    from: 'candidates',
+                    let: { 
+                        categories: '$allCategories',
+                        skills: '$allSkills'
+                    },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $or: [
+                                        // Match candidate employment categories
+                                        { 
+                                            $anyElementTrue: [
+                                                { $map: {
+                                                    input: '$$categories',
+                                                    as: 'category',
+                                                    in: { $in: ['$$category', '$employment.categories.value'] }
+                                                }}
+                                            ]
+                                        },
+                                        // Match candidate skills
+                                        {
+                                            $anyElementTrue: [
+                                                { $map: {
+                                                    input: '$$skills',
+                                                    as: 'skill',
+                                                    in: { $in: ['$$skill', '$employment.categories.value'] }
+                                                }}
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        // Add matching score
+                        // {
+                        //     $addFields: {
+                        //         matchScore: {
+                        //             $size: {
+                        //                 $setIntersection: [
+                        //                     { $concatArrays: ['$employment.categories.value'] },
+                        //                     { $concatArrays: ['$$categories', '$$skills'] }
+                        //                 ]
+                        //             }
+                        //         }
+                        //     }
+                        // },
+                        // Project relevant candidate fields
+                        {
+                            $project: {
+                                name: 1,
+                                email: 1,
+                                designation: 1,
+                                education: 1,
+                                employment: 1,
+                                // matchScore: 1,
+                                contact: 1
+                            }
+                        },
+                        // Sort by match score
+                        // { $sort: { matchScore: -1 } },
+                        // Limit results
+                        { $limit: 50 }
+                    ],
+                    as: 'matchedCandidates'
+                }
+            },
+            // Stage 5: Unwind and restructure results
+            {
+                $project: {
+                    matchedCandidates: 1,
+                    totalMatchedCandidates: { $size: '$matchedCandidates' }
+                }
+            }
+        ]);
+
+        res.status(200).json({
+            success: true,
+            data:result
+        });
+
+    } catch (error) {
+        console.error('Error in CandidatesForEmployer:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error',
+            error: error instanceof Error ? error.message : 'Unknown error'
+        });
+    }
+};
 export {
-    createEmployer, getEmployers, getEmployer, updateEmployer, deleteEmployer,EmployerDashboard,ForwardCV,getSubEmployers
+    createEmployer, getEmployers, getEmployer,CandidatesForEmployer, updateEmployer, deleteEmployer,EmployerDashboard,ForwardCV,getSubEmployers
 }

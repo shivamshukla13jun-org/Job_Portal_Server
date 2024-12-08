@@ -136,10 +136,6 @@ const candidateSchema = new Schema<ICandidate>({
                 type: String,
                 required: [true, 'Education name is required']
             },
-            // from: {
-            //     type: Date,
-            //     required: [true, 'From is required']
-            // },
             to: {
                 type: Date,
                 required: [true, 'Passing Year is required']
@@ -148,13 +144,8 @@ const candidateSchema = new Schema<ICandidate>({
                 type: String,
                 required: [true, 'Qualification is required']
             },
-            // certificate: {
-            //     type: Object,
-            //     required: [true, 'Certificate is required']
-            // }
         }
     ],
-    // registration_certificate: { type: Object },
     employment: [
         {
             name: {
@@ -194,9 +185,6 @@ const candidateSchema = new Schema<ICandidate>({
                 type: Date,
                 required: [true, 'To is required']
             },
-            // certificate: {
-            //     type: Object,
-            // }
         }
     ],
     achievement: [
@@ -224,39 +212,6 @@ const candidateSchema = new Schema<ICandidate>({
             }
         }
     ],
-    // english_language: {
-    //     certification_attempted: {
-    //         type: String,
-    //         required: [true, 'Certification attempted is required']
-    //     },
-    //     recent_test: {
-    //         type: Date,
-    //         required: [true, 'Recent test is required']
-    //     },
-    //     test_score: {
-    //         listening: {
-    //             type: Number,
-    //             required: [true, 'Listening is required']
-    //         },
-    //         reading: {
-    //             type: Number,
-    //             required: [true, 'Reading is required']
-    //         },
-    //         writing: {
-    //             type: Number,
-    //             required: [true, 'Writing is required']
-    //         },
-    //         speaking: {
-    //             type: Number,
-    //             required: [true, 'Speaking is required']
-    //         },
-    //         overall: {
-    //             type: Number,
-    //             required: [true, 'Overall is required']
-    //         }
-    //     },
-    //     score_card: { type: Object }
-    // },
     hear_about_us: [
         {
             type: String,
@@ -276,11 +231,7 @@ const candidateSchema = new Schema<ICandidate>({
         type:Boolean,
         default:false
     },
-    // coverletter:{
-    //     type:String,
-    //     required: [true, 'Cover Letter is requied']
 
-    // }
 
 }, { timestamps: true });
 

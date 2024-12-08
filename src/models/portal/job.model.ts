@@ -1,7 +1,5 @@
 import  { Schema, Document, Types, model } from "mongoose";
 import { IJobCandidate, IJobCompany, IJobPersonal, IJobSelect } from "@/types/company";
-import crypto from 'crypto';
-
 export type IJobCandidateStatus = {
     candidateId: Types.ObjectId;
     date: Date;
@@ -67,10 +65,7 @@ const jobSchema = new Schema<IJob>({
         enum:[ "freelancer", "full-time", "part-time", "temporary" ],
         required: [true, "Job Type is required"]
     },
-    // age: {
-    //     type: Number,
-    //     required: [true, 'Age is required']
-    // },
+  
     candidate_requirement: {
         experience: {
             type: Number,
@@ -127,64 +122,12 @@ const jobSchema = new Schema<IJob>({
             ]
         }
     ],
-    // timing: {
-    //     job: {
-    //         type: String,
-    //         required: [true, "Job timing is required"]
-    //     },
-    //     interview: {
-    //         type: String,
-    //         required: [true, "Interview timing is required"]
-    //     }
-    // },
-    // company: {
-    //     name: {
-    //         type: String,
-    //         required: [true, "Name is required"]
-    //     },
-    //     contact_person: {
-    //         type: String,
-    //         required: [true, "Contact person is required"]
-    //     },
-    //     phone: {
-    //         type: String,
-    //         required: [true, "Phone is required"]
-    //     },
-    //     email: {
-    //         type: String,
-    //         required: [true, "Email is required"]
-    //     },
-    //     contact_person_profile: {
-    //         type: String,
-    //         required: [true, "Contact person profile is required"]
-    //     },
-    //     size_of_org: {
-    //         type: Number,
-    //         required: [true, "Size of organisation is required"]
-    //     },
-    //     job_address: {
-    //         type: String,
-    //         required: [true, "Job address is required"]
-    //     },
-    //     vacancy: {
-    //         type: String,
-    //         required: [true, "Vacancy is required"]
-    //     },
-    //     id:{
-    //         type:Schema.Types.UUID,
-    //         default: () => crypto.randomUUID(),  // Generate a UUID using crypto
-
-    //     }
-    // },
     applications: [
         {
             type: Schema.Types.ObjectId,
             ref: 'Application',
         }
     ],
-  
-   
-   
     isActive: {
         type: Boolean,
         default: true
