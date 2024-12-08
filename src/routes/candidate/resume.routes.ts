@@ -26,14 +26,14 @@ const upload = createMulterMiddleware({
 });
 
 // routes
-router.get("/candidate/:id", verifyUserTypeToken(["candidate", "employer"]), getResumeForCandidate)
+router.get("/candidate/:id", verifyUserTypeToken(["candidate", "employer","subemployer"]), getResumeForCandidate)
 
 router.route("/")
     .get(verifyToken, getResumes)
-    .post(verifyUserTypeToken(["candidate"]), createResume);
+    .post(verifyUserTypeToken(["candidate", "employer","subemployer"]), createResume);
 
 router.route("/:id")
-    .get(verifyUserTypeToken(["candidate", "employer"]), getResume)
+    .get(verifyUserTypeToken(["candidate", "employer","subemployer"]), getResume)
     .put(
         verifyUserTypeToken(["candidate"]),
         upload.single("portfolio"),

@@ -122,7 +122,7 @@ const getJobs = async (req: Request, res: Response, next: NextFunction) => {
             };
 
             if (typeof value === 'string' && value !== '' && key === 'categories') {
-                matchQueries["categories.label"] = createRegex(value)
+                matchQueries["categories.label"] = {$in:value.split(",")}
             }
             if (typeof value === 'string' && value !== '' && key === 'jobtype') {
                 matchQueries["jobtype"] = {$in:value.split(",")}
@@ -366,15 +366,15 @@ const getEmployerJobs = async (req: Request, res: Response, next: NextFunction) 
                     preserveNullAndEmptyArrays: true
                 }
             },
+            {
+                $sort: { createdAt: -1 }, // Sort by `createdAt` in descending order
+              },
             
             {
                 $facet: {
                     data: [
                         { $skip: (pageOptions.page-1) * pageOptions.limit },
                         { $limit: pageOptions.limit },
-                        {
-                            $sort: { createdAt: -1 }
-                         }
                         
                     ],
                     count: [

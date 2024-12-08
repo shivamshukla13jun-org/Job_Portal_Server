@@ -5,7 +5,7 @@ const router = Router();
 
 // routes
 router.route("/users").get(listUsers)
-router.route("/dashboard").get(dashboard)
+router.route("/dashboard").get()
 router.route("/location").get(getAllLocations)
 router.route("/plan").get(planList)
 router.route("/jobs").get(getJobs)
@@ -16,3 +16,4 @@ router.route('/:id').put(updateAdmin).delete(deleteAdmin);
 router.post('/login', loginUser);
 
 export default router;
+dashboard

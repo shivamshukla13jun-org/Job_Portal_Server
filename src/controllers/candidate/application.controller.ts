@@ -86,6 +86,65 @@ const applyJob = async (req: Request, res: Response, next: NextFunction): Promis
     next(error);
   }
 };
+const WIdrawJob = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const userId = res.locals.userId as Types.ObjectId;
+    const appId: Types.ObjectId = new mongoose.Types.ObjectId(req.params.id);
+
+
+    // Check candidate and resume
+    const checkUser = await Candidate.findOne({ userId: userId }).populate("userId")
+    .session(session);
+    if (!checkUser) {
+      throw new AppError('Please Complete Your Profile and Resume Section to apply for job!', 400);
+    }
+    if (!checkUser.isresume) {
+      throw new AppError('Please fill Resume Details to apply for job!', 400);
+    }
+
+    
+
+    // Check if the user has already applied for this job
+    const existingApplication = await Application.findById(appId)
+    .session(session);
+    if (!existingApplication) {
+      throw new AppError('You have already applied for this job!', 400);
+    }
+
+   
+
+    // Update the job's applications array
+    await Job.updateOne(
+      { _id: existingApplication.job },
+      { $unset: { applications:appId } },
+      { session }
+    );
+
+    // Send email notification
+    //  sendEmail({
+    //   email: job.employerId.email,
+    //   subject: `Application for ${job.title} at ${job.employerId.name}`,
+    //   text: `You have a new application for the position of ${job.title}.`
+    // });
+
+
+    await session.commitTransaction();
+    session.endSession();
+
+    res.status(200).json({
+      success: true,
+      message: 'Job applied successfully!',
+    });
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    console.log(error);
+    next(error);
+  }
+};
 
 
 const getAppliedJobs = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -676,22 +735,6 @@ const deleteapplication = async (req: Request, res: Response, next: NextFunction
     await Job.findByIdAndUpdate(jobId,{$pull:{applications:applicationId}}).session(session)
     await session.commitTransaction();
     session.endSession();
-    // if (result?.applicant?.email) {
-    //   let text: string = status === 'rejected' ? 'Update on Your Job Decline Application for the Position of' : 'Update on Your Application for the Position of';
-    //   sendEmail({
-    //     to: result?.applicant?.email,
-    //     subject: `${text}  ${result.job.title}`,
-    //     template: "jobSeekerEmail",
-    //     data: {
-    //       link: process.env.clienturl,
-    //       name: result.applicant?.personalDetails?.first_name,
-    //       jobTitle: result.job.title,
-    //       company: result?.company?.name,
-    //       status: status,
-    //     },
-    //   });
-    // }
-
     res.status(200).json({
       message: `Apllicant  deleted successfully.`,
       success: true,
@@ -767,7 +810,7 @@ const getEmployerJobNamesOnly = async (req: Request, res: Response, next: NextFu
 }
 export {
   applyJob,
-  getAppliedJobs,
+  getAppliedJobs,WIdrawJob,
   getApplicants,
   updateStatus,deleteapplication,
   getAllApplicants,getEmployerJobNamesOnly,getAllShortlistApplicants

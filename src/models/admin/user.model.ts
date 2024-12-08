@@ -117,7 +117,28 @@ userSchema.pre("save", async function (next) {
   this.password = await bcrypt.hash(this.password as string, salt);
   next();
 });
+// Add middleware for findOneAndUpdate to hash password
+userSchema.pre('findOneAndUpdate', async function(next) {
+  // Check if password is being modified
+  const update = this.getUpdate() as any;
+  
+  // If no password in update, continue
+  if (!update.password) {
+    return next();
+  }
 
+  try {
+    // Generate salt
+    const salt = await bcrypt.genSalt(10);
+    
+    // Hash the password
+    update.password = await bcrypt.hash(update.password, salt);
+    
+    next();
+  } catch (error) {
+    return next(error as Error);
+  }
+});
 // match user entered password to hashed password in database
 userSchema.methods.matchPassword = async function (pass: string) {
   return await bcrypt.compare(pass, this.password);

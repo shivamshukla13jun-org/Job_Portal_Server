@@ -21,9 +21,9 @@ class SubEmployerController {
                 name, 
                 email, 
                 phone, 
+                password,
                 dashboardPermissions 
             } = req.body;
-            const password= generateNumber(4)
             // Step 1: Validate Parent Employer
             const parentEmployer = await Employer.findOne({ userId: res.locals.userId });
             if (!parentEmployer) {
@@ -102,6 +102,8 @@ class SubEmployerController {
                 name, 
                 email, 
                 phone, 
+                password,
+                isActive,
                 dashboardPermissions 
             } = req.body;
             const subEmployerId=req.params.id
@@ -131,7 +133,8 @@ class SubEmployerController {
             if (name) userUpdateData.name = name;
             if (email) userUpdateData.email = email;
             if (phone) userUpdateData.phone = phone;
-    
+            if (password) userUpdateData.password = password;
+           
             if (Object.keys(userUpdateData).length > 0) {
                 await User.findByIdAndUpdate(existingSubEmployer.userId, userUpdateData, {runValidators:true, session });
             }
@@ -148,7 +151,7 @@ class SubEmployerController {
                 subEmployerUpdateData, 
                 { session,runValidators:true, new: true }
             );
-    
+
             await session.commitTransaction();
             res.status(200).json({
                 message: "Sub-employer updated successfully",
@@ -227,7 +230,7 @@ class SubEmployerController {
             });
     
             // Send email
-            await sendEmail({
+             sendEmail({
                 email,
                 subject: 'Your Meeting Details',
                 html: emailContent,
@@ -260,6 +263,89 @@ class SubEmployerController {
             });
         } catch (error) {
             next(error);
+        }
+    }
+    async deleteSubEmployer(req: Request, res: Response, next: NextFunction) {
+        const session = await mongoose.startSession();
+        session.startTransaction();
+        try {
+            const subEmployerId = req.params.id;
+    
+            // Step 1: Find Existing SubEmployer
+            const existingSubEmployer = await SubEmployer.findById(subEmployerId);
+            if (!existingSubEmployer) {
+                throw new AppError("Sub-employer not found", 404);
+            }
+    
+            // Step 2: Verify Parent Employer Authorization
+            const parentEmployer = await Employer.findOne({ userId: res.locals.userId });
+            if (!parentEmployer || 
+                !existingSubEmployer.parentEmployerId===parentEmployer._id) {
+                throw new AppError("Unauthorized to update this sub-employer", 403);
+            }
+    
+            // Step 3: Delete Associated User
+            await User.findByIdAndDelete(existingSubEmployer.userId, { session });
+    
+            // Step 4: Delete SubEmployer
+            await SubEmployer.findByIdAndDelete(subEmployerId, { session });
+            // Step 4: Delete Forwardedcvs
+            await ForwardedCV.deleteOne({ toSubEmployerId:subEmployerId },{session})
+    
+            // Commit the transaction
+            await session.commitTransaction();
+            await session.endSession();
+            res.status(200).json({
+                message: "Sub-employer deleted successfully",
+                success: true,
+            });
+        } catch (error) {
+            // Abort the transaction in case of any error
+            await session.abortTransaction();
+            await session.endSession();
+            next(error);
+        } finally {
+            // End the session
+            await session.endSession();
+        }
+    }
+    async ActivateDeactivate(req: Request, res: Response, next: NextFunction) {
+        const session = await mongoose.startSession();
+        session.startTransaction();
+        try {
+            const subEmployerId = req.params.id;
+            let {isActive}=req.body
+    
+            // Step 1: Find Existing SubEmployer
+            const existingSubEmployer = await SubEmployer.findById(subEmployerId);
+            if (!existingSubEmployer) {
+                throw new AppError("Sub-employer not found", 404);
+            }
+    
+            // Step 2: Verify Parent Employer Authorization
+            const parentEmployer = await Employer.findOne({ userId: res.locals.userId });
+            if (!parentEmployer || 
+                !existingSubEmployer.parentEmployerId===parentEmployer._id) {
+                throw new AppError("Unauthorized to update this sub-employer", 403);
+            }
+    
+            // Step 3: Delete Associated User
+            await User.findByIdAndUpdate(existingSubEmployer.userId,{isActive:isActive}, { session });
+            // Commit the transaction
+            await session.commitTransaction();
+            await session.endSession();
+            res.status(200).json({
+                message: `Sub-employer ${!isActive ? "deactivated" : "Activted"}  successfully`,
+                success: true,
+            });
+        } catch (error) {
+            // Abort the transaction in case of any error
+            await session.abortTransaction();
+            await session.endSession();
+            next(error);
+        } finally {
+            // End the session
+            await session.endSession();
         }
     }
 }
