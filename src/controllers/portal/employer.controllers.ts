@@ -450,125 +450,191 @@ const deleteEmployer = async (req: Request, res: Response, next: NextFunction) =
 
 
 
- const CandidatesForEmployer = async (req: Request, res: Response) => {
+const CandidatesForEmployer = async (req: Request, res: Response) => {
     try {
-        const employerId =new Types.ObjectId(res.locals.userId);
-        // Execute the aggregation
-        const result= await Job.aggregate([
-            // Stage 1: Fetch employer's jobs
-            {
-                $match: { 
-                    employerId:employerId
-                }
-            },
-            // Stage 2: Extract all job categories and skills
-            {
-                $project: {
-                    jobCategories: '$categories.value',
-                    jobSkills: '$candidate_requirement.skills.value'
-                }
-            },
-            // Stage 3: Aggregate categories and skills
-            {
-                $group: {
-                    _id: null,
-                    allCategories: { $addToSet: '$jobCategories' },
-                    allSkills: { $addToSet: '$jobSkills' }
-                }
-            },
-            // Stage 4: Lookup candidates matching job requirements
+        const employerId = new Types.ObjectId(res.locals.userId);
+        const results = await Job.aggregate([
+            // Step 1: Match jobs by employerId
+            // { $match: { employerId: new mongoose.Types.ObjectId(res.locals.userId) } },
+        
+            // Step 2: Lookup candidates
             {
                 $lookup: {
-                    from: 'candidates',
-                    let: { 
-                        categories: '$allCategories',
-                        skills: '$allSkills'
+                    from: 'candidates', // Collection name for candidates
+                    let: {
+                        jobCategories: {
+                            $ifNull: ['$categories', []], // Ensure jobCategories is an array
+                        },
+                        jobExperience: '$candidate_requirement.experience',
                     },
                     pipeline: [
+                        // Unwind employment array to process each job
+                        { $unwind: { path: '$employment', preserveNullAndEmptyArrays: true } },
+        
+                        // Match candidates based on job criteria
                         {
                             $match: {
                                 $expr: {
-                                    $or: [
-                                        // Match candidate employment categories
-                                        { 
-                                            $anyElementTrue: [
-                                                { $map: {
-                                                    input: '$$categories',
-                                                    as: 'category',
-                                                    in: { $in: ['$$category', '$employment.categories.value'] }
-                                                }}
-                                            ]
-                                        },
-                                        // Match candidate skills
+                                    $and: [
+                                        // Match categories (job sector)
                                         {
-                                            $anyElementTrue: [
-                                                { $map: {
-                                                    input: '$$skills',
-                                                    as: 'skill',
-                                                    in: { $in: ['$$skill', '$employment.categories.value'] }
-                                                }}
-                                            ]
-                                        }
-                                    ]
-                                }
-                            }
+                                            $in: [
+                                                {
+                                                    $ifNull: [
+                                                        { $arrayElemAt: ['$employment.categories.value', 0] },
+                                                        null,
+                                                    ],
+                                                },
+                                                '$$jobCategories.value',
+                                            ],
+                                        },
+        
+                                        // Calculate candidate's experience in years
+                                        {
+                                            $gte: [
+                                                {
+                                                    $divide: [
+                                                        {
+                                                            $subtract: [
+                                                                new Date(),
+                                                                { $ifNull: ['$employment.from', new Date(0)] },
+                                                            ],
+                                                        },
+                                                        1000 * 60 * 60 * 24 * 365, // Convert ms to years
+                                                    ],
+                                                },
+                                                '$$jobExperience',
+                                            ],
+                                        },
+                                    ],
+                                },
+                            },
                         },
-                        // Add matching score
-                        // {
-                        //     $addFields: {
-                        //         matchScore: {
-                        //             $size: {
-                        //                 $setIntersection: [
-                        //                     { $concatArrays: ['$employment.categories.value'] },
-                        //                     { $concatArrays: ['$$categories', '$$skills'] }
-                        //                 ]
-                        //             }
-                        //         }
-                        //     }
-                        // },
-                        // Project relevant candidate fields
+        
+                        // Calculate total experience for each employment entry
                         {
-                            $project: {
-                                name: 1,
-                                email: 1,
-                                designation: 1,
-                                education: 1,
-                                employment: 1,
-                                // matchScore: 1,
-                                contact: 1
-                            }
+                            $addFields: {
+                                experienceYears: {
+                                    $divide: [
+                                        {
+                                            $subtract: [
+                                                { $ifNull: ['$employment.to', new Date()] }, // Use 'to' or current date
+                                                { $ifNull: ['$employment.from', new Date(0)] }, // Use 'from' or epoch
+                                            ],
+                                        },
+                                        1000 * 60 * 60 * 24 * 365, // Convert ms to years
+                                    ],
+                                },
+                            },
                         },
-                        // Sort by match score
-                        // { $sort: { matchScore: -1 } },
-                        // Limit results
-                        { $limit: 50 }
+        
+                        // Calculate matchScore based on experience and category match
+                        {
+                            $addFields: {
+                                matchScore: {
+                                    $sum: [
+                                        // Add points for category match
+                                        {
+                                            $cond: [
+                                                {
+                                                    $in: [
+                                                        {
+                                                            $ifNull: [
+                                                                { $arrayElemAt: ['$employment.categories.value', 0] },
+                                                                null,
+                                                            ],
+                                                        },
+                                                        '$$jobCategories.value',
+                                                    ],
+                                                },
+                                                50, // Points for category match
+                                                0,  // No points if no match
+                                            ],
+                                        },
+                                        // Add points for experience match
+                                        {
+                                            $cond: [
+                                                {
+                                                    $gte: [
+                                                        {
+                                                            $divide: [
+                                                                {
+                                                                    $subtract: [
+                                                                        new Date(),
+                                                                        { $ifNull: ['$employment.from', new Date(0)] },
+                                                                    ],
+                                                                },
+                                                                1000 * 60 * 60 * 24 * 365, // Convert ms to years
+                                                            ],
+                                                        },
+                                                        '$$jobExperience',
+                                                    ],
+                                                },
+                                                50, // Points for experience match
+                                                0,  // No points if no match
+                                            ],
+                                        },
+                                    ],
+                                },
+                            },
+                        },
+        
+                        // Re-group employment back into an array
+                        {
+                            $group: {
+                                _id: '$_id',
+                                candidate: { $first: '$$ROOT' }, // Retain all candidate fields
+                                employment: { $push: '$employment' }, // Re-group employment into an array
+                            },
+                        },
+        
+                        // Merge the employment array back into the candidate object
+                        {
+                            $replaceRoot: {
+                                newRoot: {
+                                    $mergeObjects: ['$candidate', { employment: '$employment' }],
+                                },
+                            },
+                        },
                     ],
-                    as: 'matchedCandidates'
-                }
+                    as: 'matchedCandidates',
+                },
             },
-            // Stage 5: Unwind and restructure results
+        
+            // Step 3: Filter jobs with no matching candidates
             {
-                $project: {
-                    matchedCandidates: 1,
-                    totalMatchedCandidates: { $size: '$matchedCandidates' }
-                }
-            }
+                $match: {
+                    matchedCandidates: { $ne: [] }, // Ensure matchedCandidates is not empty
+                },
+            },
+        
+            // Step 4: Unwind matchedCandidates to show only candidates
+            { $unwind: '$matchedCandidates' },
+        
+            // Step 5: Project only candidate details
+            {
+                $replaceRoot: {
+                    newRoot: '$matchedCandidates', // Replace job document with candidate document
+                },
+            },
         ]);
-
+        
+        
+        
         res.status(200).json({
             success: true,
-            data:result
+            data: results,
         });
-
     } catch (error) {
         console.error('Error in CandidatesForEmployer:', error);
         res.status(500).json({
             success: false,
             message: 'Internal server error',
-            error: error instanceof Error ? error.message : 'Unknown error'
+            error: error instanceof Error ? error.message : 'Unknown error',
         });
     }
 };
+
 export {
     createEmployer, getEmployers, getEmployer,CandidatesForEmployer, updateEmployer, deleteEmployer,EmployerDashboard,ForwardCV,getSubEmployers
 }
