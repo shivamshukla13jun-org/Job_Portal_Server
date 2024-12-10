@@ -452,10 +452,10 @@ const deleteEmployer = async (req: Request, res: Response, next: NextFunction) =
 
 const CandidatesForEmployer = async (req: Request, res: Response) => {
     try {
-        const employerId = new Types.ObjectId(res.locals.userId);
+        const employerId = req.params.id
         const results = await Job.aggregate([
             // Step 1: Match jobs by employerId
-            // { $match: { employerId: new mongoose.Types.ObjectId(res.locals.userId) } },
+            // { $match: { employerId: new mongoose.Types.ObjectId(employerId) } },
         
             // Step 2: Lookup candidates
             {

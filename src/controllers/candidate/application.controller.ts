@@ -1,22 +1,26 @@
-import mongoose, { Types } from 'mongoose';
-import { Request, Response, NextFunction } from 'express';
-import { sendEmail } from '@/services/emails';
-import Candidate from '@/models/portal/candidate.model';
-import Job from '@/models/portal/job.model';
-import { Application } from '@/models/candidate/application.model';
-import { AppError } from '@/middlewares/error';
+import mongoose, { Types } from "mongoose";
+import { Request, Response, NextFunction } from "express";
+import { sendEmail } from "@/services/emails";
+import Candidate from "@/models/portal/candidate.model";
+import Job from "@/models/portal/job.model";
+import { Application } from "@/models/candidate/application.model";
+import { AppError } from "@/middlewares/error";
 import { generateToken } from "@/middlewares/auth";
-import Employer from '@/models/portal/employer.model';
-import { postedatesCondition } from '@/utils/postedadate';
-import SubEmployer from '@/models/portal/SubEmployer.model';
+import Employer from "@/models/portal/employer.model";
+import { postedatesCondition } from "@/utils/postedadate";
+import SubEmployer from "@/models/portal/SubEmployer.model";
 
-const applyJob = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+const applyJob = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
   const session = await mongoose.startSession();
   session.startTransaction();
 
   try {
     const userId = res.locals.userId as Types.ObjectId;
-    console.log("UserId",userId)
+    console.log("UserId", userId);
     const jobId: Types.ObjectId = new mongoose.Types.ObjectId(req.params.id);
 
     if (!jobId) {
@@ -25,37 +29,47 @@ const applyJob = async (req: Request, res: Response, next: NextFunction): Promis
     }
 
     // Check candidate and resume
-    const checkUser = await Candidate.findOne({ userId: userId }).populate("userId")
-    .session(session);
+    const checkUser = await Candidate.findOne({ userId: userId })
+      .populate("userId")
+      .session(session);
     if (!checkUser) {
-      throw new AppError('Please Complete Your Profile and Resume Section to apply for job!', 400);
+      throw new AppError(
+        "Please Complete Your Profile and Resume Section to apply for job!",
+        400
+      );
     }
     if (!checkUser.isresume) {
-      throw new AppError('Please fill Resume Details to apply for job!', 400);
+      throw new AppError("Please fill Resume Details to apply for job!", 400);
     }
 
     // Fetch the job details and employer
-    const job: any = await Job.findById(jobId).populate('employerId')
-    .session(session);
+    const job: any = await Job.findById(jobId)
+      .populate("employerId")
+      .session(session);
     if (!job) {
-      throw new AppError('Failed to find job!', 400);
+      throw new AppError("Failed to find job!", 400);
     }
 
     // Check if the user has already applied for this job
-    const existingApplication = await Application.findOne({ job: jobId, candidate: checkUser._id })
-    .session(session);
+    const existingApplication = await Application.findOne({
+      job: jobId,
+      candidate: checkUser._id,
+    }).session(session);
     if (existingApplication) {
-      throw new AppError('You have already applied for this job!', 400);
+      throw new AppError("You have already applied for this job!", 400);
     }
 
     // Create new application
-    const [newApplication]: any = await Application.create([{
-      job: jobId,
-      employer: job.employerId._id,
-      candidate: userId ,
-    }], 
-    { session }
-  );
+    const [newApplication]: any = await Application.create(
+      [
+        {
+          job: jobId,
+          employer: job.employerId._id,
+          candidate: userId,
+        },
+      ],
+      { session }
+    );
 
     // Update the job's applications array
     await Job.updateOne(
@@ -71,13 +85,12 @@ const applyJob = async (req: Request, res: Response, next: NextFunction): Promis
     //   text: `You have a new application for the position of ${job.title}.`
     // });
 
-
     await session.commitTransaction();
     session.endSession();
 
     res.status(200).json({
       success: true,
-      message: 'Job applied successfully!',
+      message: "Job applied successfully!",
     });
   } catch (error) {
     await session.abortTransaction();
@@ -86,7 +99,11 @@ const applyJob = async (req: Request, res: Response, next: NextFunction): Promis
     next(error);
   }
 };
-const WIdrawJob = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+const WIdrawJob = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
   const session = await mongoose.startSession();
   session.startTransaction();
 
@@ -94,32 +111,32 @@ const WIdrawJob = async (req: Request, res: Response, next: NextFunction): Promi
     const userId = res.locals.userId as Types.ObjectId;
     const appId: Types.ObjectId = new mongoose.Types.ObjectId(req.params.id);
 
-
     // Check candidate and resume
-    const checkUser = await Candidate.findOne({ userId: userId }).populate("userId")
-    .session(session);
+    const checkUser = await Candidate.findOne({ userId: userId })
+      .populate("userId")
+      .session(session);
     if (!checkUser) {
-      throw new AppError('Please Complete Your Profile and Resume Section to apply for job!', 400);
+      throw new AppError(
+        "Please Complete Your Profile and Resume Section to apply for job!",
+        400
+      );
     }
     if (!checkUser.isresume) {
-      throw new AppError('Please fill Resume Details to apply for job!', 400);
+      throw new AppError("Please fill Resume Details to apply for job!", 400);
     }
-
-    
 
     // Check if the user has already applied for this job
-    const existingApplication = await Application.findById(appId)
-    .session(session);
+    const existingApplication = await Application.findById(appId).session(
+      session
+    );
     if (!existingApplication) {
-      throw new AppError('You have already applied for this job!', 400);
+      throw new AppError("You have already applied for this job!", 400);
     }
-
-   
 
     // Update the job's applications array
     await Job.updateOne(
       { _id: existingApplication.job },
-      { $unset: { applications:appId } },
+      { $unset: { applications: appId } },
       { session }
     );
 
@@ -130,13 +147,12 @@ const WIdrawJob = async (req: Request, res: Response, next: NextFunction): Promi
     //   text: `You have a new application for the position of ${job.title}.`
     // });
 
-
     await session.commitTransaction();
     session.endSession();
 
     res.status(200).json({
       success: true,
-      message: 'Job applied successfully!',
+      message: "Job applied successfully!",
     });
   } catch (error) {
     await session.abortTransaction();
@@ -146,57 +162,65 @@ const WIdrawJob = async (req: Request, res: Response, next: NextFunction): Promi
   }
 };
 
-
-const getAppliedJobs = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+const getAppliedJobs = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
   try {
-    const userId = res.locals.userId as Types.ObjectId
+    const userId = res.locals.userId as Types.ObjectId;
     const page: number = parseInt(req.query.page as string) || 1;
     const limit: number = parseInt(req.query.limit as string) || 10;
-    const status: string = req.query.status as string  || "";
+    const status: string = (req.query.status as string) || "";
     const skip: number = (page - 1) * limit;
-       // Check candidate and resume
-       const checkUser = await Candidate.findOne({ userId: userId })
-       // .session(session);
-       if (!checkUser) {
-         throw new AppError('Failed to find user to apply for job!', 400);
-       }
-    const matchstage:any={
-      candidate: userId,
+    // Check candidate and resume
+    const checkUser = await Candidate.findOne({ userId: userId });
+    // .session(session);
+    if (!checkUser) {
+      throw new AppError("Failed to find user to apply for job!", 400);
     }
-    if(status){
-      matchstage["status"]=status
+    const matchstage: any = {
+      candidate: userId,
+    };
+    if (status) {
+      matchstage["status"] = status;
     }
     const results = await Application.aggregate([
-      { $match:matchstage},
+      { $match: matchstage },
       { $sort: { createdAt: -1 } },
       {
         $lookup: {
           from: "jobs",
           localField: "job",
           foreignField: "_id",
-          pipeline:[
+          pipeline: [
             {
-              $lookup:{
-                from:"employers",
-                localField:"employerId",
-                foreignField:"_id",
-                as:"employerId"
-              }
+              $lookup: {
+                from: "employers",
+                localField: "employerId",
+                foreignField: "_id",
+                as: "employerId",
+              },
             },
-            { $unwind: {path:"$employerId", preserveNullAndEmptyArrays: true  }, },
             {
-              $project:{
-                "employerId.logo":1,
-                "title":1,
-                "company":1,
-                location:1
-              }
-            }
+              $unwind: {
+                path: "$employerId",
+                preserveNullAndEmptyArrays: true,
+              },
+            },
+            {
+              $project: {
+                "employerId.logo": 1,
+                title: 1,
+                company: 1,
+                location: 1,
+              },
+            },
           ],
           as: "job",
         },
       },
-      { $unwind: {path:"$job", preserveNullAndEmptyArrays: true  }, },
+      { $unwind: { path: "$job", preserveNullAndEmptyArrays: true } },
 
       // {
       //   $project:{
@@ -215,10 +239,10 @@ const getAppliedJobs = async (req: Request, res: Response, next: NextFunction): 
     const totalApplications: number = results[0]?.total[0]?.count || 0;
 
     res.status(200).json({
-      data:application,
+      data: application,
       currentPage: page,
       totalPages: Math.ceil(totalApplications / limit),
-      count:totalApplications,
+      count: totalApplications,
       success: true,
     });
   } catch (error) {
@@ -226,53 +250,72 @@ const getAppliedJobs = async (req: Request, res: Response, next: NextFunction): 
     next(error);
   }
 };
+interface ApplicationQuery {
+  page?:string;
+  limit?:string;
+  status?:string;
+  jobid?:Types.ObjectId;
+  createdAt?:any;
+  queries?:object
 
-const getAllApplicants = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+}
+const getAllApplicants = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
   try {
-    const userId = res.locals.userId as Types.ObjectId
-    const { page, limit,status, createdAt,...queries } = req.query;
-
+    const userId = res.locals.userId as Types.ObjectId;
+    let { page="1", limit="10", status,jobid, createdAt, ...queries } = req.query as ApplicationQuery;
+    
     const checkEmployer = await Employer.findOne({ userId: userId });
     if (!checkEmployer) {
-        throw new AppError(`Failed to find an employer`, 400);
+      throw new AppError(`Failed to find an employer`, 400);
     }
 
     const pageOptions = {
-        page: parseInt(page as string, 0) || 1,
-        limit: parseInt(limit as string, 0) || 10
+      page: parseInt(page, 0) || 1,
+      limit: parseInt(limit, 0) || 10,
     };
 
     const matchQueriesupper: Record<string, any> = {
       employer: checkEmployer._id,
     };
-    const matchQueries: Record<string, any> = {};
-    const createRegex = (value: string) => new RegExp(`.*${value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}.*`, "gi");
-    // Handle date filter
-            if (createdAt) {
-              let startDate=postedatesCondition(createdAt  as string )
-              if (startDate) {
-                matchQueriesupper['createdAt'] = { $gte: startDate };
-              }   
-            }
-              if (status) {
-                matchQueriesupper['status'] =  status
-              }   
-            
-    for (const [key, value] of Object.entries(queries)) {
-            if (typeof value === 'string' && value !== '' && !['createdAt', 'status',"name" ].includes(key)) {
-              matchQueries[key] = createRegex(value)
-          };
-        if (typeof value === 'string' && value !== '') {
-            if (key === 'name') {
-                matchQueries['candidate.name'] = createRegex(value);
-            } 
-        }
+    if(jobid){
+      matchQueriesupper["job"]=new Types.ObjectId(jobid)
     }
- console.log({matchQueries,matchQueriesupper})
+    const matchQueries: Record<string, any> = {};
+    const createRegex = (value: string) =>
+      new RegExp(`.*${value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}.*`, "gi");
+    // Handle date filter
+    if (createdAt) {
+      let startDate = postedatesCondition(createdAt as string);
+      if (startDate) {
+        matchQueriesupper["createdAt"] = { $gte: startDate };
+      }
+    }
+    if (status) {
+      matchQueriesupper["status"] = status;
+    }
+
+    for (const [key, value] of Object.entries(queries)) {
+      if (
+        typeof value === "string" &&
+        value !== "" &&
+        !["createdAt", "status", "name"].includes(key)
+      ) {
+        matchQueries[key] = createRegex(value);
+      }
+      if (typeof value === "string" && value !== "") {
+        if (key === "name") {
+          matchQueries["candidate.name"] = createRegex(value);
+        }
+      }
+    }
     const results = await Application.aggregate([
       {
-        $match: matchQueriesupper
-    },
+        $match: matchQueriesupper,
+      },
       {
         $lookup: {
           from: "jobs",
@@ -289,8 +332,8 @@ const getAllApplicants = async (req: Request, res: Response, next: NextFunction)
           as: "job",
         },
       },
-      { $unwind:{ path:"$job",preserveNullAndEmptyArrays:true} },
-     
+      { $unwind: { path: "$job", preserveNullAndEmptyArrays: true } },
+
       {
         $lookup: {
           from: "candidates",
@@ -307,7 +350,7 @@ const getAllApplicants = async (req: Request, res: Response, next: NextFunction)
           as: "candidate",
         },
       },
-      { $unwind:{path: "$candidate",preserveNullAndEmptyArrays:true} },
+      { $unwind: { path: "$candidate", preserveNullAndEmptyArrays: true } },
       {
         $lookup: {
           from: "resumes",
@@ -324,12 +367,12 @@ const getAllApplicants = async (req: Request, res: Response, next: NextFunction)
           as: "resume",
         },
       },
-      { $unwind:{path: "$resume",preserveNullAndEmptyArrays:true} },
+      { $unwind: { path: "$resume", preserveNullAndEmptyArrays: true } },
       {
         $match: {
-            ...matchQueries
-        }
-    },     
+          ...matchQueries,
+        },
+      },
       {
         $facet: {
           total: [{ $count: "count" }],
@@ -355,50 +398,59 @@ const getAllApplicants = async (req: Request, res: Response, next: NextFunction)
     next(error);
   }
 };
-const getAllShortlistApplicants = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+const getAllShortlistApplicants = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
   try {
-    const userId = res.locals.userId as Types.ObjectId
-    const { page, limit,status, createdAt,...queries } = req.query;
+    const userId = res.locals.userId as Types.ObjectId;
+    const { page, limit, status, createdAt, ...queries } = req.query;
 
     const checkEmployer = await SubEmployer.findOne({ userId: userId });
     if (!checkEmployer) {
-        throw new AppError(`Failed to find an employer`, 400);
+      throw new AppError(`Failed to find an employer`, 400);
     }
 
     const pageOptions = {
-        page: parseInt(page as string, 0) || 1,
-        limit: parseInt(limit as string, 0) || 10
+      page: parseInt(page as string, 0) || 1,
+      limit: parseInt(limit as string, 0) || 10,
     };
 
     const matchQueriesupper: Record<string, any> = {
       employer: checkEmployer.parentEmployerId,
-      status:"shortlisted"
+      status: "shortlisted",
     };
     const matchQueries: Record<string, any> = {};
-    const createRegex = (value: string) => new RegExp(`.*${value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}.*`, "gi");
+    const createRegex = (value: string) =>
+      new RegExp(`.*${value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}.*`, "gi");
     // Handle date filter
-            if (createdAt) {
-              let startDate=postedatesCondition(createdAt  as string )
-              if (startDate) {
-                matchQueriesupper['createdAt'] = { $gte: startDate };
-              }   
-            } 
-            
-    for (const [key, value] of Object.entries(queries)) {
-            if (typeof value === 'string' && value !== '' && !['createdAt', 'status',"name" ].includes(key)) {
-              matchQueries[key] = createRegex(value)
-          };
-        if (typeof value === 'string' && value !== '') {
-            if (key === 'name') {
-                matchQueries['candidate.name'] = createRegex(value);
-            } 
-        }
+    if (createdAt) {
+      let startDate = postedatesCondition(createdAt as string);
+      if (startDate) {
+        matchQueriesupper["createdAt"] = { $gte: startDate };
+      }
     }
- console.log({matchQueries,matchQueriesupper})
+
+    for (const [key, value] of Object.entries(queries)) {
+      if (
+        typeof value === "string" &&
+        value !== "" &&
+        !["createdAt", "status", "name"].includes(key)
+      ) {
+        matchQueries[key] = createRegex(value);
+      }
+      if (typeof value === "string" && value !== "") {
+        if (key === "name") {
+          matchQueries["candidate.name"] = createRegex(value);
+        }
+      }
+    }
+    console.log({ matchQueries, matchQueriesupper });
     const results = await Application.aggregate([
       {
-        $match: matchQueriesupper
-    },
+        $match: matchQueriesupper,
+      },
       {
         $lookup: {
           from: "jobs",
@@ -415,8 +467,8 @@ const getAllShortlistApplicants = async (req: Request, res: Response, next: Next
           as: "job",
         },
       },
-      { $unwind:{ path:"$job",preserveNullAndEmptyArrays:true} },
-     
+      { $unwind: { path: "$job", preserveNullAndEmptyArrays: true } },
+
       {
         $lookup: {
           from: "candidates",
@@ -433,7 +485,7 @@ const getAllShortlistApplicants = async (req: Request, res: Response, next: Next
           as: "candidate",
         },
       },
-      { $unwind:{path: "$candidate",preserveNullAndEmptyArrays:true} },
+      { $unwind: { path: "$candidate", preserveNullAndEmptyArrays: true } },
       {
         $lookup: {
           from: "resumes",
@@ -450,12 +502,12 @@ const getAllShortlistApplicants = async (req: Request, res: Response, next: Next
           as: "resume",
         },
       },
-      { $unwind:{path: "$resume",preserveNullAndEmptyArrays:true} },
+      { $unwind: { path: "$resume", preserveNullAndEmptyArrays: true } },
       {
         $match: {
-            ...matchQueries
-        }
-    },     
+          ...matchQueries,
+        },
+      },
       {
         $facet: {
           total: [{ $count: "count" }],
@@ -482,9 +534,13 @@ const getAllShortlistApplicants = async (req: Request, res: Response, next: Next
   }
 };
 
-const getApplicants = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+const getApplicants = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
   try {
-    const userId = res.locals.userId as Types.ObjectId
+    const userId = res.locals.userId as Types.ObjectId;
     // const jobId = res.query.jobId as Types.ObjectId
     let {
       page = 1,
@@ -494,9 +550,9 @@ const getApplicants = async (req: Request, res: Response, next: NextFunction): P
       todate = "" as any,
       islatest = "" as any,
     } = req.query;
-      let jobId=req.params.id as any
+    let jobId = req.params.id as any;
     // Manually cast jobId to ObjectId if it's a valid ID
-     jobId = jobId ? new Types.ObjectId(jobId) : jobId
+    jobId = jobId ? new Types.ObjectId(jobId) : jobId;
     islatest = islatest ? -1 : 1;
     const options = {
       page: parseInt(page as string, 10) || 1,
@@ -505,7 +561,7 @@ const getApplicants = async (req: Request, res: Response, next: NextFunction): P
 
     const applicationMatchStage: any = {
       // "employer": userId,
-       job:jobId
+      job: jobId,
     };
     if (status) {
       applicationMatchStage["status"] = status;
@@ -520,7 +576,6 @@ const getApplicants = async (req: Request, res: Response, next: NextFunction): P
       };
     }
     const results = await Application.aggregate([
-      
       // {
       //   $lookup: {
       //     from: "jobs",
@@ -555,7 +610,7 @@ const getApplicants = async (req: Request, res: Response, next: NextFunction): P
           as: "candidate",
         },
       },
-      { $unwind: {path:"$candidate",preserveNullAndEmptyArrays:true} },
+      { $unwind: { path: "$candidate", preserveNullAndEmptyArrays: true } },
       {
         $lookup: {
           from: "resumes",
@@ -572,7 +627,7 @@ const getApplicants = async (req: Request, res: Response, next: NextFunction): P
           as: "resume",
         },
       },
-      { $unwind:{path: "$resume",preserveNullAndEmptyArrays:true} },
+      { $unwind: { path: "$resume", preserveNullAndEmptyArrays: true } },
       { $match: applicationMatchStage },
       {
         $facet: {
@@ -585,61 +640,57 @@ const getApplicants = async (req: Request, res: Response, next: NextFunction): P
       },
     ]);
     const stats = await Application.aggregate([
-     
-     
-      { $match: {job:jobId} },
+      { $match: { job: jobId } },
       {
         $facet: {
           totals: [
             {
-              $match:{status:"pending"}
+              $match: { status: "pending" },
             },
             {
-              $group:{
-                _id:null,
-               total:{$sum:1}
-              }
+              $group: {
+                _id: null,
+                total: { $sum: 1 },
+              },
             },
-            { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } }
+            { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } },
           ],
           approved: [
             {
-              $match:{status:"shortlisted"}
+              $match: { status: "shortlisted" },
             },
             {
-              $group:{
-                _id:null,
-                total:{$sum:1}
-              }
+              $group: {
+                _id: null,
+                total: { $sum: 1 },
+              },
             },
-            { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } }
+            { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } },
           ],
           rejected: [
             {
-              $match:{status:"rejected"}
+              $match: { status: "rejected" },
             },
             {
-              $group:{
-                _id:null,
-                total:{$sum:1}
-              }
+              $group: {
+                _id: null,
+                total: { $sum: 1 },
+              },
             },
-            { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } }
+            { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } },
           ],
         },
       },
-      { $unwind: {path:"$totals",preserveNullAndEmptyArrays:true} },
-      { $unwind: {path:"$approved",preserveNullAndEmptyArrays:true} },
-      { $unwind: {path:"$rejected",preserveNullAndEmptyArrays:true} },
-
-
+      { $unwind: { path: "$totals", preserveNullAndEmptyArrays: true } },
+      { $unwind: { path: "$approved", preserveNullAndEmptyArrays: true } },
+      { $unwind: { path: "$rejected", preserveNullAndEmptyArrays: true } },
     ]);
     const application = results[0]?.application || [];
     const totalApplications: number = results[0]?.total[0]?.count || 0;
 
     res.status(200).json({
       data: application,
-      stats:stats[0],
+      stats: stats[0],
       currentPage: options.page,
       totalPages: Math.ceil(totalApplications / options.limit),
       count: totalApplications,
@@ -651,10 +702,16 @@ const getApplicants = async (req: Request, res: Response, next: NextFunction): P
   }
 };
 
-const updateStatus = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+const updateStatus = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
   try {
     let { status }: { status: string } = req.body;
-    const applicationId: Types.ObjectId = new mongoose.Types.ObjectId(req.params.id);
+    const applicationId: Types.ObjectId = new mongoose.Types.ObjectId(
+      req.params.id
+    );
 
     if (!status) {
       res.status(400).json({
@@ -699,7 +756,9 @@ const updateStatus = async (req: Request, res: Response, next: NextFunction): Pr
     // }
 
     res.status(200).json({
-      message: `Apllicant  ${status.charAt(0).toUpperCase() +status.slice(1)} successfully.`,
+      message: `Apllicant  ${
+        status.charAt(0).toUpperCase() + status.slice(1)
+      } successfully.`,
       success: true,
     });
   } catch (error) {
@@ -707,14 +766,20 @@ const updateStatus = async (req: Request, res: Response, next: NextFunction): Pr
     next(error);
   }
 };
-const deleteapplication = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+const deleteapplication = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
   const session = await mongoose.startSession();
-   session.startTransaction();
-    try {
-    const applicationId: Types.ObjectId = new mongoose.Types.ObjectId(req.params.applicationId);
+  session.startTransaction();
+  try {
+    const applicationId: Types.ObjectId = new mongoose.Types.ObjectId(
+      req.params.applicationId
+    );
     const jobId: Types.ObjectId = new mongoose.Types.ObjectId(req.params.jobId);
-    const result = await Application.findById(applicationId).session(session)
-    const jobresult = await Job.findById(jobId).session(session)
+    const result = await Application.findById(applicationId).session(session);
+    const jobresult = await Job.findById(jobId).session(session);
 
     if (!result) {
       res.status(400).json({
@@ -731,8 +796,10 @@ const deleteapplication = async (req: Request, res: Response, next: NextFunction
       return;
     }
 
-    await Application.findByIdAndDelete(applicationId).session(session)
-    await Job.findByIdAndUpdate(jobId,{$pull:{applications:applicationId}}).session(session)
+    await Application.findByIdAndDelete(applicationId).session(session);
+    await Job.findByIdAndUpdate(jobId, {
+      $pull: { applications: applicationId },
+    }).session(session);
     await session.commitTransaction();
     session.endSession();
     res.status(200).json({
@@ -746,27 +813,30 @@ const deleteapplication = async (req: Request, res: Response, next: NextFunction
     next(error);
   }
 };
-const getEmployerJobNamesOnly = async (req: Request, res: Response, next: NextFunction) => {
+const getEmployerJobNamesOnly = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
+    const userId = new Types.ObjectId(res.locals.userId);
+    const checkEmployer = await Employer.findOne({ userId });
+    if (!checkEmployer) {
+      throw new AppError("Failed to find employer", 400);
+    }
 
-      const userId = new Types.ObjectId(res.locals.userId);
-      const checkEmployer = await Employer.findOne({ userId });
-      if (!checkEmployer) {
-          throw new AppError('Failed to find employer', 400)
-      };
-
-      const jobs = await Application.aggregate([
-          {
-              $match: {
-                  employer: checkEmployer._id
-              }
-          },
-          {
-            $group:{
-              _id:"$job",
-            }
-          },
-            {
+    const jobs = await Application.aggregate([
+      {
+        $match: {
+          employer: checkEmployer._id,
+        },
+      },
+      {
+        $group: {
+          _id: "$job",
+        },
+      },
+      {
         $lookup: {
           from: "jobs",
           let: { jobId: "$_id" },
@@ -780,38 +850,39 @@ const getEmployerJobNamesOnly = async (req: Request, res: Response, next: NextFu
             },
             {
               $project: {
-                  title: 1
-              }
-          }
+                title: 1,
+              },
+            },
           ],
           as: "job",
         },
-        
       },
-      { $unwind:{path: "$job",preserveNullAndEmptyArrays:true} },
+      { $unwind: { path: "$job", preserveNullAndEmptyArrays: true } },
       {
         $project: {
-            "job": 1
-        }
-    }
-         
-      ]);
+          job: 1,
+        },
+      },
+    ]);
 
-      res.status(200).json({
-          success: true,
-          message: 'Candidate fetched!',
-          data: jobs
-      })
-
+    res.status(200).json({
+      success: true,
+      message: "Candidate fetched!",
+      data: jobs,
+    });
   } catch (error) {
-      console.log(error)
-      next(error)
+    console.log(error);
+    next(error);
   }
-}
+};
 export {
   applyJob,
-  getAppliedJobs,WIdrawJob,
+  getAppliedJobs,
+  WIdrawJob,
   getApplicants,
-  updateStatus,deleteapplication,
-  getAllApplicants,getEmployerJobNamesOnly,getAllShortlistApplicants
+  updateStatus,
+  deleteapplication,
+  getAllApplicants,
+  getEmployerJobNamesOnly,
+  getAllShortlistApplicants,
 };

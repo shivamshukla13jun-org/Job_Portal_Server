@@ -66,6 +66,12 @@ const candidateSchema = Yup.object().shape({
     profile: Yup.mixed().required('Profile upload is required'),
     // registration_certificate: Yup.mixed().required('Registration certificate is required'),
 });
+const contactusSchema = Yup.object({
+    username: Yup.string().required('Name is required'),
+    email: Yup.string().email('Invalid email address').required('Email is required'),
+    subject: Yup.string().required('Subject is required'),
+    message: Yup.string().required('Message is required'),
+  });
 
 
 const validateCandidateApi = async (req: Request, res: Response, next: NextFunction) => {
@@ -95,7 +101,7 @@ const validateCandidate = async (payload: ICandidate) => {
 };
 const validateCantactUs = async (payload: IContactUs) => {
     try {
-        await candidateSchema.validate(payload, { abortEarly: true });
+        await contactusSchema.validate(payload, { abortEarly: true });
         return true;
     } catch (error) {
         if (error instanceof Yup.ValidationError) {
