@@ -11,6 +11,7 @@ import { validateMeeting } from '@/validations/subemployer';
 import path from 'path';
 import ejs from "ejs"
 import ForwardedCV from '@/models/portal/Forwarwardedcv.model';
+import Meeting from '@/models/portal/CreateMeetingLink.model';
 
 class SubEmployerController {
     async  createSubEmployer(req: Request, res: Response, next: NextFunction) {
@@ -53,6 +54,7 @@ class SubEmployerController {
                 phone,
                 userType: userType._id,
                 user_otp: activationOTP,
+                createdBy: res.locals.userId,
                 parentEmployerId: parentEmployer._id,
             });
     
@@ -194,47 +196,54 @@ class SubEmployerController {
         }
     }
     async CreateMeetingLink(req: Request, res: Response, next: NextFunction) {
+        const session = await mongoose.startSession();
+        session.startTransaction();
         try {
-            const { date, time, timeDuration, email, phone, message, meetingLink } = req.body;
-    
+            const { email,  } = req.body;
+
             // Validate the data
-            const check = await validateMeeting(req.body);
-            if (!check) {
-                return;
+            const isValid = await validateMeeting(req.body);
+            if (!isValid) {
+              throw new AppError('Invalid meeting data' ,400);
             }
     
             // Generate a meeting link if not provided
-            const generatedLink = meetingLink;
+            // Save to the database
+            const newMeeting = new Meeting({...req.body,createdBy:res.locals.userId});
     
-            // Save to the database (mocked with an in-memory object)
-            const newMeeting = {
-                date,
-                time,
-                timeDuration,
-                email,
-                phone,
-                message,
-                meetingLink: generatedLink,
-            };
-    
-            console.log('Meeting Created:', newMeeting);
+            await newMeeting.save({session});
     
             // Render the EJS template
-            const templatePath = path.join(process.cwd(), 'views','meeting-email.ejs');
-            const emailContent = await ejs.renderFile(templatePath, {
-                date,
-                time,
-                timeDuration,
-                message,
-                meetingLink: generatedLink,
-            });
+            const templatePath = path.join(process.cwd(), 'views', 'meeting-email.ejs');
+            const emailContent = await ejs.renderFile(templatePath, req.body);
     
             // Send email
              sendEmail({
                 email,
                 subject: 'Your Meeting Details',
-                html: emailContent,
+                html: emailContent as string,
             });
+            await session.commitTransaction();
+            await session.endSession();
+            // Respond with the created meeting details
+            return res.status(201).json({
+                message: 'Meeting scheduled successfully',
+                data: newMeeting,
+            });
+        } catch (error) {
+            await session.abortTransaction();
+            await session.endSession();
+            next(error);
+        } finally {
+            await session.endSession();
+        }
+    }
+    async MeetingLinklists(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { createdBy,  } = req.query;
+            // Save to the database
+            const newMeeting = await  Meeting.find({createdBy:createdBy});
+
     
             // Respond with the created meeting details
             return res.status(201).json({
@@ -243,7 +252,7 @@ class SubEmployerController {
             });
         } catch (error) {
             next(error);
-        }
+        } 
     }
     async getForwardedCVs(req: Request, res: Response, next: NextFunction) {
         try {
@@ -267,7 +276,7 @@ class SubEmployerController {
     }
     async deleteSubEmployer(req: Request, res: Response, next: NextFunction) {
         const session = await mongoose.startSession();
-        session.startTransaction();
+        await session.startTransaction();
         try {
             const subEmployerId = req.params.id;
     

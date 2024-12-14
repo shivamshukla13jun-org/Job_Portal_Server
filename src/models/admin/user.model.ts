@@ -18,6 +18,7 @@ export interface IUser extends Document {
   employerId?: Types.ObjectId;
   parentEmployerId?: Types.ObjectId;
   subEmployerId?: Types.ObjectId;
+  createdBy?: Types.ObjectId;
   // jobs?: IJobStatus[];
   // shortListedJobs?: IJobStatus[];
   // rejectedJobs?: IJobStatus[];
@@ -92,6 +93,10 @@ const userSchema = new Schema<IUser>({
   isActive: {
     type: Boolean,
     default: true
+},
+createdBy: {
+  type: Schema.Types.ObjectId,
+  ref: 'User',
 },
   user_verified: {
     type: Boolean,

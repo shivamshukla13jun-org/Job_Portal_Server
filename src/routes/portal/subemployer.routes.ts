@@ -14,7 +14,7 @@ router.route("/").post(
     SubEmployerController.getSubEmployers
 );
 router.route('/shortlistcvs').get( verifyUserTypeToken(["subemployer"]),SubEmployerController.getForwardedCVs);
-router.route('/meetings').post( verifyUserTypeToken(["subemployer"]),SubEmployerController.CreateMeetingLink);
+router.route('/meetings').get( verifyUserTypeToken(["subemployer"]),SubEmployerController.MeetingLinklists).post( verifyUserTypeToken(["subemployer"]),SubEmployerController.CreateMeetingLink);
 router.route('/activate/:id').put( verifyUserTypeToken(["employer"]),SubEmployerController.ActivateDeactivate);
 // Update sub-employer
 router.route("/:id")

@@ -43,9 +43,9 @@ router.route("/")
     );
 
 router.route("/:id")
-    .get(verifyUserTypeToken(["employer","admin"]), getEmployer)
+    .get(verifyUserTypeToken(["employer","admin","subemployer"]), getEmployer)
     .put(
-        verifyUserTypeToken(["employer","admin"]),
+        verifyUserTypeToken(["employer","admin","subemployer"]),
         upload.fields([
             { name: 'logo', maxCount: 1 },
             { name: 'videos[]', maxCount: 5 },
