@@ -254,6 +254,25 @@ class SubEmployerController {
             next(error);
         } 
     }
+    async deleteMeetingLink(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { id,  } = req.params;
+            if(!id){
+                throw new AppError("Id is Required",400)
+            }
+            // Save to the database
+            const newMeeting = await  Meeting.deleteOne({_id:id});
+
+    
+            // Respond with the created meeting details
+            return res.status(201).json({
+                message: 'Meeting deleted successfully',
+                data: newMeeting,
+            });
+        } catch (error) {
+            next(error);
+        } 
+    }
     async getForwardedCVs(req: Request, res: Response, next: NextFunction) {
         try {
             const SubEmployerdata = await SubEmployer.findOne({ userId: res.locals.userId });
