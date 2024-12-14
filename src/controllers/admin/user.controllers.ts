@@ -132,7 +132,9 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
         message: "User not verified yet!",
       });
     }
-
+    if(!checkUser.isActive){
+      throw new AppError("Account is Deactivate by owner!", 400);
+    }
     if (checkUser.isBlocked) {
       throw new AppError("User blocked by owner!", 400);
     }
@@ -518,14 +520,7 @@ const resetUser = async (req: Request, res: Response, next: NextFunction) => {
        user.toObject();
  
      const token = generateToken(user);
-     res
-       .status(200)
-       .json({
-         success: true,
-         data: userData,
-         message: "Login successful",
-         token,
-       });
+     res .status(200) .json({ success: true, data: userData, message: "Login successful", token, });
        await user.save()
 
     }

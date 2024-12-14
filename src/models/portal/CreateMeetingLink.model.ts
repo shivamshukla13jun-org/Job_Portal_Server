@@ -15,11 +15,6 @@ export interface IMeeting extends Document {
 
 // Define the Meeting schema
 const MeetingSchema: Schema = new Schema({
-    userId: {
-        type: Schema.Types.ObjectId,
-        ref: 'User',
-        required: [true, 'User ID is required']
-    },
     date: { type: String, required: true },
     time: { type: String, required: true },
     timeDuration: { type: String, required: true },
