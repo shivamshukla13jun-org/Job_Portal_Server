@@ -15,5 +15,4 @@ router.route('/').post(createAdmin).get(getAdmins);
 router.route('/:id').put(updateAdmin).delete(deleteAdmin);
 router.post('/login', loginUser);
 
-export default router;
-dashboard
+export default router

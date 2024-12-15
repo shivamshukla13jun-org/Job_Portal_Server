@@ -7,7 +7,7 @@ import Job from '@/models/portal/job.model';
 import { JobportalPlan } from '@/models/portal/plan.model';
 import { postedatesCondition } from '@/utils/postedadate';
 import { NextFunction, Request, Response } from 'express';
-import mongoose, { Types } from 'mongoose';
+import mongoose, { Types ,PipelineStage} from 'mongoose';
 
 interface ListQueryParams {
   page?: number;
@@ -30,7 +30,7 @@ interface PaginatedResult {
   success: boolean;
 }
 
-export const getAllLocations = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const getAllLocations = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const page: number = parseInt(req.query.page as string) || 1;
     const limit: number = parseInt(req.query.limit as string) || 10;
@@ -73,7 +73,8 @@ export const getAllLocations = async (req: Request, res: Response, next: NextFun
     next(error);
   }
 };
-export const loginUser = async (req: Request, res: Response) => {
+export const loginUser = async (req: Request, res: Response,next:NextFunction) => {
+try {
   const { email, password } = req.body;
 
   const user = await Admin.findOne({ email });
@@ -93,8 +94,10 @@ export const loginUser = async (req: Request, res: Response) => {
   } else {
     throw new AppError('Invalid email or password',401);
   }
+} catch (error) {
+  next(error)
 }
-import { PipelineStage } from 'mongoose';
+}
 
 export const dashboard= (
   matchQueries: any,
@@ -812,10 +815,81 @@ export const getJobNamesOnly = async (req: Request, res: Response, next: NextFun
       next(error)
   }
 }
-const EmployerDashboard = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+
+
+// Create Admin
+export const createAdmin = async (req: Request, res: Response,next: NextFunction) => {
   try {
-      
-     
+    const { name, email, password } = req.body;
+  
+    const adminExists = await Admin.findOne({ email });
+    if (adminExists) {
+  
+      throw new AppError('Admin already exists',400);
+    }
+  
+    const admin = await Admin.create({ name, email, password });
+    res.status(201).json({ message: 'Admin created successfully', admin });
+    
+  } catch (error) {
+    next(error)
+  }
+}
+
+// Get All Admins
+export const getAdmins = async (req: Request, res: Response,next: NextFunction) => {
+  try {
+    const admins = await Admin.find({});
+    res.json(admins);
+    
+  } catch (error) {
+    next(error)
+  }
+}
+
+// Update Admin
+export const updateAdmin = async (req: Request, res: Response,next: NextFunction) => {
+  try {
+    const { id } = req.params;
+    const admin = await Admin.findById(id);
+  
+    if (!admin) {
+      throw new AppError('Admin not found',404);
+    }
+  
+    admin.name = req.body.name || admin.name;
+    admin.email = req.body.email || admin.email;
+  
+    if (req.body.password) {
+      admin.password = req.body.password;
+    }
+  
+    const updatedAdmin = await admin.save();
+    res.json({ message: 'Admin updated successfully', updatedAdmin });
+  } catch (error) {
+    next(error)
+  }
+}
+
+// Delete Admin
+export const deleteAdmin = async (req: Request, res: Response,next: NextFunction) => {
+ try {
+  const { id } = req.params;
+  const admin = await Admin.findById(id);
+
+  if (!admin) {
+    res.status(404);
+    throw new AppError('Admin not found',404);
+  }
+
+  await Admin.deleteOne({_id:id})
+  res.json({ message: 'Admin deleted successfully' });
+ } catch (error) {
+  next(error)
+ }
+};
+const EmployerDashboard = async (req: Request, res: Response, next: NextFunction)=> {
+  try {
       const today: Date = new Date();
       const lastYear: Date = new Date(today.setFullYear(today.getFullYear() - 1));
       const monthsArray: string[] = [
@@ -974,62 +1048,3 @@ const EmployerDashboard = async (req: Request, res: Response, next: NextFunction
       next(error);
   }
 }
-
-// Create Admin
-export const createAdmin = async (req: Request, res: Response) => {
-  const { name, email, password } = req.body;
-
-  const adminExists = await Admin.findOne({ email });
-  if (adminExists) {
-
-    throw new AppError('Admin already exists',400);
-  }
-
-  const admin = await Admin.create({ name, email, password });
-  res.status(201).json({ message: 'Admin created successfully', admin });
-}
-
-// Get All Admins
-export const getAdmins = async (req: Request, res: Response) => {
-  const admins = await Admin.find({});
-  res.json(admins);
-}
-
-// Update Admin
-export const updateAdmin = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const admin = await Admin.findById(id);
-
-  if (!admin) {
-    throw new AppError('Admin not found',404);
-  }
-
-  admin.name = req.body.name || admin.name;
-  admin.email = req.body.email || admin.email;
-
-  if (req.body.password) {
-    admin.password = req.body.password;
-  }
-
-  const updatedAdmin = await admin.save();
-  res.json({ message: 'Admin updated successfully', updatedAdmin });
-}
-
-// Delete Admin
-export const deleteAdmin = async (req: Request, res: Response) => {
- try {
-  const { id } = req.params;
-  const admin = await Admin.findById(id);
-
-  if (!admin) {
-    res.status(404);
-    throw new AppError('Admin not found',404);
-  }
-
-  await Admin.deleteOne({_id:id})
-  res.json({ message: 'Admin deleted successfully' });
- } catch (error) {
-  
- }
-};
-export default listUsers
