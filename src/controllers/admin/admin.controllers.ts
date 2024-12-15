@@ -3,8 +3,11 @@ import { AppError } from '@/middlewares/error';
 import Admin from '@/models/admin/admin.model';
 import User from '@/models/admin/user.model';
 import { Application } from '@/models/candidate/application.model';
+import Candidate from '@/models/portal/candidate.model';
+import Employer from '@/models/portal/employer.model';
 import Job from '@/models/portal/job.model';
 import { JobportalPlan } from '@/models/portal/plan.model';
+import SubEmployer from '@/models/portal/SubEmployer.model';
 import { postedatesCondition } from '@/utils/postedadate';
 import { NextFunction, Request, Response } from 'express';
 import mongoose, { Types ,PipelineStage} from 'mongoose';
@@ -198,152 +201,94 @@ export const dashboard= (
   ];
 };
 
-export const listUsers = async (req: Request, res: Response,next:NextFunction) => {
+export const listUsers = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { 
-      page = 1, 
-      limit = 10, 
-      search = '', 
-      userType,
+    const {
+      page = 1,
+      limit = 10,
+      search = '',
       sortBy = 'createdAt',
       sortOrder = 'desc',
-      fromdate,todate
+      fromdate,
+      todate,
     } = req.query as ListQueryParams;
 
-    // Parse page and limit, ensure they are numbers
     const pageNumber = Math.max(1, Number(page));
     const limitNumber = Math.max(1, Number(limit));
     const skip = (pageNumber - 1) * limitNumber;
+
     const matchQueries: Record<string, any> = {};
     const searchMatch: Record<string, any> = {};
-    const userTypeMatch: Record<string, any> = {};
-    const createRegex = (value: string) => new RegExp(`.*${value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}.*`, "gi");
-     // Handle date filter
-    // Prepare search match stage
-    if(search){
-      searchMatch["$or"]=[
-        { name: { $regex: search, $options: 'i' } },
-        { email: { $regex: search, $options: 'i' } }
-      ]
-    }
-    if(userType){
-      userTypeMatch['userType.name']= userType
-    }
-    if (fromdate || todate) {
-      matchQueries["createdAt"]={}
 
-  }
+    if (search) {
+      searchMatch['$or'] = [
+        { name: { $regex: search, $options: 'i' } },
+        { email: { $regex: search, $options: 'i' } },
+      ];
+    }
+
+    
+
+    if (fromdate || todate) {
+      matchQueries['createdAt'] = {};
+    }
     if (fromdate) {
-        matchQueries["createdAt"] ["$gte"]=  new Date(fromdate)
+      matchQueries['createdAt']['$gte'] = new Date(fromdate);
     }
-       if (todate) {
-        matchQueries["createdAt"] ["$lte"]=  new Date(todate)
+    if (todate) {
+      matchQueries['createdAt']['$lte'] = new Date(todate);
     }
-    // Prepare sort stage
+
     const sortStage = {
-      [sortBy]: sortOrder === 'asc' ? 1 : -1
+      [sortBy]: sortOrder === 'asc' ? 1 : -1,
     };
 
-    // Aggregation pipeline
     const aggregationPipeline: any[] = [
-      {$match:matchQueries},
-      // Join with UserType
-      {
-        $lookup: {
-          from: 'usertypes',
-          localField: 'userType',
-          foreignField: '_id',
-          as: 'userType'
-        }
-      },
-      { $unwind: '$userType' },
-
-      // Join with additional collections based on user type
-      {
-        $lookup: {
-          from: 'candidates',
-          localField: '_id',
-          foreignField: 'userId',
-          as: 'candidateDetails'
-        }
-      },
-      {
-        $lookup: {
-          from: 'employers',
-          localField: '_id',
-          foreignField: 'userId',
-          as: 'employerDetails'
-        }
-      },
-      {
-        $lookup: {
-          from: 'subemployers',
-          localField: '_id',
-          foreignField: 'userId',
-          as: 'subEmployerDetails'
-        }
-      },
-      { $unwind: { path: '$candidateDetails', preserveNullAndEmptyArrays: true } },
-      { $unwind: { path: '$employerDetails', preserveNullAndEmptyArrays: true } },
-      { $unwind: { path: '$subEmployerDetails', preserveNullAndEmptyArrays: true } },
-
-      // Match stages
+      { $match: matchQueries },
       { $match: searchMatch },
-      { $match: userTypeMatch },
-
-      // Project to control output fields
       {
-        $project: {
-          _id: 1,
-          email: 1,
-          password:1,
-          candidateDetails: {
-            $cond: {
-              if: { $eq: ['$userType.name', 'Candidate'] },
-              then: '$candidateDetails',
-              else: '$$REMOVE'
-            }
-          },
-          employerDetails: {
-            $cond: {
-              if: { $eq: ['$userType.name', 'Employer'] },
-              then: '$employerDetails',
-              else: '$$REMOVE'
-            }
-          },
-          subEmployerDetails: {
-            $cond: {
-              if: { $eq: ['$userType.name', 'Subemployer'] },
-              then: '$subEmployerDetails',
-              else: '$$REMOVE'
-            }
-          },
-          userType: '$userType.name',
-          isActive: 1,
-          isBlocked: 1,
-          createdAt: 1,
-         
+        $lookup: {
+          from: 'applications',
+          localField: 'userId',
+          foreignField: 'candidate',
+          as: 'applicationsSubmitted',
+        },
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'userId',
+          foreignField: '_id',
+          as: 'user',
+        },
+      },
+      { $unwind:{ path:"$user",preserveNullAndEmptyArrays:true} },
+      {
+        $addFields:{
+          totalApplicationsSubmitted: { $size: '$applicationsSubmitted' },
         }
       },
-
-      // Sort stage
-      { $sort: sortStage }
+      // {
+      //   $project:{
+      //     "user.email":1,"user.isActive":1
+      //   }
+      // }
     ];
 
-    // Prepare final aggregation with pagination
+
     const [results, totalCount] = await Promise.all([
-      User.aggregate([
+      Candidate.aggregate([
         ...aggregationPipeline,
+        { $sort: sortStage },
         { $skip: skip },
-        { $limit: limitNumber }
+        { $limit: limitNumber },
       ]),
-      User.aggregate([
+      Candidate.aggregate([
         ...aggregationPipeline,
-        { $count: 'total' }
-      ])
+        { $count: 'total' },
+      ]),
     ]);
-    
-    // Calculate total pages
+
     const total = totalCount[0]?.total || 0;
     const totalPages = Math.ceil(total / limitNumber);
 
@@ -353,13 +298,243 @@ export const listUsers = async (req: Request, res: Response,next:NextFunction) =
         currentPage: pageNumber,
         totalPages,
         totalUsers: total,
-        pageSize: limitNumber
-      }
+        pageSize: limitNumber,
+      },
     });
   } catch (error) {
     console.error('Error in listUsers:', error);
-    next(error)
+    next(error);
+  }
 };
+export const subemployers = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const {
+      page = 1,
+      limit = 10,
+      search = '',
+      sortBy = 'createdAt',
+      sortOrder = 'desc',
+      fromdate,
+      todate,
+    } = req.query as ListQueryParams;
+
+    const pageNumber = Math.max(1, Number(page));
+    const limitNumber = Math.max(1, Number(limit));
+    const skip = (pageNumber - 1) * limitNumber;
+
+    const matchQueries: Record<string, any> = {};
+    const searchMatch: Record<string, any> = {};
+
+    if (search) {
+      searchMatch['$or'] = [
+        { name: { $regex: search, $options: 'i' } },
+        { email: { $regex: search, $options: 'i' } },
+      ];
+    }
+
+    
+
+    if (fromdate || todate) {
+      matchQueries['createdAt'] = {};
+    }
+    if (fromdate) {
+      matchQueries['createdAt']['$gte'] = new Date(fromdate);
+    }
+    if (todate) {
+      matchQueries['createdAt']['$lte'] = new Date(todate);
+    }
+
+    const sortStage = {
+      [sortBy]: sortOrder === 'asc' ? 1 : -1,
+    };
+
+    const aggregationPipeline: any[] = [
+      { $match: matchQueries },
+      { $match: searchMatch },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'userId',
+          foreignField: '_id',
+          as: 'user',
+        },
+      },
+      { $unwind:{ path:"$user",preserveNullAndEmptyArrays:true} },
+     
+      // {
+      //   $project:{
+      //     "user.email":1,"user.isActive":1
+      //   }
+      // }
+    ];
+
+
+    const [results, totalCount] = await Promise.all([
+      SubEmployer.aggregate([
+        ...aggregationPipeline,
+        { $sort: sortStage },
+        { $skip: skip },
+        { $limit: limitNumber },
+      ]),
+      SubEmployer.aggregate([
+        ...aggregationPipeline,
+        { $count: 'total' },
+      ]),
+    ]);
+
+    const total = totalCount[0]?.total || 0;
+    const totalPages = Math.ceil(total / limitNumber);
+
+    res.status(200).json({
+      users: results,
+      pagination: {
+        currentPage: pageNumber,
+        totalPages,
+        totalUsers: total,
+        pageSize: limitNumber,
+      },
+    });
+  } catch (error) {
+    console.error('Error in listUsers:', error);
+    next(error);
+  }
+};
+export const Employers = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const {
+      page = 1,
+      limit = 10,
+      search = '',
+      sortBy = 'createdAt',
+      sortOrder = 'desc',
+      fromdate,
+      todate,
+    } = req.query as ListQueryParams;
+
+    const pageNumber = Math.max(1, Number(page));
+    const limitNumber = Math.max(1, Number(limit));
+    const skip = (pageNumber - 1) * limitNumber;
+
+    const matchQueries: Record<string, any> = {};
+    const searchMatch: Record<string, any> = {};
+
+    if (search) {
+      searchMatch['$or'] = [
+        { name: { $regex: search, $options: 'i' } },
+        { email: { $regex: search, $options: 'i' } },
+      ];
+    }
+
+  
+    if (fromdate || todate) {
+      matchQueries['createdAt'] = {};
+    }
+    if (fromdate) {
+      matchQueries['createdAt']['$gte'] = new Date(fromdate);
+    }
+    if (todate) {
+      matchQueries['createdAt']['$lte'] = new Date(todate);
+    }
+
+    const sortStage = {
+      [sortBy]: sortOrder === 'asc' ? 1 : -1,
+    };
+
+    const aggregationPipeline: any[] = [
+      { $match: matchQueries },
+      { $match: searchMatch },
+      {
+        $lookup: {
+          from: 'jobs',
+          localField: '_id',
+          foreignField: 'employerId',
+          as: 'jobsPosted',
+        },
+      },
+     
+      {
+        $lookup: {
+          from: 'applications',
+          localField: 'jobsPosted._id',
+          foreignField: 'job',
+          as: 'applicationsReceived',
+        },
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'userId',
+          foreignField: '_id',
+          as: 'user',
+        },
+      },
+      { $unwind:{ path:"$user",preserveNullAndEmptyArrays:true} },
+      {
+        $addFields:{
+          totalJobsPosted: { $size: '$jobsPosted' },
+          totalApplicationsReceived: { $size: '$applicationsReceived' },
+        }
+      },
+      {
+        $project:{
+          applicationsReceived:0,jobsPosted:0,
+          // "user.email":1,"user.isActive":1
+        }
+      }
+    ];
+    const [results, totalCount] = await Promise.all([
+      Employer.aggregate([
+        ...aggregationPipeline,
+        { $sort: sortStage },
+        { $skip: skip },
+        { $limit: limitNumber },
+      ]),
+      Employer.aggregate([
+        ...aggregationPipeline,
+        { $count: 'total' },
+      ]),
+    ]);
+
+    const total = totalCount[0]?.total || 0;
+    const totalPages = Math.ceil(total / limitNumber);
+
+    res.status(200).json({
+      users: results,
+      pagination: {
+        currentPage: pageNumber,
+        totalPages,
+        totalUsers: total,
+        pageSize: limitNumber,
+      },
+    });
+  } catch (error) {
+    console.error('Error in listUsers:', error);
+    next(error);
+  }
+};
+export const UpdateUser=async (req: Request, res: Response, next: NextFunction)=> {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  try {
+      const id = req.params.id;
+      // Step 3: Delete Associated User
+      await User.findByIdAndUpdate(id,req.body, { session });
+      // Commit the transaction
+      await session.commitTransaction();
+      await session.endSession();
+      res.status(200).json({
+          message: `Updated   successfully`,
+          success: true,
+      });
+  } catch (error) {
+      // Abort the transaction in case of any error
+      await session.abortTransaction();
+      await session.endSession();
+      next(error);
+  } finally {
+      // End the session
+      await session.endSession();
+  }
 }
 
 export const getUserDetails = async (req: Request, res: Response) => {
