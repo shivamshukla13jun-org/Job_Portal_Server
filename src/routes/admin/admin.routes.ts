@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createAdmin, deleteAdmin, UpdateUser,loginUser,getAdmins, getAllApplicants,getJobNamesOnly, getJobs, listUsers, planList, updateAdmin, getAllLocations, dashboard, Employers, subemployers } from "@/controllers/admin/admin.controllers";
+import { createAdmin, deleteAdmin, UpdateUser,loginUser,getAdmins,updateJob, getAllApplicants,getJobNamesOnly, getJobs, listUsers, planList, updateAdmin, getAllLocations, Employers, subemployers } from "@/controllers/admin/admin.controllers";
 import { deleteUser } from "@/controllers/admin/user.controllers";
 
 const router = Router();
@@ -13,6 +13,7 @@ router.route("/dashboard").get()
 router.route("/location").get(getAllLocations)
 router.route("/plan").get(planList)
 router.route("/jobs").get(getJobs)
+router.route("/jobs/:id").put(updateJob)
 router.route("/jobs/names").get(getJobNamesOnly)
 router.route("/applicantions").get(getAllApplicants)
 router.route('/').post(createAdmin).get(getAdmins);

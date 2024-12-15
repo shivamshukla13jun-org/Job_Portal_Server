@@ -536,6 +536,32 @@ export const UpdateUser=async (req: Request, res: Response, next: NextFunction)=
       await session.endSession();
   }
 }
+export const updateJob=async (req: Request, res: Response, next: NextFunction)=> {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  try {
+  
+      const job = await Job.findByIdAndUpdate(req.params.id, req.body, { new: true })
+      if (!job) {
+          throw new AppError('Failed to update job', 400)
+      }
+      // Commit the transaction
+      await session.commitTransaction();
+      await session.endSession();
+      res.status(200).json({
+          message: `Updated   successfully`,
+          success: true,
+      });
+  } catch (error) {
+      // Abort the transaction in case of any error
+      await session.abortTransaction();
+      await session.endSession();
+      next(error);
+  } finally {
+      // End the session
+      await session.endSession();
+  }
+}
 
 export const getUserDetails = async (req: Request, res: Response) => {
   try {
