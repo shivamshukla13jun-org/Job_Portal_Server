@@ -293,6 +293,26 @@ class SubEmployerController {
             next(error);
         }
     }
+    async deleteForwardedCVs(req: Request, res: Response, next: NextFunction) {
+        try {
+            const SubEmployerdata = await SubEmployer.findOne({ userId: res.locals.userId });
+            if(!SubEmployerdata){
+                throw new AppError("Employer not found", 400);
+            }
+            const data = await ForwardedCV.deleteOne({ _id: req.query.id })
+            if(!SubEmployerdata){
+                throw new AppError("Employer not found", 400);
+            }
+
+            // Respond with the created meeting details
+            return res.status(200).json({
+                message: 'CV deleted successfully',
+                data: data,
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
     async deleteSubEmployer(req: Request, res: Response, next: NextFunction) {
         const session = await mongoose.startSession();
         await session.startTransaction();

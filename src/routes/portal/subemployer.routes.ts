@@ -13,7 +13,8 @@ router.route("/").post(
     verifyUserTypeToken(["employer","admin"]), 
     SubEmployerController.getSubEmployers
 );
-router.route('/shortlistcvs').get( verifyUserTypeToken(["subemployer"]),SubEmployerController.getForwardedCVs);
+router.route('/shortlistcvs').get( verifyUserTypeToken(["subemployer"]),SubEmployerController.getForwardedCVs)
+.delete( verifyUserTypeToken(["subemployer"]),SubEmployerController.deleteForwardedCVs)
 router.route('/meetings').get( verifyUserTypeToken(["subemployer"]),SubEmployerController.MeetingLinklists).post( verifyUserTypeToken(["subemployer"]),SubEmployerController.CreateMeetingLink)
 
 router.route('/meetings/:id').delete(verifyUserTypeToken(["subemployer"]),SubEmployerController.deleteMeetingLink)
