@@ -21,7 +21,7 @@ phone: yup
     .matches(/^[0-9]{10,15}$/, 'Phone must be a valid number')
     .required('Phone is required'),
 message: yup.string(),
-meetingLink: yup.string().url('Meeting link must be a valid URL').required('Meeting link is required'),
+meetingLink: yup.string().url('Meeting link must be a valid URL').notRequired(),
     // registration_certificate: Yup.mixed().required('Registration certificate is required'),
 });
 const validateMeeting = async (payload:object) => {
