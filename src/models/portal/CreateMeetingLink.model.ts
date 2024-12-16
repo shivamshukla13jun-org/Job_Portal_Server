@@ -22,6 +22,7 @@ const MeetingSchema: Schema = new Schema({
     phone: { type: String, required: true },
     message: { type: String, required: false },
     meetingLink: { type: String, default:"" },
+    address: { type: String, default:"" },
     createdBy: {
         type: Schema.Types.ObjectId,
         ref: 'User',
