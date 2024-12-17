@@ -22,6 +22,7 @@ import { date } from "yup";
 import SubEmployer from "@/models/portal/SubEmployer.model";
 import path from "path";
 import ejs from "ejs"
+import ForwardedCV from "@/models/portal/Forwarwardedcv.model";
 /**
  @desc    Register a new user 
  @route   POST /api/v1/user/register
@@ -585,7 +586,7 @@ const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
     // Check if the user is a Candidate
     if ((user.userType as IUserType)?.name === "Candidate") {
       const candidate = await Candidate.findOneAndDelete({ userId: user._id }).session(session);
-      await SavedJobs.findOneAndDelete({ userId: user._id }).session(session);
+      await SavedJobs.deleteMany({ userId: user._id }).session(session);
       if (candidate) {
         // Delete candidate applications and remove references in jobs
         const candidateApplications = await Application.find({ candidate: id }).session(session);
@@ -603,20 +604,8 @@ const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
     }
     if ((user.userType as IUserType)?.name === "Subemployer") {
       const candidate = await SubEmployer.findOneAndDelete({ userId: user._id }).session(session);
-      await SavedJobs.findOneAndDelete({ userId: user._id }).session(session);
       if (candidate) {
-        // Delete candidate applications and remove references in jobs
-        const candidateApplications = await Application.find({ candidate: id }).session(session);
-        const candidateApplicationIds = candidateApplications.map((app) => app._id);
-        
-        if (candidateApplicationIds.length > 0) {
-          await Job.updateMany(
-            { applications: { $in: candidateApplicationIds } },
-            { $pull: { applications: { $in: candidateApplicationIds } } }
-          ).session(session);
-        }
-        
-        await Application.deleteMany({ candidate: id }).session(session);
+        await ForwardedCV.deleteMany({ toSubEmployerId: candidate._id }).session(session);
       }
     }
 
