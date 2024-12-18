@@ -42,7 +42,7 @@ const Options=async (req: Request, res: Response, next: NextFunction) => {
       if(!type){
         throw new AppError("Provie type",400)
       }
-      data=type==="personal_info.assets.value"?await Job.find() await Job.distinct(type as string)
+      data= await Job.distinct(type as string)
 
         res.status(200).json({
             success: true,
