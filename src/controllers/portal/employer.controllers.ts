@@ -381,11 +381,11 @@ const updateEmployer = async (req: Request, res: Response, next: NextFunction) =
             }
         }
         // formatting the payload
-        console.log(files)
         payload.logo = files?.logo?.[0] || payload?.logo;
         payload.videos = files?.["video[]"]?.[0] || payload?.videos;
         payload.pictures = files?.["picture[]"]?.[0] || payload?.pictures;
-
+        
+        console.log({payload})
         // validate the data
         const check = await validateEmployer(payload);
         if (!check) {
@@ -406,12 +406,12 @@ const updateEmployer = async (req: Request, res: Response, next: NextFunction) =
             });
         };
 
-        const employer = await Employer.findByIdAndUpdate(checkEmployer._id, payload, { new: true, runValidators: true })
+        const employer = await Employer.findByIdAndUpdate(checkEmployer._id, {$set:payload}, { new: true, runValidators: true })
         if (!employer) {
             throw new AppError('Failed to update employer', 400)
         }
 
-        res.status(200).json({
+             res.status(200).json({
             success: true,
             message: 'Employer updated!',
             data: employer

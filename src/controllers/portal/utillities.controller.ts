@@ -5,6 +5,7 @@ import { AppError } from "@/middlewares/error";
 import Job from "@/models/portal/job.model";
 import { validateCantactUs } from "@/validations/candidate";
 import { sendEmail } from "@/services/emails";
+import Candidate from "@/models/portal/candidate.model";
 
 
 /**
@@ -26,6 +27,26 @@ const getEmployer = async (req: Request, res: Response, next: NextFunction) => {
                 maxsalary:maxsalary,
                 maxeperience:maxeperience
             },
+            message: 'company and jobs fetched successfully'
+        });
+
+
+    } catch (error) {
+        next(error)
+    }
+};
+const Options=async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const {type=""}=req.params
+      let data:any=[]
+      if(!type){
+        throw new AppError("Provie type",400)
+      }
+      data=type==="personal_info.assets.value"?await Job.find() await Job.distinct(type as string)
+
+        res.status(200).json({
+            success: true,
+            data: data,
             message: 'company and jobs fetched successfully'
         });
 
@@ -69,5 +90,5 @@ const ContactUs = async (req: Request, res: Response, next: NextFunction) => {
 
 
 export {
-     getEmployer,ContactUs
+     getEmployer,ContactUs,Options
 }

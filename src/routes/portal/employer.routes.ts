@@ -48,8 +48,8 @@ router.route("/:id")
         verifyUserTypeToken(["employer","admin","subemployer"]),
         upload.fields([
             { name: 'logo', maxCount: 1 },
-            { name: 'videos[]', maxCount: 5 },
-            { name: 'pictures[]', maxCount: 5 },
+            { name: 'video[]', maxCount: 5 },
+            { name: 'picture[]', maxCount: 5 },
         ]),
         updateEmployer
     )
