@@ -12,7 +12,7 @@ import Candidate from "@/models/portal/candidate.model";
  @desc      Get an company
  @route     POST /api/v1/company/:id
  @access    Public
-**/
+// **/
 const getEmployer = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const [maxsalary,maxeperience] = await Promise.all([
@@ -35,6 +35,11 @@ const getEmployer = async (req: Request, res: Response, next: NextFunction) => {
         next(error)
     }
 };
+/**
+ @desc      Get an company
+ @route     POST /api/v1/options/:id
+ @access    Public
+// **/
 const Options=async (req: Request, res: Response, next: NextFunction) => {
     try {
         const {type=""}=req.params
