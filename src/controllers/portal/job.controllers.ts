@@ -175,7 +175,7 @@ const getJobs = async (req: Request, res: Response, next: NextFunction) => {
             {
                 $match: {
                     "subscription": { $exists: true },
-                    "subscription.expiresAt": { $gte: today  },
+                    // "subscription.expiresAt": { $gte: today  },
                     isActive: true,
                     ...matchQueries
                 }

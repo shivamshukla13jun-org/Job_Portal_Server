@@ -17,8 +17,9 @@ export enum AccessLevel {
 export interface ISubEmployer extends Document {
     parentEmployerId: Types.ObjectId;
     userId: Types.ObjectId;
-    name: string;
     email: string;
+    name: string;
+    department: string;
     phone: string;
     dashboardPermissions: object;
     isActive: boolean;
@@ -39,6 +40,10 @@ const subEmployerSchema = new Schema<ISubEmployer>({
     name: {
         type: String,
         required: [true, 'Name is required']
+    },
+    department: {
+        type: String,
+        required: [true, 'department is required']
     },
     email: {
         type: String,

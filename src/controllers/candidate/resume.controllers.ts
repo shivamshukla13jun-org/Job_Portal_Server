@@ -108,15 +108,15 @@ const getResume = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const id = req.params.id;
 
-        const resume = await Resume.findOne({ candidateId: id }).populate("candidateId")
+        const resume = await Candidate.findById(id)
         if (!resume) {
-            throw new AppError('Failed to find resume', 400);
+            throw new AppError('Failed to find data', 400);
         }
 
         res.status(200).json({
             success: true,
             data: resume,
-            message: 'Resume fetched'
+            message: 'dara fetched'
         });
 
     } catch (error) {

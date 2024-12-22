@@ -38,9 +38,9 @@ const applyJob = async (
         400
       );
     }
-    if (!checkUser.isresume) {
-      throw new AppError("Please fill Resume Details to apply for job!", 400);
-    }
+    // if (!checkUser.isresume) {
+    //   throw new AppError("Please fill Resume Details to apply for job!", 400);
+    // }
 
     // Fetch the job details and employer
     const job: any = await Job.findById(jobId)
@@ -256,7 +256,12 @@ interface ApplicationQuery {
   status?:string;
   jobid?:Types.ObjectId;
   createdAt?:any;
-  queries?:object
+  queries?:object;
+  qualification?:string;
+  keyword?:string;
+  category?:string;
+  experience_from?:number
+  experience_to?:number;
 
 }
 const getAllApplicants = async (
@@ -266,7 +271,11 @@ const getAllApplicants = async (
 ): Promise<void> => {
   try {
     const userId = res.locals.userId as Types.ObjectId;
-    let { page="1", limit="10", status,jobid, createdAt, ...queries } = req.query as ApplicationQuery;
+    let { page="1", limit="10", status,jobid, qualification, 
+      keyword, 
+      category, 
+      experience_from, 
+      experience_to, createdAt, ...queries } = req.query as ApplicationQuery;
     
     const checkEmployer = await Employer.findOne({ userId: userId });
     if (!checkEmployer) {
@@ -312,6 +321,61 @@ const getAllApplicants = async (
         }
       }
     }
+    const matchConditions: any = {};
+
+
+      // Build base conditions without adding them to matchConditions yet
+      const qualificationMatch = qualification ? {
+        "candidate.education": {
+          $elemMatch: {
+            "qualification": qualification
+          }
+        }
+      } : null;
+  
+      const keywordMatch = keyword ? {
+        "candidate.designation": { $regex: keyword, $options: "i" }
+      } : null;
+  
+      const categoryMatch = category ? {
+        "candidate.employment": {
+          $elemMatch: {
+            "categories": {
+              $elemMatch: {
+                "value": category
+              }
+            }
+          }
+        }
+      } : null;
+  
+      const dateConditions: any = {};
+      if (experience_from) {
+        dateConditions["$lte"] = new Date(
+          new Date().setFullYear(new Date().getFullYear() - experience_from)
+        );
+      }
+      if (experience_to) {
+        dateConditions["$gte"] = new Date(
+          new Date().setFullYear(new Date().getFullYear() - experience_to)
+        );
+      }
+      
+      const experienceMatch = (experience_from || experience_to) ? {
+        "candidate.employment": {
+          $elemMatch: {
+            "from": dateConditions
+          }
+        }
+      } : null;
+  
+      // Combine conditions for final match
+      Object.assign(matchConditions, 
+        qualificationMatch,
+        keywordMatch ? { "$or": [keywordMatch] } : null,
+        categoryMatch,
+        experienceMatch
+      );
     const results = await Application.aggregate([
       {
         $match: matchQueriesupper,
@@ -351,26 +415,11 @@ const getAllApplicants = async (
         },
       },
       { $unwind: { path: "$candidate", preserveNullAndEmptyArrays: true } },
-      {
-        $lookup: {
-          from: "resumes",
-          let: { candidateId: "$candidate._id" },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $eq: ["$candidateId", "$$candidateId"],
-                },
-              },
-            },
-          ],
-          as: "resume",
-        },
-      },
-      { $unwind: { path: "$resume", preserveNullAndEmptyArrays: true } },
+       
       {
         $match: {
           ...matchQueries,
+          ...matchConditions
         },
       },
       {

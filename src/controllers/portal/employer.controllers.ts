@@ -17,6 +17,7 @@ import ForwardedCV, {
   ForwardingStatus,
   IForwardedCV,
 } from "@/models/portal/Forwarwardedcv.model";
+import { EmployerDashBoardGraph } from "@/utils/employerdashboardGraph";
 
 /**
  @desc      Create an employer
@@ -116,6 +117,8 @@ const EmployerDashboard = async (
         },
       },
     ];
+
+  
     const [totalpostedjobs]: any[] = await Job.aggregate([
       {
         $match: {
@@ -125,6 +128,7 @@ const EmployerDashboard = async (
 
       {
         $facet: {
+          graph:EmployerDashBoardGraph,
           postedjobs: [
             { $group: { _id: "$employerId", total: { $sum: 1 } } },
             { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } },
@@ -141,10 +145,12 @@ const EmployerDashboard = async (
       {
         $project: {
           total: { $ifNull: ["$postedjobs.total", 0] },
+          graph:1,
           stats: 1,
         },
       },
     ]);
+
 
     // Application stats with status-based filtering
     const [Applicationdata]: any[] = await Application.aggregate([
