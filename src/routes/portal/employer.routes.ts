@@ -27,7 +27,7 @@ const upload = createMulterMiddleware({
     maxFileSize: 1024 * 1024 * 10
 });
 router.route("/forwardcv").post(verifyUserTypeToken(["employer","admin"]),ForwardCV)
-router.route("/candidates/:id").get(verifyUserTypeToken(["employer"]),CandidatesForEmployer)
+router.route("/candidates").get(verifyUserTypeToken(["employer"]),CandidatesForEmployer)
 router.route("/getSubEmployers/:id").get(verifyUserTypeToken(["employer","admin"]),getSubEmployers)
 // routes
 router.route("/")

@@ -10,7 +10,7 @@ router.route("/contactus")
     .post( ContactUs)
 router.route("/maxsalaryandexp")
     .get( getEmployer)
-router.route("/options/:type")
+router.route("/options/:id/:type")
     .get( Options)
 
 export default router;

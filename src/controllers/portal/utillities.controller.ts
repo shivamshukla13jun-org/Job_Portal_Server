@@ -40,26 +40,129 @@ const getEmployer = async (req: Request, res: Response, next: NextFunction) => {
  @route     POST /api/v1/options/:id
  @access    Public
 // **/
-const Options=async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const {type=""}=req.params
-      let data:any=[]
-      if(!type){
-        throw new AppError("Provie type",400)
-      }
-      data= await Job.distinct(type as string)
+interface OptionsQuery {
+    type?:string;
+    id?:Types.ObjectId
 
+}
+const Options = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        let { type, id } = req.params as OptionsQuery;
+        let data: any[] = [];
+
+        if (!type) {
+            throw new AppError("Provide type", 400);
+        }
+
+        const match: Record<string, any> = {
+            // employerId: new Types.ObjectId(id),
+        };
+
+        // Base pipeline
+        const pipeline: any[] = [{ $match: match }];
+console.log(type)
+        // Handle specific types
+        if (type === "personal_info.info.degree") {
+            type = "personal_info.assets.label";
+
+            pipeline.push(
+                { $unwind: "$personal_info" },
+                { $unwind: "$personal_info.assets" },
+                {$match:{
+                    "personal_info.info":"Degree and Specialisation"
+                }},
+                {
+                    $group: {
+                        _id: `$${type}`,
+                        total: { $sum: 1 },
+                    },
+                },
+                { $project: { _id: 0, value: "$_id", total: 1 } },
+                { $sort: { value: 1 } }
+            );
+        } 
+        else if (type === "categories.label") {
+            // type="categories.label"
+            pipeline.push(
+                { $unwind: "$categories" },
+                {
+                    $group: {
+                        _id: `$${type}`,
+                        total: { $sum: 1 },
+                    },
+                },
+                { $project: { _id: 0, value: "$_id", total: 1 } },
+                { $sort: { value: 1 } }
+            );
+        } 
+        
+        else if (type === "salary_experience") {
+            // Add grouping stages for max and min salary and experience
+            pipeline.push(
+                {
+                    $group: {
+                        _id: null, // No grouping by fields, we want global max/min
+                        minSalary: { $min: "$candidate_requirement.salary_from" },
+                        maxSalary: { $max: "$candidate_requirement.salary_to" },
+                    },
+                },
+                {
+                    $project: {
+                        _id: 0,
+                        maxSalary: 1,
+                        minSalary: 1,
+                    },
+                }
+            );
+        } 
+        else if (type === "experience") {
+            // Add grouping stages for max and min salary and experience
+            pipeline.push(
+                {
+                    $group: {
+                        _id: null, // No grouping by fields, we want global max/min
+                        minExperience: { $min: "$candidate_requirement.experience" },
+                        maxExperience: { $max: "$candidate_requirement.experience" },
+                    },
+                },
+                {
+                    $project: {
+                        _id: 0,
+                        minExperience: 1,
+                        maxExperience: 1,
+                    },
+                }
+            );
+        } 
+        else{
+
+            pipeline.push(
+                    {
+                        $group: {
+                            _id: `$${type}`,
+                            total: { $sum: 1 },
+                        },
+                    },
+                    { $project: { _id: 0, value: "$_id", total: 1 } },
+                    { $sort: { value: 1 } }
+                );
+        }  
+          if( type === "salary_experience"  ||type==="experience"){
+            [data]=await Job.aggregate(pipeline)
+          }else{
+            data=await Job.aggregate(pipeline);
+          }
         res.status(200).json({
             success: true,
             data: data,
-            message: 'company and jobs fetched successfully'
+            message: "Data fetched successfully",
         });
-
-
     } catch (error) {
-        next(error)
+        next(error);
     }
 };
+
+
 const ContactUs = async (req: Request, res: Response, next: NextFunction) => {
     try {
       

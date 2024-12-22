@@ -32,11 +32,12 @@ const createJob = async (req: Request, res: Response, next: NextFunction) => {
         if (!check) {
             return;
         }
-        const subscription:any = await Subscription.findOne({  userId: payload.createdBy});
+        const subscription:any = await Subscription.findOne({  userId: payload.createdBy}).populate("plan_id")
+        console.log({subscription})
              if (!subscription) {
                  throw new AppError("Subscribe Package first",400)
                }
-             if (subscription.jobPostLimit === 0) {
+             if (subscription.plan_id.jobPostLimit ===subscription.jobPostsUsed) {
                    return res.status(400).json({
                        message: "You have reached the limit of job posts",
                        success: false
@@ -47,7 +48,6 @@ const createJob = async (req: Request, res: Response, next: NextFunction) => {
         if (!job) {
             throw new AppError('Failed to create job', 400);
         }
-        subscription.jobPostLimit -= 1;
         subscription.jobPostsUsed += 1;
         await subscription.save();
         res.status(201).json({
