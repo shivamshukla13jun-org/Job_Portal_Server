@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createAdmin, deleteAdmin, UpdateUser,loginUser,getAdmins,updateJob, getAllApplicants,getJobNamesOnly, getJobs, listUsers, planList, updateAdmin, getAllLocations, Employers, subemployers } from "@/controllers/admin/admin.controllers";
+import { createAdmin, deleteAdmin, UpdateUser,loginUser,getAdmins,updateJob, getAllApplicants,getJobNamesOnly, getJobs, listUsers, planList, updateAdmin, getAllLocations, Employers, subemployers, Dashboard } from "@/controllers/admin/admin.controllers";
 import { deleteUser } from "@/controllers/admin/user.controllers";
 import { deleteJob } from "@/controllers/portal/job.controllers";
 
@@ -10,7 +10,7 @@ router.route("/users").get(listUsers)
 router.route("/subemployers").get(subemployers)
 router.route("/users/:id").put(UpdateUser).delete(deleteUser)
 router.route("/employers").get(Employers)
-router.route("/dashboard").get()
+router.route("/dashboard").get(Dashboard)
 router.route("/location").get(getAllLocations)
 router.route("/plan").get(planList)
 router.route("/jobs").get(getJobs)

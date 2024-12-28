@@ -1089,163 +1089,274 @@ export const deleteAdmin = async (req: Request, res: Response,next: NextFunction
   next(error)
  }
 };
-const EmployerDashboard = async (req: Request, res: Response, next: NextFunction)=> {
-  try {
-      const today: Date = new Date();
-      const lastYear: Date = new Date(today.setFullYear(today.getFullYear() - 1));
-      const monthsArray: string[] = [
-          "January", "February", "March", "April", "May", "June",
-          "July", "August", "September", "October", "November", "December"
-      ];
+export const Dashboard = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const today = new Date();
+        const lastYear = new Date(today.setFullYear(today.getFullYear() - 1));
+        const monthsArray = ["January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"];
 
-      const baseStats: any[] = [
-          {
-              $match: {
-                  createdAt: { $gte: lastYear }
-              }
-          },
-          {
-              $group: {
-                  _id: {
-                      year: { $year: "$createdAt" },
-                      month: { $month: "$createdAt" }
-                  },
-                  total: { $sum: 1 }
-              }
-          },
-          {
-              $sort: {
-                  "_id.year": 1,
-                  "_id.month": 1
-              }
-          },
-          {
-              $project: {
-                  _id: 0,
-                  year: "$_id.year",
-                  month: {
-                      $arrayElemAt: [monthsArray, { $subtract: ["$_id.month", 1] }]
-                  },
-                  total: 1
-              }
-          },
-      ];
-      const [totalpostedjobs]: any[] = await Job.aggregate([
-          {
-            $match:{ }
-          },
-
-          {
-              $facet: {
-                  postedjobs: [
-                      { $group: { _id: "$_id", total: { $sum: 1 } } },
-                      { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } }
-                  ],
-                  stats: baseStats,
-              }
-          },
-          {
-              $unwind: {
-                  path: "$postedjobs",
-                  preserveNullAndEmptyArrays: true,
-              },
-          },
-          {
-              $project: {
-                  total: { $ifNull: ["$postedjobs.total", 0] },
-                  stats: 1,
-              }
-          }
-      ]);
-
-      // Application stats with status-based filtering
-      const [Applicationdata]:any[] = await Application.aggregate([
-          {
-              $match:{ }
+        // Base aggregation pipeline
+        const baseStats = [
+            { $match: { createdAt: { $gte: lastYear } } },
+            {
+                $group: {
+                    _id: {
+                        year: { $year: "$createdAt" },
+                        month: { $month: "$createdAt" }
+                    },
+                    total: { $sum: 1 }
+                }
             },
-          {
-              $facet: {
-                  Application: [
-                      { $group: { _id: null, total: { $sum: 1 } } },
-                      { $project: { _id: 0 } }
-                  ],
-                  Shortlist: [
-                      { $match: { status: "shortlisted" } },
-                      { $group: { _id: null, total: { $sum: 1 } } },
-                      { $project: { _id: 0 } }
-                  ],
-                  pendinglist: [
-                      { $match: { status: "pending" } },
-                      { $group: { _id: null, total: { $sum: 1 } } },
-                      { $project: { _id: 0 } }
-                  ],
-                  rejectedlist: [
-                      { $match: { status: "rejected" } },
-                      { $group: { _id: null, total: { $sum: 1 } } },
-                      { $project: { _id: 0 } }
-                  ],
-                  Applicationstats: baseStats,
-                  Shortliststats: [
-                    { $match:{ status: "shortlisted" } } ,// Filtering for accepted
-                      ...baseStats,
-                  ],
-                  pendingstats: [
-                    { $match: { status: "pending" } }, // Filtering for pending
-                      ...baseStats,
-                  ],
-                  rejectedstats: [
-                    { $match: {  status: "rejected" } }, // Filtering for rejected
-                      ...baseStats,
-                  ],
-              },
-          },
-          {
-              $unwind: {
-                  path: "$Application",
-                  preserveNullAndEmptyArrays: true,
-              },
-          },
-          {
-              $unwind: {
-                  path: "$Shortlist",
-                  preserveNullAndEmptyArrays: true,
-              },
-          },
-          {
-              $unwind: {
-                  path: "$pendinglist",
-                  preserveNullAndEmptyArrays: true,
-              },
-          },
-          {
-              $unwind: {
-                  path: "$rejectedlist",
-                  preserveNullAndEmptyArrays: true,
-              },
-          },
-          {
-              $project: {
-                  Application: { $ifNull: ["$Application.total", 0] },
-                  Shortlist: { $ifNull: ["$Shortlist.total", 0] },
-                  pendinglist: { $ifNull: ["$pendinglist.total", 0] },
-                  rejectedlist: { $ifNull: ["$rejectedlist.total", 0] },
-                  Applicationstats: 1,
-                  Shortliststats: 1,
-                  pendingstats: 1,
-                  rejectedstats: 1,
-              },
-          },
-      ]);
+            { $sort: { "_id.year": 1, "_id.month": 1 } },
+            {
+                $project: {
+                    _id: 0,
+                    year: "$_id.year",
+                    month: { $arrayElemAt: [monthsArray, { $subtract: ["$_id.month", 1] }] },
+                    total: 1
+                }
+            }
+        ];
 
-    
+        // Jobs statistics
+        const [jobStats] = await Job.aggregate([
+            {
+                $facet: {
+                    totalJobs: [
+                        { $group: { _id: null, total: { $sum: 1 } } },
+                        { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } }
+                    ],
+                    activeListings: [
+                        { $match: { isActive:true  } },
+                        { $group: { _id: null, total: { $sum: 1 } } },
+                        { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } }
+                    ],
+                    jobTypeStats: [
+                        {
+                            $group: {
+                                _id: "$jobtype",
+                                total: { $sum: 1 }
+                            }
+                        },
+                        {
+                            $project: {
+                                jobType: "$_id",
+                                total: 1,
+                                _id: 0
+                            }
+                        }
+                    ],
+                    // "monthlyStats": baseStats
+                }
+              },
+              {
+                $unwind:{
+                  path:"$totalJobs",preserveNullAndEmptyArrays:true
+                }
+              },
+              {
+                $unwind:{
+                  path:"$activeListings",preserveNullAndEmptyArrays:true
+                }
+              }
+        ]);
 
-      let data: any = {
-          jobs: totalpostedjobs,
-          Applicationdata,
-          // users: users,
-      };
-      res.status(200).json({ data, message: "fetch data successful" });
-  } catch (error) {
-      next(error);
-  }
-}
+        // Application statistics
+        const [applicationStats] = await Application.aggregate([
+            {
+                $facet: {
+                    totalApplications: [
+                        { $group: { _id: null, total: { $sum: 1 } } },
+                        { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } }
+                    ],
+                    statusBreakdown: [
+                        {
+                            $group: {
+                                _id: "$status",
+                                count: { $sum: 1 }
+                            }
+                        },
+                        {
+                            $project: {
+                                status: "$_id",
+                                total: "$count",
+                                _id: 0
+                            }
+                        }
+                    ],
+                    sourceBreakdown: [
+                      {
+                          $lookup: {
+                              from: "candidates",
+                              localField: "candidate",
+                              foreignField: "_id",
+                              as: "candidateInfo"
+                          }
+                      },
+                      { $unwind: "$candidateInfo" },
+                      {
+                          $project: {
+                              hear_about_us: {
+                                  $cond: {
+                                      if: { $isArray: "$candidateInfo.hear_about_us" },
+                                      then: "$candidateInfo.hear_about_us",
+                                      else: []
+                                  }
+                              }
+                          }
+                      },
+                      { $unwind: "$hear_about_us" },
+                      {
+                          $group: {
+                              _id: "$hear_about_us",
+                              total: { $sum: 1 }
+                          }
+                      },
+                      {
+                          $match: {
+                              _id: { $ne: null }
+                          }
+                      },
+                      {
+                          $project: {
+                              source: "$_id",
+                              total: 1,
+                              _id: 0
+                          }
+                      },
+                      { $sort: { total: -1 } }
+                  ],
+                    recentApplications: [
+                        { $sort: { createdAt: -1 } },
+                        { $limit: 5 },
+                        {
+                            $lookup: {
+                                from: "candidates",
+                                localField: "candidate",
+                                foreignField: "_id",
+                                as: "candidateInfo"
+                            }
+                        },
+                        { $unwind: "$candidateInfo" },
+                        {
+                            $lookup: {
+                                from: "jobs",
+                                localField: "job",
+                                foreignField: "_id",
+                                as: "jobInfo"
+                            }
+                        },
+                        { $unwind: "$jobInfo" },
+                        {
+                            $project: {
+                                candidate: {
+                                    name: "$candidateInfo.name",
+                                    // role: "$candidateInfo.designation",
+                                    // experience: "$candidateInfo.yearsOfExperience"
+                                },
+                                appliedFor: "$jobInfo.title",
+                                status: 1,
+                                createdAt: 1
+                            }
+                        }
+                    ]
+                }
+            }
+        ]);
+        console.log(applicationStats.sourceBreakdown)
+        // Calculate hire rate
+        const hireRate = applicationStats.statusBreakdown?.find((s:any) => s.status === "shortlisted")?.total || 0;
+        const totalApplications = applicationStats.totalApplications?.total || 0;
+        const hirePercentage = totalApplications > 0 ? (hireRate / totalApplications * 100).toFixed(1) : 0;
+
+        const response = {
+            jobStatistics: [
+                { title: 'Total Jobs', value: jobStats.totalJobs?.total || 0, percent: 100, color: 'success' },
+                { title: 'Active Listings', value: jobStats.activeListings?.total || 0, percent: 60, color: 'info' },
+                { title: 'Applications', value: `${totalApplications} Applied`, percent: 75, color: 'warning' },
+                { title: 'Interviews', value: `${applicationStats.statusBreakdown?.find((s:any) => s.status === "interview")?.total || 0} Scheduled`, percent: 30, color: 'danger' },
+                { title: 'Hire Rate', value: `${hirePercentage}% Success`, percent: Number(hirePercentage), color: 'primary' }
+            ],
+            jobApplicationTrend: jobStats.jobTypeStats?.map((stat:any) => ({
+                title: stat.jobType,
+                value1: Math.round((stat.total / jobStats.totalJobs.total) * 100),
+                value2: stat.total
+            })) || [],
+            sourceBreakdown: applicationStats.sourceBreakdown?.map((source: any) => ({
+              title: source.source,
+              icon: getSourceIcon(source.source),
+              percent: Math.round((source.total / totalApplications) * 100),
+              value: `${source.total} Applicants`
+          })) || [],
+            recentApplications: applicationStats.recentApplications?.map((app:any) => ({
+                candidate: {
+                    name: app.candidate.name,
+                    role: app.candidate.role,
+                    applied: app.appliedFor
+                },
+                // experience: {
+                //     years: app.candidate.experience,
+                //     level: getLevelFromYears(app.candidate.experience)
+                // },
+                status: {
+                    text: getStatusText(app.status),
+                    color: getStatusColor(app.status)
+                },
+                activity: getTimeAgo(app.createdAt)
+            })) || []
+        };
+
+        res.status(200).json({ data: response, message: "Dashboard data fetched successfully" });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// Helper functions
+// Add source icon mapping helper
+const getSourceIcon = (source: string) => {
+  const iconMap: { [key: string]: string } = {
+      'Job Boards': 'cilChart',
+      'Social Media': 'cilUserFemale',
+      'Company Website': 'cilBuilding',
+      'Referral': 'cilPeople',
+      'Direct': 'cilUser'
+  };
+  return iconMap[source] || 'cilUser';
+};
+const getLevelFromYears = (years: number) => {
+    if (years < 2) return 'Entry-Level';
+    if (years < 5) return 'Mid-Level';
+    return 'Senior';
+};
+
+const getStatusText = (status: string) => {
+    const statusMap: { [key: string]: string } = {
+        pending: 'Application Received',
+        interview: 'Interview Scheduled',
+        shortlisted: 'Shortlisted',
+        hired: 'Hired',
+        rejected: 'Rejected'
+    };
+    return statusMap[status] || status;
+};
+
+const getStatusColor = (status: string) => {
+    const colorMap: { [key: string]: string } = {
+        pending: 'primary',
+        interview: 'info',
+        shortlisted: 'success',
+        hired: 'success',
+        rejected: 'danger'
+    };
+    return colorMap[status] || 'primary';
+};
+
+const getTimeAgo = (date: Date) => {
+    const diff = Math.floor((new Date().getTime() - new Date(date).getTime()) / 1000);
+    if (diff < 3600) return `${Math.floor(diff / 60)} mins ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)} hours ago`;
+    if (diff < 604800) return 'Yesterday';
+    return 'Last Week';
+};

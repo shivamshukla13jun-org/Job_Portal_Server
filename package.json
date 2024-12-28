@@ -6,6 +6,7 @@
     "dev": "nodemon ",
     "build": "tsc && tsc-alias",
     "start": "npm run build && pm2 start dist/index.js",
+    "stop": "pm2 start dist/index.js",
     "start:pm2": "npm run build && pm2 start dist/index.js -i 0",
     "restart:pm2": "npm run build && pm2 restart dist/index.js",
     "log:pm2": "pm2 logs",

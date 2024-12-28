@@ -8,6 +8,7 @@ export interface ICandidate extends Document {
     name: string;
     email: string;
     achievement:object;
+    experience:number;
     gender: 'Male' | 'Female' | 'Other';
     dob: Date;
     categories: IJobSelect[];
@@ -52,6 +53,10 @@ const candidateSchema = new Schema<ICandidate>({
         type: String,
         required: [true, 'Gender is required'],
         enum: ['Male', 'Female', 'Other']
+    },
+    experience: {
+        type: Number,
+        required: [true, 'experience is required'],
     },
     dob: {
         type: Date,
