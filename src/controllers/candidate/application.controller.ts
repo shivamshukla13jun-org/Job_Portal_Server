@@ -882,6 +882,60 @@ const updateStatus = async (
     next(error);
   }
 };
+const interviewconfirmation = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const applicationId: Types.ObjectId = new mongoose.Types.ObjectId(
+      req.params.id
+    );
+
+    const [result] = await Application.aggregate([
+      { $match: { _id: applicationId } },
+    ]);
+
+    if (!result) {
+      res.status(400).json({
+        message: "Application not found.",
+        success: false,
+      });
+      return;
+    }
+
+    await Application.updateOne(
+      { _id: applicationId },
+      { $set: req.body}
+    );
+
+    // if (result?.applicant?.email) {
+    //   let text: string = status === 'rejected' ? 'Update on Your Job Decline Application for the Position of' : 'Update on Your Application for the Position of';
+    //   sendEmail({
+    //     to: result?.applicant?.email,
+    //     subject: `${text}  ${result.job.title}`,
+    //     template: "jobSeekerEmail",
+    //     data: {
+    //       link: process.env.clienturl,
+    //       name: result.applicant?.personalDetails?.first_name,
+    //       jobTitle: result.job.title,
+    //       company: result?.company?.name,
+    //       status: status,
+    //     },
+    //   });
+    // }
+
+    res.status(200).json({
+      message: `Apllicant  ${
+        status.charAt(0).toUpperCase() + status.slice(1)
+      } successfully.`,
+      success: true,
+    });
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
 const deleteapplication = async (
   req: Request,
   res: Response,
@@ -1000,5 +1054,5 @@ export {
   deleteapplication,
   getAllApplicants,
   getEmployerJobNamesOnly,
-  getAllShortlistApplicants,
+  getAllShortlistApplicants,interviewconfirmation
 };

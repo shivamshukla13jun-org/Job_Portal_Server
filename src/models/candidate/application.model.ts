@@ -1,10 +1,14 @@
 import mongoose, { Document, Schema } from 'mongoose';
+export interface IInterviewDetails {
+    message:string;
+    confirm:boolean;
 
+}
 interface IApplication extends Document {
     job: mongoose.Types.ObjectId;
     candidate: mongoose.Types.ObjectId;
     employer: mongoose.Types.ObjectId;
-    message?:string;
+    intrviewConfirmation:IInterviewDetails
     status: 'pending' | 'shortlisted' | 'rejected';
 }
 
@@ -24,9 +28,15 @@ const applicationSchema: Schema<IApplication> = new Schema({
         ref: 'Employer',
         required: true
     },
-    message:{
-        type:String,
-        default:""
+    intrviewConfirmation:{
+        message:{
+            type:String,
+            default:""
+        },
+        confirm:{
+            type:Boolean,
+            default:false
+        },
     },
     status: {
         type: String,
