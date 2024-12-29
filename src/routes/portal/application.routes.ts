@@ -11,7 +11,7 @@ router.get("/applicant/:applicantId", verifyToken, singleApplicant);
 router.delete("/applied/:id", verifyToken, WIdrawJob);
 router.route('/apply/:id').put(verifyUserTypeToken(["candidate"]),  applyJob);
 router.route('/status/:id').put( verifyUserTypeToken(["employer","admin","subemployer"]),  updateStatus);
-router.route('/interviewconfirmation/:id').put( verifyUserTypeToken(["employer","admin","subemployer"]),  interviewconfirmation);
+router.route('/interviewconfirmation/:id').put( verifyUserTypeToken(["employer","admin","subemployer",'candidate']),  interviewconfirmation);
 router.route('/job/:jobId/:applicationId').get( verifyUserTypeToken(["employer","admin","candidate","subemployer"]),  deleteapplication);
 router.route('/tracking').get( verifyUserTypeToken(["employer","admin"]),  getAllApplicants);
 router.route('/job/:id').get( verifyUserTypeToken(["employer","admin"]),  getApplicants);

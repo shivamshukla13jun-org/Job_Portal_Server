@@ -57,6 +57,7 @@ const candidateSchema = new Schema<ICandidate>({
     experience: {
         type: Number,
         required: [true, 'experience is required'],
+        default:0
     },
     dob: {
         type: Date,

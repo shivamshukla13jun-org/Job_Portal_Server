@@ -926,9 +926,7 @@ const interviewconfirmation = async (
     // }
 
     res.status(200).json({
-      message: `Apllicant  ${
-        status.charAt(0).toUpperCase() + status.slice(1)
-      } successfully.`,
+      message: `Information Send To Employer.`,
       success: true,
     });
   } catch (error) {
