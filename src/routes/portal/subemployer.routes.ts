@@ -13,11 +13,11 @@ router.route("/").post(
     verifyUserTypeToken(["employer","admin"]), 
     SubEmployerController.getSubEmployers
 );
-router.route('/shortlistcvs').get( verifyUserTypeToken(["subemployer"]),SubEmployerController.getForwardedCVs)
-.delete( verifyUserTypeToken(["subemployer"]),SubEmployerController.deleteForwardedCVs)
-router.route('/meetings').get( verifyUserTypeToken(["subemployer"]),SubEmployerController.MeetingLinklists).post( verifyUserTypeToken(["subemployer"]),SubEmployerController.CreateMeetingLink)
+router.route('/shortlistcvs').get( verifyUserTypeToken(["subemployer","employer"]),SubEmployerController.getForwardedCVs)
+.delete( verifyUserTypeToken(["subemployer","employer"]),SubEmployerController.deleteForwardedCVs)
+router.route('/meetings').get( verifyUserTypeToken(["subemployer","employer"]),SubEmployerController.MeetingLinklists).post( verifyUserTypeToken(["subemployer","employer"]),SubEmployerController.CreateMeetingLink)
 
-router.route('/meetings/:id').delete(verifyUserTypeToken(["subemployer"]),SubEmployerController.deleteMeetingLink)
+router.route('/meetings/:id').delete(verifyUserTypeToken(["subemployer","employer"]),SubEmployerController.deleteMeetingLink)
 router.route('/activate/:id').put( verifyUserTypeToken(["employer"]),SubEmployerController.ActivateDeactivate);
 // Update sub-employer
 router.route("/:id")

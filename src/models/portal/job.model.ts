@@ -4,14 +4,20 @@ export type IJobCandidateStatus = {
     candidateId: Types.ObjectId;
     date: Date;
 }
-
+export interface IInterviewDetails {
+    date: Date;
+    time: string;
+    location: string;
+    type: 'in_person' | 'online' | 'phone';
+    notes?: string;
+}
 export interface IJob extends Document {
     employerId: Types.ObjectId;
     subscription:Types.ObjectId;
     title: string;
     location: string;
     place: string;
-    interview_details: string;
+    interview_details: IInterviewDetails;
     opening: number;
     jobtype:string,
     candidate_requirement: IJobCandidate;
@@ -58,8 +64,26 @@ const jobSchema = new Schema<IJob>({
         required: [true, "Place is required"]
     },
     interview_details: {
-        type: String,
-        required: [true, "Interview Details is required"]
+        date: {
+            type: Date,
+            required: [true, "Interview date is required"]
+        },
+        time: {
+            type: String,
+            required: [true, "Interview time is required"]
+        },
+        location: {
+            type: String,
+            required: [true, "Interview location is required"]
+        },
+        type: {
+            type: String,
+            enum: ['in_person', 'online', 'phone'],
+            required: [true, "Interview type is required"]
+        },
+        notes: {
+            type: String
+        }
     },
     opening: {
         type: Number,

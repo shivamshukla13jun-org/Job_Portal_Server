@@ -451,6 +451,9 @@ const getUser = async (req: Request, res: Response, next: NextFunction) => {
     if ((user?.userType as IUserType).name.toLowerCase() === "candidate") {
       userTypeValue = await Candidate.findOne({ userId: user._id });
     }
+    if ((user?.userType as IUserType).name.toLowerCase() === "subemployer") {
+      userTypeValue = await SubEmployer.findOne({ userId: user._id });
+    }
 
     const { password, isBlocked, user_verified, ...userData } =
       user?.toObject();

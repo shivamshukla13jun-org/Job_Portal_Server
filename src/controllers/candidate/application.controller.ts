@@ -208,14 +208,14 @@ const getAppliedJobs = async (
                 preserveNullAndEmptyArrays: true,
               },
             },
-            {
-              $project: {
-                "employerId.logo": 1,
-                title: 1,
-                company: 1,
-                location: 1,
-              },
-            },
+            // {
+            //   $project: {
+            //     "employerId": 1,
+            //     title: 1,
+            //     company: 1,
+            //     location: 1,
+            //   },
+            // },
           ],
           as: "job",
         },
@@ -750,6 +750,73 @@ const getApplicants = async (
     next(error);
   }
 };
+const singleApplicant = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const applicantId = req.params.applicantId as any;
+ 
+    // Manually cast jobId to ObjectId if it's a valid ID
+  
+    const applicationMatchStage: any = {
+       _id:new Types.ObjectId(applicantId)
+    };
+ 
+  
+    const [results] = await Application.aggregate([
+      // {
+      //   $lookup: {
+      //     from: "jobs",
+      //     let: { jobId: "$job" },
+      //     pipeline: [
+      //       {
+      //         $match: {
+      //           $expr: {
+      //             $eq: ["$_id", "$$jobId"],
+      //           },
+      //         },
+      //       },
+      //       { $sort: { createdAt: islatest } },
+      //     ],
+      //     as: "job",
+      //   },
+      // },
+      // { $unwind:{path: "$job",preserveNullAndEmptyArrays:true} },
+      {
+        $match:applicationMatchStage
+      },
+      {
+        $lookup: {
+          from: "candidates",
+          let: { candidateId: "$candidate" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ["$userId", "$$candidateId"],
+                },
+              },
+            },
+          ],
+          as: "candidate",
+        },
+      },
+      { $unwind: { path: "$candidate", preserveNullAndEmptyArrays: true } },
+     
+    ]).limit(1)
+    
+   
+    res.status(200).json({
+      data: results,
+      success: true,
+    });
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
 
 const updateStatus = async (
   req: Request,
@@ -929,7 +996,7 @@ export {
   getAppliedJobs,
   WIdrawJob,
   getApplicants,
-  updateStatus,
+  updateStatus,singleApplicant,
   deleteapplication,
   getAllApplicants,
   getEmployerJobNamesOnly,

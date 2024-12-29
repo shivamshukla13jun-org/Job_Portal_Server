@@ -2,11 +2,12 @@ import { Router } from "express";
 import path from "path";
 
 import { verifyToken, verifyUserTypeToken } from "@/middlewares/auth";
-import { applyJob ,getAppliedJobs,updateStatus,getAllApplicants,deleteapplication, getApplicants,getEmployerJobNamesOnly, WIdrawJob} from "@/controllers/candidate/application.controller";
+import { applyJob ,getAppliedJobs,updateStatus,getAllApplicants,deleteapplication, getApplicants,getEmployerJobNamesOnly, WIdrawJob, singleApplicant} from "@/controllers/candidate/application.controller";
 
 const router = Router();
 
 router.get("/applied", verifyToken, getAppliedJobs);
+router.get("/applicant/:applicantId", verifyToken, singleApplicant);
 router.delete("/applied/:id", verifyToken, WIdrawJob);
 router.route('/apply/:id').put(verifyUserTypeToken(["candidate"]),  applyJob);
 router.route('/status/:id').put( verifyUserTypeToken(["employer","admin","subemployer"]),  updateStatus);

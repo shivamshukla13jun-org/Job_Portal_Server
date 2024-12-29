@@ -297,6 +297,8 @@ const getJob = async (req: Request, res: Response, next: NextFunction) => {
                     personal_info: { $first: "$personal_info" },
                     categories: { $first: "$categories" },
                     jobtype:{ $first: "$jobtype" },
+                    interview_details:{ $first: "$interview_details" },
+
                 }
             }
         ]);

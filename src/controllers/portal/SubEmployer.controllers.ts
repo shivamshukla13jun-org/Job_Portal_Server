@@ -251,7 +251,7 @@ class SubEmployerController {
       const { createdBy } = req.query;
       // Save to the database
       const newMeeting = await Meeting.find({ createdBy: createdBy });
-
+      
       // Respond with the created meeting details
       return res.status(201).json({
         message: "Meeting scheduled successfully",
@@ -281,23 +281,115 @@ class SubEmployerController {
   }
   async getForwardedCVs(req: Request, res: Response, next: NextFunction) {
     try {
-      const SubEmployerdata = await SubEmployer.findOne({
-        userId: res.locals.userId,
-      });
-      if (!SubEmployerdata) {
-        throw new AppError("Employer not found", 400);
+      // Destructure and validate query parameters
+      const { SubEmployerId, EmployerId, page = '1', limit = '10' } = req.query as {
+        SubEmployerId?: string;
+        EmployerId?: string;
+        page?: string;
+        limit?: string;
+      };
+  
+      const currentPage = parseInt(page, 10) || 1;
+      const pageSize = parseInt(limit, 10) || 10;
+      const skip = (currentPage - 1) * pageSize;
+  
+      // Build the match filter dynamically
+      const match: any = {};
+      if (SubEmployerId) {
+        match['toSubEmployerId'] = new Types.ObjectId(SubEmployerId);
       }
-      const data = await ForwardedCV.find({
-        toSubEmployerId: SubEmployerdata._id,
-      }).populate("candidateId");
-      if (!SubEmployerdata) {
-        throw new AppError("Employer not found", 400);
+      if (EmployerId) {
+        match['fromEmployerId'] = new Types.ObjectId(EmployerId);
       }
-
-      // Respond with the created meeting details
+  
+      // Run Aggregation Pipeline with Pagination
+      const [data, total] = await Promise.all([
+        ForwardedCV.aggregate([
+          { $match: match },
+  
+          // Lookup SubEmployer Details
+          {
+            $lookup: {
+              from: 'subemployers',
+              localField: 'toSubEmployerId',
+              foreignField: '_id',
+              as: 'subEmployerDetails',
+            },
+          },
+          {
+            $unwind: {
+              path: '$subEmployerDetails',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+  
+          // Lookup Employer Details
+          {
+            $lookup: {
+              from: 'employers',
+              localField: 'fromEmployerId',
+              foreignField: '_id',
+              as: 'employerDetails',
+            },
+          },
+          {
+            $unwind: {
+              path: '$employerDetails',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+  
+          // Add dynamic department field
+          {
+            $addFields: {
+              department: {
+                $cond: {
+                  if: { $ne: ['$subEmployerDetails', null] }, // If SubEmployer exists
+                  then: '$subEmployerDetails.department',
+                  else: 'Employer', // Default department
+                },
+              },
+            },
+          },
+  
+          // Lookup Candidate Details
+          {
+            $lookup: {
+              from: 'candidates',
+              localField: 'candidateId',
+              foreignField: '_id',
+              as: 'candidateId',
+            },
+          },
+          {
+            $unwind: {
+              path: '$candidateId',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+  
+          // Project required fields
+        
+  
+          // Apply Pagination
+          { $skip: skip },
+          { $limit: pageSize },
+        ]),
+  
+        // Total count for pagination metadata
+        ForwardedCV.countDocuments(match),
+      ]);
+  
+      // Respond with paginated data
       return res.status(200).json({
-        message: "Meeting scheduled successfully",
-        data: data,
+        message: 'Data fetched successfully',
+        data,
+        pagination: {
+          currentPage,
+          pageSize,
+          totalItems: total,
+          totalPages: Math.ceil(total / pageSize),
+        },
       });
     } catch (error) {
       next(error);
