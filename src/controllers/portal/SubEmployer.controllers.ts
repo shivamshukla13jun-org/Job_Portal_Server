@@ -423,6 +423,7 @@ class SubEmployerController {
       return res.status(200).json({
         message: "CV deleted successfully",
         data: data,
+        success:true
       });
     } catch (error) {
       next(error);
