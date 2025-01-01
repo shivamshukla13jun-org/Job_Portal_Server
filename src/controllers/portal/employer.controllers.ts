@@ -118,7 +118,6 @@ const EmployerDashboard = async (
       },
     ];
 
-  
     const [totalpostedjobs]: any[] = await Job.aggregate([
       {
         $match: {
@@ -128,7 +127,7 @@ const EmployerDashboard = async (
 
       {
         $facet: {
-          graph:EmployerDashBoardGraph,
+          graph: EmployerDashBoardGraph,
           postedjobs: [
             { $group: { _id: "$employerId", total: { $sum: 1 } } },
             { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } },
@@ -145,12 +144,11 @@ const EmployerDashboard = async (
       {
         $project: {
           total: { $ifNull: ["$postedjobs.total", 0] },
-          graph:1,
+          graph: 1,
           stats: 1,
         },
       },
     ]);
-
 
     // Application stats with status-based filtering
     const [Applicationdata]: any[] = await Application.aggregate([
@@ -344,12 +342,12 @@ const getSubEmployers = async (
 const ForwardCV = async (req: Request, res: Response, next: NextFunction) => {
   try {
     // Get the current user's ID from locals
+    const { fromEmployerId } = req.query;
     const userId = new Types.ObjectId(res.locals.userId);
-     const CheckEMployer=await Employer.findOne({userId:userId})
-     if(!CheckEMployer){
-       throw new AppError("EMployer not found", 404);
-
-     }
+    const CheckEMployer = await Employer.findOne({ userId: userId });
+    if (!CheckEMployer) {
+      throw new AppError("EMployer not found", 404);
+    }
     // Destructure request body
     const { candidateId, subEmployerIds, notes } = req.body as ForwardCVBody;
 
@@ -361,7 +359,15 @@ const ForwardCV = async (req: Request, res: Response, next: NextFunction) => {
 
     // Prepare forwarding results
     const forwardingResults: Array<ForwardingResult> = [];
-    if (subEmployerIds && subEmployerIds.length > 0 && candidateId) {
+    if (fromEmployerId) {
+      // Create new forwarding record
+      await ForwardedCV.create({
+        candidateId,
+        fromEmployerId: CheckEMployer._id,
+        status: ForwardingStatus.PENDING,
+        additionalNotes: notes || undefined,
+      });
+    } else if (subEmployerIds && subEmployerIds.length > 0 && candidateId) {
       for (const subEmployerId of subEmployerIds) {
         // Check if already forwarded
         const alreadyForwarded = await ForwardedCV.isAlreadyForwarded(
@@ -379,8 +385,6 @@ const ForwardCV = async (req: Request, res: Response, next: NextFunction) => {
           });
         }
       }
-    } else {
-      throw new AppError("Sub-employer IDs or candidate ID missing", 400);
     }
 
     // Respond with results
@@ -501,25 +505,29 @@ const deleteEmployer = async (
 };
 
 interface CandidatQuery {
-  qualification?:string;
-  keyword?:string;
-  category?:string;
-  experience_from?:number
-  experience_to?:number;
-  limit:number;
-  page:number;
+  qualification?: string;
+  keyword?: string;
+  category?: string;
+  experience_from?: number;
+  experience_to?: number;
+  limit: number;
+  page: number;
 }
 
-const CandidatesForEmployer = async (req: Request, res: Response, next: NextFunction) => {
+const CandidatesForEmployer = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
-    const { 
-      qualification, 
-      keyword, 
-      category, 
-      experience_from, 
+    const {
+      qualification,
+      keyword,
+      category,
+      experience_from,
       experience_to,
       limit = 6,
-      page = 1 
+      page = 1,
     } = req.query as Partial<CandidatQuery>;
 
     const matchConditions: any = {};
@@ -527,7 +535,7 @@ const CandidatesForEmployer = async (req: Request, res: Response, next: NextFunc
     // Qualification Match
     if (qualification) {
       matchConditions.education = {
-        $elemMatch: { qualification }
+        $elemMatch: { qualification },
       };
     }
 
@@ -540,16 +548,18 @@ const CandidatesForEmployer = async (req: Request, res: Response, next: NextFunc
     if (category) {
       matchConditions.employment = {
         $elemMatch: {
-          categories: { $elemMatch: { value: category } }
-        }
+          categories: { $elemMatch: { value: category } },
+        },
       };
     }
 
     // Experience Match
     if (experience_from || experience_to) {
       matchConditions.experience = {};
-      if (experience_from) matchConditions.experience.$gte = Number(experience_from);
-      if (experience_to) matchConditions.experience.$lte = Number(experience_to);
+      if (experience_from)
+        matchConditions.experience.$gte = Number(experience_from);
+      if (experience_to)
+        matchConditions.experience.$lte = Number(experience_to);
     }
 
     // Aggregate Pipeline
@@ -573,18 +583,20 @@ const CandidatesForEmployer = async (req: Request, res: Response, next: NextFunc
                             $size: {
                               $filter: {
                                 input: "$education",
-                                cond: { $eq: ["$$this.qualification", qualification] }
-                              }
-                            }
+                                cond: {
+                                  $eq: ["$$this.qualification", qualification],
+                                },
+                              },
+                            },
                           },
-                          0
-                        ]
-                      }
-                    ]
+                          0,
+                        ],
+                      },
+                    ],
                   },
                   25,
-                  0
-                ]
+                  0,
+                ],
               },
 
               // Keyword Match (25 Points)
@@ -593,12 +605,18 @@ const CandidatesForEmployer = async (req: Request, res: Response, next: NextFunc
                   {
                     $and: [
                       { $ne: [keyword, null] },
-                      { $regexMatch: { input: "$designation", regex: keyword || "", options: "i" } }
-                    ]
+                      {
+                        $regexMatch: {
+                          input: "$designation",
+                          regex: keyword || "",
+                          options: "i",
+                        },
+                      },
+                    ],
                   },
                   25,
-                  0
-                ]
+                  0,
+                ],
               },
 
               // Category Match (25 Points)
@@ -619,24 +637,26 @@ const CandidatesForEmployer = async (req: Request, res: Response, next: NextFunc
                                       $size: {
                                         $filter: {
                                           input: "$$this.categories",
-                                          cond: { $eq: ["$$this.value", category] }
-                                        }
-                                      }
+                                          cond: {
+                                            $eq: ["$$this.value", category],
+                                          },
+                                        },
+                                      },
                                     },
-                                    0
-                                  ]
-                                }
-                              }
-                            }
+                                    0,
+                                  ],
+                                },
+                              },
+                            },
                           },
-                          0
-                        ]
-                      }
-                    ]
+                          0,
+                        ],
+                      },
+                    ],
                   },
                   25,
-                  0
-                ]
+                  0,
+                ],
               },
 
               // Experience Match (25 Points)
@@ -647,30 +667,27 @@ const CandidatesForEmployer = async (req: Request, res: Response, next: NextFunc
                       {
                         $or: [
                           { $ne: [experience_from, null] },
-                          { $ne: [experience_to, null] }
-                        ]
+                          { $ne: [experience_to, null] },
+                        ],
                       },
                       {
-                        $gte: [
-                          "$experience",
-                          Number(experience_from) || 0
-                        ]
+                        $gte: ["$experience", Number(experience_from) || 0],
                       },
                       {
                         $lte: [
                           "$experience",
-                          Number(experience_to) || Infinity
-                        ]
-                      }
-                    ]
+                          Number(experience_to) || Infinity,
+                        ],
+                      },
+                    ],
                   },
                   25,
-                  0
-                ]
-              }
-            ]
-          }
-        }
+                  0,
+                ],
+              },
+            ],
+          },
+        },
       },
 
       // Sort by Score and Date
@@ -685,8 +702,8 @@ const CandidatesForEmployer = async (req: Request, res: Response, next: NextFunc
           "profile.filename": 1,
           experience: 1,
           matchScore: 1,
-          contact: 1
-        }
+          contact: 1,
+        },
       },
 
       // Pagination with Facet
@@ -694,19 +711,19 @@ const CandidatesForEmployer = async (req: Request, res: Response, next: NextFunc
         $facet: {
           data: [
             { $skip: (Number(page) - 1) * Number(limit) },
-            { $limit: Number(limit) }
+            { $limit: Number(limit) },
           ],
-          totalCount: [{ $count: 'count' }]
-        }
+          totalCount: [{ $count: "count" }],
+        },
       },
 
       // Unwind Total Count
       {
         $unwind: {
-          path: '$totalCount',
-          preserveNullAndEmptyArrays: true
-        }
-      }
+          path: "$totalCount",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
     ]);
 
     // Response
@@ -714,13 +731,17 @@ const CandidatesForEmployer = async (req: Request, res: Response, next: NextFunc
       success: true,
       data: results?.data || [],
       totalCount: results?.totalCount?.count || 0,
-      totalPages: Math.ceil((results?.totalCount?.count || 0) / Number(limit))
+      totalPages: Math.ceil((results?.totalCount?.count || 0) / Number(limit)),
     });
   } catch (error) {
     next(error);
   }
 };
-const CandidateMatchGraphByEmployer = async (req: Request, res: Response, next: NextFunction) => {
+const CandidateMatchGraphByEmployer = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const userId = req.params.id;
     const checkEmployer = await Employer.findOne({ _id: userId });
@@ -728,40 +749,42 @@ const CandidateMatchGraphByEmployer = async (req: Request, res: Response, next: 
       // Lookup candidates using job details directly
       {
         $lookup: {
-          from: 'candidates',
+          from: "candidates",
           let: {
-            jobTitle: '$title',
-            jobCategories: '$categories',
-            jobExperience: '$candidate_requirement.experience',
+            jobTitle: "$title",
+            jobCategories: "$categories",
+            jobExperience: "$candidate_requirement.experience",
             jobQualifications: {
               $ifNull: [
                 {
                   $reduce: {
                     input: {
                       $filter: {
-                        input: { $ifNull: ['$personal_info', []] },
-                        as: 'info',
-                        cond: { $eq: ['$$info.info', 'Degree and Specialisation'] }
-                      }
+                        input: { $ifNull: ["$personal_info", []] },
+                        as: "info",
+                        cond: {
+                          $eq: ["$$info.info", "Degree and Specialisation"],
+                        },
+                      },
                     },
                     initialValue: [],
                     in: {
                       $concatArrays: [
-                        '$$value',
+                        "$$value",
                         {
                           $map: {
-                            input: { $ifNull: ['$$this.assets', []] },
-                            as: 'asset',
-                            in: '$$asset.value'
-                          }
-                        }
-                      ]
-                    }
-                  }
+                            input: { $ifNull: ["$$this.assets", []] },
+                            as: "asset",
+                            in: "$$asset.value",
+                          },
+                        },
+                      ],
+                    },
+                  },
                 },
-                []
-              ]
-            }
+                [],
+              ],
+            },
           },
           pipeline: [
             {
@@ -769,64 +792,82 @@ const CandidateMatchGraphByEmployer = async (req: Request, res: Response, next: 
                 designationMatch: {
                   $let: {
                     vars: {
-                      jobTitle: { $toLower: { $ifNull: ['$$jobTitle', ''] } },
-                      candidateDesignation: { $toLower: { $ifNull: ['$designation', ''] } },
-                      jobTitleWords: { $split: [{ $toLower: { $ifNull: ['$$jobTitle', ''] } }, ' '] },
-                      candidateWords: { $split: [{ $toLower: { $ifNull: ['$designation', ''] } }, ' '] }
+                      jobTitle: { $toLower: { $ifNull: ["$$jobTitle", ""] } },
+                      candidateDesignation: {
+                        $toLower: { $ifNull: ["$designation", ""] },
+                      },
+                      jobTitleWords: {
+                        $split: [
+                          { $toLower: { $ifNull: ["$$jobTitle", ""] } },
+                          " ",
+                        ],
+                      },
+                      candidateWords: {
+                        $split: [
+                          { $toLower: { $ifNull: ["$designation", ""] } },
+                          " ",
+                        ],
+                      },
                     },
                     in: {
                       $cond: [
-                        { $eq: ['$$jobTitle', '$$candidateDesignation'] },
+                        { $eq: ["$$jobTitle", "$$candidateDesignation"] },
                         true,
                         {
                           $gt: [
                             {
                               $size: {
-                                $setIntersection: ['$$jobTitleWords', '$$candidateWords']
-                              }
+                                $setIntersection: [
+                                  "$$jobTitleWords",
+                                  "$$candidateWords",
+                                ],
+                              },
                             },
-                            0
-                          ]
-                        }
-                      ]
-                    }
-                  }
+                            0,
+                          ],
+                        },
+                      ],
+                    },
+                  },
                 },
                 experienceMatch: {
                   $gte: [
-                    { $ifNull: ['$experience', 0] }, 
-                    { $ifNull: ['$$jobExperience', 0] }
-                  ]
+                    { $ifNull: ["$experience", 0] },
+                    { $ifNull: ["$$jobExperience", 0] },
+                  ],
                 },
                 categoryMatch: {
                   $let: {
                     vars: {
                       candidateCategories: {
                         $map: {
-                          input: { $ifNull: ['$categories', []] },
-                          as: 'cat',
-                          in: '$$cat.value'
-                        }
+                          input: { $ifNull: ["$categories", []] },
+                          as: "cat",
+                          in: "$$cat.value",
+                        },
                       },
                       jobCategories: {
                         $map: {
-                          input: { $ifNull: ['$$jobCategories', []] },
-                          as: 'cat',
-                          in: '$$cat.value'
-                        }
-                      }
+                          input: { $ifNull: ["$$jobCategories", []] },
+                          as: "cat",
+                          in: "$$cat.value",
+                        },
+                      },
                     },
                     in: {
                       $gt: [
                         {
                           $size: {
-                            $setIntersection: ['$$jobCategories', '$$candidateCategories']
-                          }
+                            $setIntersection: [
+                              "$$jobCategories",
+                              "$$candidateCategories",
+                            ],
+                          },
                         },
-                        0
-                      ]
-                    }
-                  }
+                        0,
+                      ],
+                    },
+                  },
                 },
                 qualificationMatch: {
                   $let: {
@@ -835,37 +876,39 @@ const CandidateMatchGraphByEmployer = async (req: Request, res: Response, next: 
                         $reduce: {
                           input: {
                             $filter: {
-                              input: { $ifNull: ['$$jobQualifications', []] },
-                              as: 'qualification',
-                              cond: { $ne: ['$$qualification', null] }
-                            }
+                              input: { $ifNull: ["$$jobQualifications", []] },
+                              as: "qualification",
+                              cond: { $ne: ["$$qualification", null] },
+                            },
                           },
                           initialValue: [],
-                          in: { $concatArrays: ['$$value', ['$$this']] }
-                        }
+                          in: { $concatArrays: ["$$value", ["$$this"]] },
+                        },
                       },
                       candidateQualifications: {
                         $map: {
-                          input: { $ifNull: ['$education', []] },
-                          as: 'edu',
-                          in: '$$edu.qualification'
-                        }
-                      }
+                          input: { $ifNull: ["$education", []] },
+                          as: "edu",
+                          in: "$$edu.qualification",
+                        },
+                      },
                     },
                     in: {
                       $gt: [
                         {
                           $size: {
-                            $setIntersection: ['$$requiredQualifications', '$$candidateQualifications']
-                          }
+                            $setIntersection: [
+                              "$$requiredQualifications",
+                              "$$candidateQualifications",
+                            ],
+                          },
                         },
-                        0
-                      ]
-                    }
-                  }
-                }
-                
-              }
+                        0,
+                      ],
+                    },
+                  },
+                },
+              },
             },
             {
               $project: {
@@ -873,17 +916,17 @@ const CandidateMatchGraphByEmployer = async (req: Request, res: Response, next: 
                 designationMatch: 1,
                 experienceMatch: 1,
                 categoryMatch: 1,
-                qualificationMatch: 1
-              }
-            }
+                qualificationMatch: 1,
+              },
+            },
           ],
-          as: 'candidates'
-        }
+          as: "candidates",
+        },
       },
-    
+
       // Unwind candidates array for analysis
-      { $unwind: { path: '$candidates', preserveNullAndEmptyArrays: true } },
-    
+      { $unwind: { path: "$candidates", preserveNullAndEmptyArrays: true } },
+
       // Group and calculate counts
       {
         $group: {
@@ -891,54 +934,50 @@ const CandidateMatchGraphByEmployer = async (req: Request, res: Response, next: 
           totalCandidates: { $sum: 1 },
           designationMatchCount: {
             $sum: {
-              $cond: [{ $eq: ['$candidates.designationMatch', true] }, 1, 0]
-            }
+              $cond: [{ $eq: ["$candidates.designationMatch", true] }, 1, 0],
+            },
           },
           experienceMatchCount: {
             $sum: {
-              $cond: [{ $eq: ['$candidates.experienceMatch', true] }, 1, 0]
-            }
+              $cond: [{ $eq: ["$candidates.experienceMatch", true] }, 1, 0],
+            },
           },
           categoryMatchCount: {
             $sum: {
-              $cond: [{ $eq: ['$candidates.categoryMatch', true] }, 1, 0]
-            }
+              $cond: [{ $eq: ["$candidates.categoryMatch", true] }, 1, 0],
+            },
           },
           qualificationMatchCount: {
             $sum: {
-              $cond: [{ $eq: ['$candidates.qualificationMatch', true] }, 1, 0]
-            }
-          }
-        }
+              $cond: [{ $eq: ["$candidates.qualificationMatch", true] }, 1, 0],
+            },
+          },
+        },
       },
-    
+
       // Final projection
       {
         $project: {
           _id: 0,
           totalCandidates: 1,
           matchCounts: {
-            designation: '$designationMatchCount',
-            experience: '$experienceMatchCount',
-            categories: '$categoryMatchCount',
-            qualification: '$qualificationMatchCount'
-          }
-        }
-      }
+            designation: "$designationMatchCount",
+            experience: "$experienceMatchCount",
+            categories: "$categoryMatchCount",
+            qualification: "$qualificationMatchCount",
+          },
+        },
+      },
     ]);
-    
-    
+
     res.status(200).json({
       success: true,
-      data: results
+      data: results,
     });
-
   } catch (error) {
     next(error);
   }
 };
-
-
 
 export {
   createEmployer,
@@ -947,7 +986,8 @@ export {
   CandidatesForEmployer,
   updateEmployer,
   deleteEmployer,
-  EmployerDashboard,CandidateMatchGraphByEmployer,
+  EmployerDashboard,
+  CandidateMatchGraphByEmployer,
   ForwardCV,
   getSubEmployers,
 };
