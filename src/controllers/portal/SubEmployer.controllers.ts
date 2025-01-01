@@ -417,7 +417,7 @@ class SubEmployerController {
   }
   async deleteForwardedCVs(req: Request, res: Response, next: NextFunction) {
     try {
-      const data = await ForwardedCV.deleteOne({ _id: req.query.id });
+      const data = await ForwardedCV.findByIdAndDelete(req.query.id);
 
       // Respond with the created meeting details
       return res.status(200).json({
