@@ -52,7 +52,7 @@ const forwardedCVSchema = new Schema<IForwardedCV>({
     toSubEmployerId: {
         type: Schema.Types.ObjectId,
         ref: 'SubEmployer',
-        required: [true, 'Destination Sub-Employer ID is required']
+        // required: [true, 'Destination Sub-Employer ID is required']
     },
     status: {
         type: String,
