@@ -433,7 +433,6 @@ const updateEmployer = async (
     payload.videos = files?.["video[]"]?.[0] || payload?.videos;
     payload.pictures = files?.["picture[]"]?.[0] || payload?.pictures;
 
-    console.log({ payload });
     // validate the data
     const check = await validateEmployer(payload);
     if (!check) {

@@ -67,7 +67,6 @@ class SubEmployerController {
       newUser.subEmployerId = newSubEmployer._id as Types.ObjectId;
       await newUser.save({ session });
       await newSubEmployer.save({ session });
-      console.log({ user_otp: newUser.user_otp });
       // Step 8: Send Activation Email
       await sendEmail({
         email,
@@ -97,7 +96,6 @@ class SubEmployerController {
       const { name, email, phone, password, isActive, dashboardPermissions } =
         req.body;
       const subEmployerId = req.params.id;
-      console.log({ subEmployerId });
       // Step 1: Find Existing SubEmployer
       const existingSubEmployer = await SubEmployer.findById(subEmployerId);
       if (!existingSubEmployer) {
@@ -305,8 +303,8 @@ class SubEmployerController {
       // Run Aggregation Pipeline with Pagination
       const [data, total] = await Promise.all([
         ForwardedCV.aggregate([
-          { $match: match },
-  
+          { $match: match }, // Filter documents based on conditions
+          
           // Lookup SubEmployer Details
           {
             $lookup: {
@@ -322,7 +320,7 @@ class SubEmployerController {
               preserveNullAndEmptyArrays: true,
             },
           },
-  
+      
           // Lookup Employer Details
           {
             $lookup: {
@@ -338,7 +336,7 @@ class SubEmployerController {
               preserveNullAndEmptyArrays: true,
             },
           },
-  
+      
           // Add dynamic department field
           {
             $addFields: {
@@ -351,34 +349,56 @@ class SubEmployerController {
               },
             },
           },
-  
+      
           // Lookup Candidate Details
           {
             $lookup: {
               from: 'candidates',
               localField: 'candidateId',
               foreignField: '_id',
-              as: 'candidateId',
+              as: 'candidateDetails',
             },
           },
           {
             $unwind: {
-              path: '$candidateId',
+              path: '$candidateDetails',
               preserveNullAndEmptyArrays: true,
             },
           },
-  
-          // Project required fields
-        
-  
+      
+          // Group by candidateId
+          {
+            $group: {
+              _id: '$candidateId',
+              originalIds: { $first: '$_id' }, // Preserve original _id values
+              mergedData: { $first: '$$ROOT' }, // Take the first document and spread it
+
+            },
+          },
+          {
+            $replaceRoot: { newRoot: { $mergeObjects: ['$mergedData', { candidateId: '$_id' ,},{_id:"$originalIds"}] } }
+          },
+         
+      
+         
+      
           // Apply Pagination
           { $skip: skip },
           { $limit: pageSize },
         ]),
-  
+      
         // Total count for pagination metadata
-        ForwardedCV.countDocuments(match),
+        ForwardedCV.aggregate([
+          { $match: match },
+          {
+            $group: {
+              _id: '$candidateId',
+            },
+          },
+          { $count: 'total' },
+        ]).then((res) => (res[0] ? res[0].total : 0)),
       ]);
+      
   
       // Respond with paginated data
       return res.status(200).json({
@@ -397,16 +417,7 @@ class SubEmployerController {
   }
   async deleteForwardedCVs(req: Request, res: Response, next: NextFunction) {
     try {
-      const SubEmployerdata = await SubEmployer.findOne({
-        userId: res.locals.userId,
-      });
-      if (!SubEmployerdata) {
-        throw new AppError("Employer not found", 400);
-      }
       const data = await ForwardedCV.deleteOne({ _id: req.query.id });
-      if (!SubEmployerdata) {
-        throw new AppError("Employer not found", 400);
-      }
 
       // Respond with the created meeting details
       return res.status(200).json({

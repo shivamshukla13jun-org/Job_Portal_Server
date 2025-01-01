@@ -33,7 +33,7 @@ const createJob = async (req: Request, res: Response, next: NextFunction) => {
             return;
         }
         const subscription:any = await Subscription.findOne({  userId: payload.createdBy}).populate("plan_id")
-        console.log({subscription})
+        
              if (!subscription) {
                  throw new AppError("Subscribe Package first",400)
                }

@@ -26,7 +26,6 @@ const createMulterMiddleware = (options: MulterOptions) => {
     });
 
     const fileFilter = (req: Express.Request, file: ExtendedMulterFile, cb: multer.FileFilterCallback) => {
-        console.log("file.mimetype ",file.mimetype )
         if (options.allowedFileTypes && !options.allowedFileTypes.includes(file.mimetype || file.type!)) {
             console.log('File type not allowed')
             return cb(new Error('File type not allowed'))

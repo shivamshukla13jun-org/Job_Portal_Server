@@ -444,7 +444,6 @@ const getUser = async (req: Request, res: Response, next: NextFunction) => {
     }
 
     let userTypeValue;
-    console.log([user])
     if ((user?.userType as IUserType).name.toLowerCase() === "employer") {
       userTypeValue = await Employer.findOne({ userId: user._id });
     }

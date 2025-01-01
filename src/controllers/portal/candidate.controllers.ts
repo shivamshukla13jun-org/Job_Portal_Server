@@ -16,8 +16,6 @@ const createCandidate = async (req: Request, res: Response, next: NextFunction) 
     try {
         const payload: ICandidate = req.body;
 
-        console.log(req.body, req.files)
-
         // payload["userId"] = new Types.ObjectId(res.locals.userId);
 
         // const candidate = await Candidate.create(payload);

@@ -16,7 +16,6 @@ export const getUserMenu = async (req: Request, res: Response, next: NextFunctio
           if (!user) {
             throw new AppError("Failed to fetch user!", 400);
           }
-      console.log("usertype",user)
       if (!user?.userType?._id) {
         throw new AppError("User type is required", 400);
       }

@@ -60,7 +60,7 @@ const Options = async (req: Request, res: Response, next: NextFunction) => {
 
         // Base pipeline
         const pipeline: any[] = [{ $match: match }];
-console.log(type)
+
         // Handle specific types
         if (type === "personal_info.info.degree") {
             type = "personal_info.assets.label";

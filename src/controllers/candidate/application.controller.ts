@@ -9,6 +9,8 @@ import { generateToken } from "@/middlewares/auth";
 import Employer from "@/models/portal/employer.model";
 import { postedatesCondition } from "@/utils/postedadate";
 import SubEmployer from "@/models/portal/SubEmployer.model";
+import { Applicationsstats, ApplicationsstatsUnwindPath } from "@/utils/ApplicationStats";
+import ForwardedCV, { ForwardingStatus } from "@/models/portal/Forwarwardedcv.model";
 
 const applyJob = async (
   req: Request,
@@ -20,7 +22,7 @@ const applyJob = async (
 
   try {
     const userId = res.locals.userId as Types.ObjectId;
-    console.log("UserId", userId);
+
     const jobId: Types.ObjectId = new mongoose.Types.ObjectId(req.params.id);
 
     if (!jobId) {
@@ -146,10 +148,13 @@ const WIdrawJob = async (
     //   subject: `Application for ${job.title} at ${job.employerId.name}`,
     //   text: `You have a new application for the position of ${job.title}.`
     // });
-
+    await ForwardedCV.deleteOne({
+      candidateId: existingApplication.candidate,
+      fromEmployerId: existingApplication.employer,
+    }).session(session);
     await session.commitTransaction();
     session.endSession();
-
+   
     res.status(200).json({
       success: true,
       message: "Job applied successfully!",
@@ -376,7 +381,7 @@ const getAllApplicants = async (
         categoryMatch,
         experienceMatch
       );
-    const results = await Application.aggregate([
+    const [results] = await Application.aggregate([
       {
         $match: matchQueriesupper,
       },
@@ -429,14 +434,19 @@ const getAllApplicants = async (
             { $skip: (pageOptions.page - 1) * pageOptions.limit },
             { $limit: pageOptions.limit },
           ],
+          ...Applicationsstats
         },
       },
+      ...ApplicationsstatsUnwindPath,
+    
     ]);
-    const application = results[0]?.application || [];
-    const totalApplications: number = results[0]?.total[0]?.count || 0;
-
+    const application = results?.application || [];
+    const totalApplications: number = results?.total[0]?.count || 0;
+   
+ 
     res.status(200).json({
       data: application,
+      stats:results.stats,
       currentPage: pageOptions.page,
       totalPages: Math.ceil(totalApplications / pageOptions.limit),
       count: totalApplications,
@@ -495,7 +505,6 @@ const getAllShortlistApplicants = async (
         }
       }
     }
-    console.log({ matchQueries, matchQueriesupper });
     const results = await Application.aggregate([
       {
         $match: matchQueriesupper,
@@ -689,7 +698,7 @@ const getApplicants = async (
       },
     ]);
     const stats = await Application.aggregate([
-      { $match: { job: jobId } },
+      { $match: applicationMatchStage },
       {
         $facet: {
           totals: [
@@ -736,7 +745,7 @@ const getApplicants = async (
     ]);
     const application = results[0]?.application || [];
     const totalApplications: number = results[0]?.total[0]?.count || 0;
-
+    
     res.status(200).json({
       data: application,
       stats: stats[0],
@@ -818,31 +827,24 @@ const singleApplicant = async (
   }
 };
 
-const updateStatus = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
+const updateStatus = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     let { status }: { status: string } = req.body;
-    const applicationId: Types.ObjectId = new mongoose.Types.ObjectId(
-      req.params.id
-    );
+    const applicationId: Types.ObjectId = new mongoose.Types.ObjectId(req.params.id);
 
     if (!status) {
       res.status(400).json({
-        message: "status is required",
+        message: "Status is required.",
         success: false,
       });
       return;
     }
 
     status = status.toLowerCase();
-    const [result] = await Application.aggregate([
-      { $match: { _id: applicationId } },
-    ]);
-
-    if (!result) {
+console.log("applicationId",applicationId)
+    // Fetch the application
+    const application = await Application.findById(applicationId).populate('candidate employer');
+    if (!application) {
       res.status(400).json({
         message: "Application not found.",
         success: false,
@@ -850,38 +852,52 @@ const updateStatus = async (
       return;
     }
 
-    await Application.updateOne(
-      { _id: applicationId },
-      { $set: { status: status } }
-    );
+    // Update application status
+    application.status = status as 'pending' | 'shortlisted' | 'rejected';
+    await application.save();
+    const candidateid=application?.candidate?.id
+    const employerid=application?.employer?.id
+    // Handle shortlisted status: Forward CV
+    if (status === 'shortlisted' && candidateid && employerid) {
+      console.log(application)
+      const alreadyForwarded = await ForwardedCV.findOne({
+        candidateId:  candidateid,
+        fromEmployerId:employerid
+      } );
 
-    // if (result?.applicant?.email) {
-    //   let text: string = status === 'rejected' ? 'Update on Your Job Decline Application for the Position of' : 'Update on Your Application for the Position of';
-    //   sendEmail({
-    //     to: result?.applicant?.email,
-    //     subject: `${text}  ${result.job.title}`,
-    //     template: "jobSeekerEmail",
-    //     data: {
-    //       link: process.env.clienturl,
-    //       name: result.applicant?.personalDetails?.first_name,
-    //       jobTitle: result.job.title,
-    //       company: result?.company?.name,
-    //       status: status,
-    //     },
-    //   });
-    // }
+      if (!alreadyForwarded) {
+        await ForwardedCV.create({
+          candidateId: candidateid,
+          fromEmployerId: employerid,
+          status: ForwardingStatus.PENDING,
+          forwardedAt: new Date(),
+          isActive: true,
+        });
+        console.log('CV forwarded successfully');
+      }
+    }
+
+    // Handle rejected status: Delete forwarded CV
+    if (status === 'rejected'  && candidateid && employerid) {
+      console.log(application)
+
+      await ForwardedCV.deleteOne({
+        candidateId: candidateid,
+        fromEmployerId: employerid,
+      });
+      console.log('Forwarded CV deleted successfully');
+    }
 
     res.status(200).json({
-      message: `Apllicant  ${
-        status.charAt(0).toUpperCase() + status.slice(1)
-      } successfully.`,
+      message: `Applicant status updated to ${status.charAt(0).toUpperCase() + status.slice(1)} successfully.`,
       success: true,
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     next(error);
   }
 };
+
 const interviewconfirmation = async (
   req: Request,
   res: Response,

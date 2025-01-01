@@ -21,14 +21,10 @@ const seedMenus = async () => {
       let userType = await UserType.findOne({ name: type.name });
       if (!userType) {
         userType = await UserType.create(type);
-        console.log(`Created userType: ${type.name}`);
       }
       return userType;
     })
   );
-
-  console.log("User Types:", userTypes);
-
   const menuData = [
     {
       userType: userTypes.find(type => type.name === 'Employer')?._id,
@@ -44,7 +40,6 @@ const seedMenus = async () => {
     }
   ];
 
-  console.log("Menu Data:", menuData);
 
   // Seed menus with upsert
   for (const menu of menuData) {

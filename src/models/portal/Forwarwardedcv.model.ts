@@ -100,7 +100,6 @@ forwardedCVSchema.statics.isAlreadyForwarded = async function(
     const existingForwarding = await this.findOne({
         candidateId,
         toSubEmployerId,
-        status: { $ne: ForwardingStatus.REJECTED }
     });
     return !!existingForwarding;
 };

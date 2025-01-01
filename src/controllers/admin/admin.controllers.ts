@@ -1264,7 +1264,6 @@ export const Dashboard = async (req: Request, res: Response, next: NextFunction)
                 }
             }
         ]);
-        console.log(applicationStats.sourceBreakdown)
         // Calculate hire rate
         const hireRate = applicationStats.statusBreakdown?.find((s:any) => s.status === "shortlisted")?.total || 0;
         const totalApplications = applicationStats.totalApplications?.total || 0;

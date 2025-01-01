@@ -48,6 +48,9 @@ const applicationSchema: Schema<IApplication> = new Schema({
 applicationSchema.pre<IApplication>('save', function (next) {
     if (this.isModified('status')) {
         this.status = this.status?.toLowerCase() as 'pending' | 'shortlisted' | 'rejected';
+        const data=this
+        console.log("data",data)
+
     }
     next();
 });
