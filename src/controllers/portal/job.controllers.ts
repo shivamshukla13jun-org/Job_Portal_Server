@@ -70,7 +70,7 @@ const getJobs = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { page: reqPage, limit: reqLimit,createdAt,experience_from,experience_to, ...queries } = req.query;
         const today = new Date();
-        const userId = res.locals.userId as Types.ObjectId
+        const candidateId = res.locals.candidateId as Types.ObjectId
 
         // Parse and set page and limit with fallback
         const page =  parseInt(reqPage as string, 10) || 1  // Ensure page is at least 0
@@ -171,7 +171,7 @@ const getJobs = async (req: Request, res: Response, next: NextFunction) => {
                                             input: "$applications",
                                             as: "item",
                                             cond: {
-                                                $eq: ["$$item.candidate", userId],
+                                                $eq: ["$$item.candidate", candidateId],
                                             },
                                         },
                                     },
@@ -262,7 +262,7 @@ const getJob = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const id = req.params.id;
         
-        const userId = res.locals.userId as Types.ObjectId
+        const candidateId = res.locals.candidateId as Types.ObjectId
         const job = await Job.aggregate([
             {
                 $match: {
@@ -301,7 +301,7 @@ const getJob = async (req: Request, res: Response, next: NextFunction) => {
                                             input: "$applications",
                                             as: "item",
                                             cond: {
-                                                $eq: ["$$item.candidate", userId],
+                                                $eq: ["$$item.candidate", candidateId],
                                             },
                                         },
                                     },

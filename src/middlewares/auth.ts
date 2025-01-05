@@ -81,7 +81,8 @@ const verifyisCandidateLogin = async (req: Request, res: Response, next: NextFun
             return next(new AppError('Unauthorized user', 403));
         }
 
-        res.locals.userId = user._id as Types.ObjectId;
+        res.locals.candidateId = user._id as Types.ObjectId;
+        res.locals.userId=user.userId as Types.ObjectId
         next();
 
     } catch (error) {

@@ -528,6 +528,13 @@ const CandidatesForEmployer = async (
       limit = 6,
       page = 1,
     } = req.query as Partial<CandidatQuery>;
+    const userId = res.locals.userId
+
+    const checkEmployer = await Employer.findOne({ userId: userId });
+    if(!checkEmployer){
+      throw new AppError("EMployer not Found",400)
+    }
+    const employerId = checkEmployer?._id ? new Types.ObjectId(checkEmployer._id as Types.ObjectId) : null;
 
     const matchConditions: any = {};
 
@@ -562,150 +569,49 @@ const CandidatesForEmployer = async (
     }
 
     // Aggregate Pipeline
-    const [results] = await Candidate.aggregate([
-      { $match: matchConditions },
-
-      // Add Match Score
+    const [results] = await Application.aggregate([
+      // Exclude applications for a specific employer
       {
-        $addFields: {
-          matchScore: {
-            $add: [
-              // Qualification Match (25 Points)
-              {
-                $cond: [
-                  {
-                    $and: [
-                      { $ne: [qualification, null] },
-                      {
-                        $gt: [
-                          {
-                            $size: {
-                              $filter: {
-                                input: "$education",
-                                cond: {
-                                  $eq: ["$$this.qualification", qualification],
-                                },
-                              },
-                            },
-                          },
-                          0,
-                        ],
-                      },
-                    ],
-                  },
-                  25,
-                  0,
-                ],
-              },
-
-              // Keyword Match (25 Points)
-              {
-                $cond: [
-                  {
-                    $and: [
-                      { $ne: [keyword, null] },
-                      {
-                        $regexMatch: {
-                          input: "$designation",
-                          regex: keyword || "",
-                          options: "i",
-                        },
-                      },
-                    ],
-                  },
-                  25,
-                  0,
-                ],
-              },
-
-              // Category Match (25 Points)
-              {
-                $cond: [
-                  {
-                    $and: [
-                      { $ne: [category, null] },
-                      {
-                        $gt: [
-                          {
-                            $size: {
-                              $filter: {
-                                input: "$employment",
-                                cond: {
-                                  $gt: [
-                                    {
-                                      $size: {
-                                        $filter: {
-                                          input: "$$this.categories",
-                                          cond: {
-                                            $eq: ["$$this.value", category],
-                                          },
-                                        },
-                                      },
-                                    },
-                                    0,
-                                  ],
-                                },
-                              },
-                            },
-                          },
-                          0,
-                        ],
-                      },
-                    ],
-                  },
-                  25,
-                  0,
-                ],
-              },
-
-              // Experience Match (25 Points)
-              {
-                $cond: [
-                  {
-                    $and: [
-                      {
-                        $or: [
-                          { $ne: [experience_from, null] },
-                          { $ne: [experience_to, null] },
-                        ],
-                      },
-                      {
-                        $gte: ["$experience", Number(experience_from) || 0],
-                      },
-                      {
-                        $lte: [
-                          "$experience",
-                          Number(experience_to) || Infinity,
-                        ],
-                      },
-                    ],
-                  },
-                  25,
-                  0,
-                ],
-              },
-            ],
-          },
+        $match: {
+          employer: employerId ? { $ne: employerId, } : { $exists: true },
         },
       },
-
-      // Sort by Score and Date
-      { $sort: { matchScore: -1, createdAt: -1 } },
-
-      // Select Required Fields
+      // Lookup candidate details
       {
-        $project: {
-          name: 1,
-          designation: 1,
-          "employment.categories": 1,
-          "profile.filename": 1,
-          experience: 1,
-          matchScore: 1,
-          contact: 1,
+        $lookup: {
+          from: "candidates",
+          localField: "candidate",
+          foreignField: "_id",
+          as: "candidate",
         },
       },
-
-      // Pagination with Facet
+      // Unwind the candidate array (it will be an array of length 1 or 0)
+      {
+        $unwind: {
+          path: "$candidate",
+          preserveNullAndEmptyArrays: true, // Keep entries even if no candidate is matched
+        },
+      },
+      // Replace root to simplify the structure, making the candidate the top-level document
+      {
+        $replaceRoot: { newRoot: "$candidate" },
+      },
+      // Apply additional filtering from matchConditions
+      {
+        $match: matchConditions,
+      },
+      // Group by candidate _id to ensure uniqueness
+      {
+        $group: {
+          _id: "$_id", // Group by candidate _id
+          candidate: { $first: "$$ROOT" }, // Take the first occurrence of each candidate
+        },
+      },
+      // Flatten back the candidate structure
+      {
+        $replaceRoot: { newRoot: "$candidate" },
+      },
+      // Pagination logic (skip and limit)
       {
         $facet: {
           data: [
@@ -715,8 +621,7 @@ const CandidatesForEmployer = async (
           totalCount: [{ $count: "count" }],
         },
       },
-
-      // Unwind Total Count
+      // Unwind total count to make it easier to access in the response
       {
         $unwind: {
           path: "$totalCount",
@@ -724,6 +629,9 @@ const CandidatesForEmployer = async (
         },
       },
     ]);
+    
+    // Results will have `data` (unique candidates) and `totalCount` (total number of candidates found)
+    
 
     // Response
     res.status(200).json({
