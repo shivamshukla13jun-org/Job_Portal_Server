@@ -70,6 +70,7 @@ const getJobs = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { page: reqPage, limit: reqLimit,createdAt,experience_from,experience_to, ...queries } = req.query;
         const today = new Date();
+        const userId = res.locals.userId as Types.ObjectId
 
         // Parse and set page and limit with fallback
         const page =  parseInt(reqPage as string, 10) || 1  // Ensure page is at least 0
@@ -153,6 +154,36 @@ const getJobs = async (req: Request, res: Response, next: NextFunction) => {
                 }
             },
             {
+                '$lookup': {
+                    'from': 'applications',
+                    'localField': 'applications',
+                    'foreignField': '_id',
+                    'as': 'applications'
+                }
+            },
+            {
+                $addFields: {
+                    isApplied: {
+                            $gt: [
+                                {
+                                    $size: {
+                                        $filter: {
+                                            input: "$applications",
+                                            as: "item",
+                                            cond: {
+                                                $eq: ["$$item.candidate", userId],
+                                            },
+                                        },
+                                    },
+                                },
+                                0,
+                            ],
+                        
+                      
+                    },
+                },
+            },
+            {
                 $unwind: {
                     path: "$employerId",
                     preserveNullAndEmptyArrays: true
@@ -186,6 +217,13 @@ const getJobs = async (req: Request, res: Response, next: NextFunction) => {
                     createdAt: queries["sort"] === 'new' ? -1 : 1
                 }
             },
+            {
+                $project:{
+                    applications:0,
+                    "candidate_requirement.job_info":0
+                }
+            }
+            ,
             {
                 $facet: {
                     data: [

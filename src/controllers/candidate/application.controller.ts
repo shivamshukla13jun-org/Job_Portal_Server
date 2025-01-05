@@ -67,7 +67,7 @@ const applyJob = async (
         {
           job: jobId,
           employer: job.employerId._id,
-          candidate: userId,
+          candidate: checkUser._id,
         },
       ],
       { session }
@@ -79,14 +79,14 @@ const applyJob = async (
       { $addToSet: { applications: newApplication._id } },
       { session }
     );
-
+   
     // Send email notification
-    //  sendEmail({
-    //   email: job.employerId.email,
-    //   subject: `Application for ${job.title} at ${job.employerId.name}`,
-    //   text: `You have a new application for the position of ${job.title}.`
-    // });
-
+     sendEmail({
+      email: job.employerId.email,
+      subject: `Application for ${job.title} at ${job.employerId.name}`,
+      text: `You have a new application for the position of ${job.title}.`
+    });
+    
     await session.commitTransaction();
     session.endSession();
 
@@ -185,7 +185,7 @@ const getAppliedJobs = async (
       throw new AppError("Failed to find user to apply for job!", 400);
     }
     const matchstage: any = {
-      candidate: userId,
+      candidate: checkUser._id,
     };
     if (status) {
       matchstage["status"] = status;
@@ -411,7 +411,7 @@ const getAllApplicants = async (
             {
               $match: {
                 $expr: {
-                  $eq: ["$userId", "$$candidateId"],
+                  $eq: ["$_id", "$$candidateId"],
                 },
               },
             },

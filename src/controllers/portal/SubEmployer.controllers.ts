@@ -187,7 +187,7 @@ class SubEmployerController {
     try {
       const subEmployers = await SubEmployer.findById({
         userId: req.params.id,
-      }).populate("userId dashboardPermissions", "name email isActive");
+      }).populate("userId ", "name email isActive");
 
       res.status(200).json({ sucesess: true, data: subEmployers });
     } catch (error) {
@@ -246,14 +246,24 @@ class SubEmployerController {
   }
   async MeetingLinklists(req: Request, res: Response, next: NextFunction) {
     try {
-      const { createdBy } = req.query;
+      let { page = 1, limit = 10,createdBy } = req.query;
+
+      const options = {
+        page: parseInt(page as string, 10) || 1,
+        limit: parseInt(limit as string, 10) || 8,
+      };
+  
+      // Calculate skip value for pagination
+      const skip = (options.page - 1) * options.limit;
+  
       // Save to the database
-      const newMeeting = await Meeting.find({ createdBy: createdBy });
-      
+      const newMeeting = await Meeting.find({ createdBy: createdBy }).skip(skip).limit(options.limit)
+      const totalItems=await Meeting.countDocuments()
       // Respond with the created meeting details
       return res.status(201).json({
         message: "Meeting scheduled successfully",
         data: newMeeting,
+        totalPages:Math.ceil((totalItems)/options.limit)
       });
     } catch (error) {
       next(error);

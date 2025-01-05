@@ -41,7 +41,7 @@ const employerMenu = [
   },
   {
     id: 6,
-    name: "Shortlisted Resumes",
+    name: "Shortlisted Candidates",
     icon: "la-bookmark-o",
     routePath: "/employers-dashboard/shortlisted-resumes",
     active: "",
@@ -52,6 +52,14 @@ const employerMenu = [
     name: "Sub Employer List",
     icon: "la-bookmark-o",
     routePath: "/employers-dashboard/subemployer",
+    active: "",
+    paramtype:"",
+  },
+  {
+    id: 6,
+    name: "Messages",
+    icon: "la-bookmark-o",
+    routePath: "/employers-dashboard/messages",
     active: "",
     paramtype:"",
   },

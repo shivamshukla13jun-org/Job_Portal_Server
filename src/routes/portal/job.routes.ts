@@ -18,7 +18,7 @@ router.route("/employer/:id")
 
 
 router.route("/")
-    .get(getJobs)
+    .get(verifyisCandidateLogin,getJobs)
     .post(
         verifyUserTypeToken(["employer","admin"]),
         createJob

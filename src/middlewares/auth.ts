@@ -8,6 +8,7 @@ import { AppError } from "./error"
 import User, { IUser } from "@/models/admin/user.model";
 import { JWT_EXPIRE, JWT_SECRET } from "@/config";
 import { UserType } from "@/models/admin/userType.model";
+import Candidate from "@/models/portal/candidate.model";
 
 // Extend the Response.locals interface to include userId
 declare global {
@@ -75,7 +76,7 @@ const verifyisCandidateLogin = async (req: Request, res: Response, next: NextFun
             return next(new AppError("Unauthorized user", 403));
         }
 
-        const user = await User.findById((decoded as jwt.JwtPayload).id);
+        const user = await Candidate.findOne({userId:(decoded as jwt.JwtPayload).id});
         if (!user) {
             return next(new AppError('Unauthorized user', 403));
         }
