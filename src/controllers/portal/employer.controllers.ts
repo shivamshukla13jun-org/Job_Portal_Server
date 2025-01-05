@@ -18,6 +18,7 @@ import ForwardedCV, {
   IForwardedCV,
 } from "@/models/portal/Forwarwardedcv.model";
 import { EmployerDashBoardGraph } from "@/utils/employerdashboardGraph";
+import { sendEmail } from "@/services/emails";
 
 /**
  @desc      Create an employer
@@ -356,7 +357,7 @@ const ForwardCV = async (req: Request, res: Response, next: NextFunction) => {
     if (!candidate) {
       throw new AppError("Candidate not found", 404);
     }
-
+     
     // Prepare forwarding results
     const forwardingResults: Array<ForwardingResult> = [];
     if (fromEmployerId) {
@@ -386,6 +387,17 @@ const ForwardCV = async (req: Request, res: Response, next: NextFunction) => {
         }
       }
     }
+// After creating the forwarding record
+sendEmail({
+  email: candidate.email,
+  subject: `Candidate Shortlisted Notification`,
+  template: "candidateShortlistNotification",
+  data: {
+    employerName: CheckEMployer.name,
+    candidateName: candidate.name,
+    additionalNotes: notes || null,
+  },
+});
 
     // Respond with results
     res.status(200).json({

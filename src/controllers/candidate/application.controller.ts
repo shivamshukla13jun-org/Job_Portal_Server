@@ -11,7 +11,8 @@ import { postedatesCondition } from "@/utils/postedadate";
 import SubEmployer from "@/models/portal/SubEmployer.model";
 import { Applicationsstats, ApplicationsstatsUnwindPath } from "@/utils/ApplicationStats";
 import ForwardedCV, { ForwardingStatus } from "@/models/portal/Forwarwardedcv.model";
-
+import ejs from "ejs"
+import path from "path";
 const applyJob = async (
   req: Request,
   res: Response,
@@ -40,10 +41,7 @@ const applyJob = async (
         400
       );
     }
-    // if (!checkUser.isresume) {
-    //   throw new AppError("Please fill Resume Details to apply for job!", 400);
-    // }
-
+    
     // Fetch the job details and employer
     const job: any = await Job.findById(jobId)
       .populate("employerId")
@@ -81,11 +79,18 @@ const applyJob = async (
     );
    
     // Send email notification
-     sendEmail({
+    sendEmail({
       email: job.employerId.email,
       subject: `Application for ${job.title} at ${job.employerId.name}`,
-      text: `You have a new application for the position of ${job.title}.`
+      template: "jobApplicationNotification",
+      data: {
+        employerName: job.employerId.name,
+        jobTitle: job.title,
+        candidateName: checkUser.name,
+        candidateEmail: checkUser.email,
+      }
     });
+    
     
     await session.commitTransaction();
     session.endSession();
@@ -123,9 +128,7 @@ const WIdrawJob = async (
         400
       );
     }
-    if (!checkUser.isresume) {
-      throw new AppError("Please fill Resume Details to apply for job!", 400);
-    }
+   
 
     // Check if the user has already applied for this job
     const existingApplication = await Application.findById(appId).session(
@@ -136,18 +139,23 @@ const WIdrawJob = async (
     }
 
     // Update the job's applications array
-    await Job.updateOne(
-      { _id: existingApplication.job },
+   const job:any= await Job.findByIdAndUpdate(existingApplication.job,
       { $unset: { applications: appId } },
       { session }
     );
 
     // Send email notification
-    //  sendEmail({
-    //   email: job.employerId.email,
-    //   subject: `Application for ${job.title} at ${job.employerId.name}`,
-    //   text: `You have a new application for the position of ${job.title}.`
-    // });
+    sendEmail({
+      email: job.employerId.email,
+      subject: `Application Withdrawal for ${job.title} at ${job.employerId.name}`,
+      template: "jobWithdrawalNotification",
+      data: {
+        employerName: job.employerId.name,
+        candidateName: checkUser.name,
+        jobTitle: job.title,
+      },
+    });
+    
     await ForwardedCV.deleteOne({
       candidateId: existingApplication.candidate,
       fromEmployerId: existingApplication.employer,
@@ -843,7 +851,7 @@ const updateStatus = async (req: Request, res: Response, next: NextFunction): Pr
     status = status.toLowerCase();
 console.log("applicationId",applicationId)
     // Fetch the application
-    const application = await Application.findById(applicationId).populate('candidate employer');
+    const application:any = await Application.findById(applicationId).populate('candidate employer');
     if (!application) {
       res.status(400).json({
         message: "Application not found.",
@@ -887,7 +895,18 @@ console.log("applicationId",applicationId)
       });
       console.log('Forwarded CV deleted successfully');
     }
-
+    sendEmail({
+      email: application?.candidate?.email ,
+      subject: "Application Status Update",
+      template: "applicationStatusUpdate",
+      data: {
+        candidateName: application?.candidate?.name,
+        jobTitle: application?.job?.title,
+        employerName: application?.employer?.name,
+        applicationStatus: status,
+      }
+    });
+    
     res.status(200).json({
       message: `Applicant status updated to ${status.charAt(0).toUpperCase() + status.slice(1)} successfully.`,
       success: true,
@@ -908,9 +927,7 @@ const interviewconfirmation = async (
       req.params.id
     );
 
-    const [result] = await Application.aggregate([
-      { $match: { _id: applicationId } },
-    ]);
+    const result:any= await Application.findByIdAndUpdate(applicationId,{$set:req.body} ).populate("employer job")
 
     if (!result) {
       res.status(400).json({
@@ -919,27 +936,21 @@ const interviewconfirmation = async (
       });
       return;
     }
-
-    await Application.updateOne(
-      { _id: applicationId },
-      { $set: req.body}
-    );
-
-    // if (result?.applicant?.email) {
-    //   let text: string = status === 'rejected' ? 'Update on Your Job Decline Application for the Position of' : 'Update on Your Application for the Position of';
-    //   sendEmail({
-    //     to: result?.applicant?.email,
-    //     subject: `${text}  ${result.job.title}`,
-    //     template: "jobSeekerEmail",
-    //     data: {
-    //       link: process.env.clienturl,
-    //       name: result.applicant?.personalDetails?.first_name,
-    //       jobTitle: result.job.title,
-    //       company: result?.company?.name,
-    //       status: status,
-    //     },
-    //   });
-    // }
+    if (result?.employer?.email) {
+      sendEmail({
+        email: result?.employer?.email,
+        subject: "Interview Confirmation",
+        template: "interviewConfirmation",
+        data: {
+          employerName: result?.employer?.name,
+          jobTitle: result?.job?.title,
+          interviewDate: result?.job?.interview_details?.date,
+          interviewTime: result?.job?.interview_details?.time,
+          interviewLocation: result?.job?.interview_details?.location,
+        }
+      });
+      
+    }
 
     res.status(200).json({
       message: `Information Send To Employer.`,
@@ -962,9 +973,13 @@ const deleteapplication = async (
       req.params.applicationId
     );
     const jobId: Types.ObjectId = new mongoose.Types.ObjectId(req.params.jobId);
-    const result = await Application.findById(applicationId).session(session);
-    const jobresult = await Job.findById(jobId).session(session);
+  
+   
 
+   const result:any= await Application.findByIdAndDelete(applicationId).populate("candidate employer").session(session);
+   const jobresult:any= await Job.findByIdAndUpdate(jobId, {
+      $pull: { applications: applicationId },
+    }).session(session);
     if (!result) {
       res.status(400).json({
         message: "Application not found.",
@@ -979,13 +994,32 @@ const deleteapplication = async (
       });
       return;
     }
-
-    await Application.findByIdAndDelete(applicationId).session(session);
-    await Job.findByIdAndUpdate(jobId, {
-      $pull: { applications: applicationId },
-    }).session(session);
+    console.log({result})
+    console.log({jobresult})
+      // Send email notification
+      sendEmail({
+        email: result.employer.email,
+        subject: `Application Withdrawal for ${jobresult.title} at ${result.employer.name}`,
+        template: "jobWithdrawalNotification",
+        data: {
+          employerName: result.employer.name,
+          candidateName:result.candidate.name,
+          jobTitle: jobresult.title,
+        },
+      });
+       sendEmail({
+        email: result.candidate.email,
+        subject: `Application Withdrawal for ${jobresult.title} at ${result.employer.name}`,
+        template: "jobWithdrawalNotification",
+        data: {
+          employerName: jobresult.employerId.name,
+          candidateName:result.candidate.name,
+          jobTitle: jobresult.title,
+        },
+      });
     await session.commitTransaction();
     session.endSession();
+   
     res.status(200).json({
       message: `Apllicant  deleted successfully.`,
       success: true,

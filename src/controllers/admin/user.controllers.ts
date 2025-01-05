@@ -485,15 +485,12 @@ const forgotUser = async (req: Request, res: Response, next: NextFunction) => {
     // Create JWT reset token
     const token = generateToken(checkUser, "10m");
     const resetURL = `${process.env.CLIENT_URL}/resetPassword?token=${token}`;
-    // Path to the EJS file
-    const templatePath = path.join(process.cwd(), "views", "resetPasswordEmail.ejs");
-        
-    // Render the EJS template
-    const htmlContent = await ejs.renderFile(templatePath, { resetURL });
+   
     sendEmail({
         email: checkUser.email,
         subject: 'Password Reset Token (Valid for 10 minutes)',
-        html:htmlContent,
+        data:{ resetURL },
+        template:'resetPasswordEmail'
     })
     res.status(200).json({
       status: "success",

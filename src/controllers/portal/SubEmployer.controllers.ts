@@ -68,7 +68,7 @@ class SubEmployerController {
       await newUser.save({ session });
       await newSubEmployer.save({ session });
       // Step 8: Send Activation Email
-      await sendEmail({
+       sendEmail({
         email,
         subject: "Account Activation",
         text: `Your  Password for Login is ${password}`,
@@ -221,13 +221,13 @@ class SubEmployerController {
         "views",
         "meeting-email.ejs"
       );
-      const emailContent = await ejs.renderFile(templatePath, req.body);
-
+     
       // Send email
       sendEmail({
         email,
         subject: "Your Meeting Details",
-        html: emailContent as string,
+       template:"meeting-email",
+       data:req.body
       });
       await session.commitTransaction();
       await session.endSession();
@@ -359,6 +359,14 @@ class SubEmployerController {
               },
             },
           },
+          {
+            $addFields: {
+              department: { 
+                $ifNull: ["$subEmployerDetails.department", "Employer"]
+              }
+            }
+          },
+          
       
           // Lookup Candidate Details
           {

@@ -1,6 +1,7 @@
 import nodemailer from "nodemailer"
 import dotenv from "dotenv"
-
+import ejs from "ejs"
+import path from "path";
 import { AppError } from "@/middlewares/error";
 
 dotenv.config()
@@ -9,11 +10,15 @@ export interface IEmail {
     email: string;
     subject: string;
     text?: string;
-    html?: string;
+    template?: string;
+    data?:any
 }
 
-export const sendEmail = async ({ email, subject, text, html }: IEmail) => {
+export const sendEmail = async ({ email, subject, text, template,data }: IEmail) => {
     try {
+        const templatePath = path.join(__dirname, `../templates/${template}.ejs`);
+  const emailBody = await ejs.renderFile(templatePath, data);
+
         const transporter = nodemailer.createTransport({
             service: process.env.MAIL_HOST,
             host: "smtp.gmail.com",
@@ -30,7 +35,7 @@ export const sendEmail = async ({ email, subject, text, html }: IEmail) => {
             to: email,
             subject: subject,
             text: text,
-            html: html  // Added HTML option
+            html: emailBody  as string // Added HTML option
         }
 
         const info = await transporter.sendMail(mailOptions)

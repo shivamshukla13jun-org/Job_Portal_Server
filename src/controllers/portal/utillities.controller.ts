@@ -183,7 +183,7 @@ const ContactUs = async (req: Request, res: Response, next: NextFunction) => {
               Message: ${message}
             `,
           };
-        await sendEmail(mailOptions)
+         sendEmail(mailOptions)
         res.status(200).json({
             success: true,
             message: 'Email sent successfully'

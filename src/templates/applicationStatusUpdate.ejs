@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Application Status Update</title>
+  </head>
+  <body>
+    <h2>Application Status Update</h2>
+    <p>Dear <strong><%= candidateName %></strong>,</p>
+    <p>
+      Your application for the position of <strong><%= jobTitle %></strong> at
+      <strong><%= employerName %></strong> has been updated.
+    </p>
+    <p>
+      <strong>New Status:</strong>
+      <span style="text-transform: capitalize;"><%= applicationStatus %></span>
+    </p>
+    <% if (applicationStatus === 'shortlisted') { %>
+      <p>
+        Congratulations! Your application has been shortlisted. The employer may reach out to you shortly for the next steps.
+      </p>
+    <% } else if (applicationStatus === 'rejected') { %>
+      <p>
+        We regret to inform you that your application was not selected for further processing.
+      </p>
+    <% } %>
+    <br />
+    <p>Best regards,</p>
+    <p><strong>Job Portal Team</strong></p>
+  </body>
+</html>

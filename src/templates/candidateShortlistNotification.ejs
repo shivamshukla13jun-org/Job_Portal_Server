@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Candidate Shortlisted</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+      }
+      .container {
+        padding: 20px;
+        border: 1px solid #e0e0e0;
+        border-radius: 5px;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+      .header {
+        background-color: #4caf50;
+        color: white;
+        padding: 10px;
+        text-align: center;
+        border-radius: 5px 5px 0 0;
+      }
+      .content {
+        margin-top: 20px;
+      }
+      .footer {
+        margin-top: 30px;
+        font-size: 12px;
+        color: #777;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h2>Candidate Shortlisted</h2>
+      </div>
+      <div class="content">
+        <p>Dear <strong><%= employerName %></strong>,</p>
+        <p>
+          The candidate <strong><%= candidateName %></strong> has been successfully shortlisted for further evaluation.
+        </p>
+        <% if (additionalNotes) { %>
+        <p><strong>Additional Notes:</strong> <%= additionalNotes %></p>
+        <% } %>
+        <p>
+          Please proceed with the next steps in the hiring process. If you have any questions, feel free to reach out to us.
+        </p>
+      </div>
+      <div class="footer">
+        <p>Best regards,<br />Job Portal Team</p>
+      </div>
+    </div>
+  </body>
+</html>
