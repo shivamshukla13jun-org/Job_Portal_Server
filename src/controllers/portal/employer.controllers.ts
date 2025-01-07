@@ -8,7 +8,7 @@ import Employer, {
 import { AppError } from "@/middlewares/error";
 import { validateEmployer } from "@/validations/employer";
 import Job from "@/models/portal/job.model";
-import { Application } from "@/models/candidate/application.model";
+import { Application, ISubEmployers } from "@/models/candidate/application.model";
 import SubEmployer from "@/models/portal/SubEmployer.model";
 import Candidate from "@/models/portal/candidate.model";
 import ForwardedCV, {
@@ -350,62 +350,58 @@ const ForwardCV = async (req: Request, res: Response, next: NextFunction) => {
       throw new AppError("EMployer not found", 404);
     }
     // Destructure request body
-    const { candidateId, subEmployerIds, notes } = req.body as ForwardCVBody;
+    const { applicationid, subEmployerIds, notes } = req.body as ForwardCVBody;
 
     // Validate candidate ID
-    const candidate = await Candidate.findById(candidateId);
-    if (!candidate) {
-      throw new AppError("Candidate not found", 404);
-    }
+   // Validate Application
+   const application:any = await Application.findById(applicationid).populate("candidate");
+   if (!application) {
+     throw new AppError("Application not found", 404);
+   }
      
     // Prepare forwarding results
     const forwardingResults: Array<ForwardingResult> = [];
-    if (fromEmployerId) {
-      // Create new forwarding record
-      await ForwardedCV.create({
-        candidateId,
-        fromEmployerId: CheckEMployer._id,
-        status: ForwardingStatus.PENDING,
-        additionalNotes: notes || undefined,
-      });
-    } else if (subEmployerIds && subEmployerIds.length > 0 && candidateId) {
+    if (subEmployerIds && subEmployerIds.length > 0) {
+      // Forwarding to multiple sub-employers
       for (const subEmployerId of subEmployerIds) {
+        const subEmployerIdObj = new Types.ObjectId(subEmployerId);
+
         // Check if already forwarded
-        const alreadyForwarded = await ForwardedCV.isAlreadyForwarded(
-          candidateId,
-          subEmployerId
+        const alreadyForwarded  = application.toSubEmployers.some(
+          (entry:ISubEmployers) => entry.subEmployerId.equals(subEmployerIdObj)
         );
+
         if (!alreadyForwarded) {
-          // Create new forwarding record
-          await ForwardedCV.create({
-            candidateId,
-            fromEmployerId: CheckEMployer._id,
-            toSubEmployerId: subEmployerId,
-            status: ForwardingStatus.PENDING,
-            additionalNotes: notes || undefined,
+          application.toSubEmployers.push({
+            subEmployerId: subEmployerIdObj,
+            status: 'pending',
+            additionalNotes: notes || '',
           });
         }
       }
     }
-// After creating the forwarding record
-sendEmail({
-  email: candidate.email,
-  subject: `Candidate Shortlisted Notification`,
-  template: "candidateShortlistNotification",
-  data: {
-    employerName: CheckEMployer.name,
-    candidateName: candidate.name,
-    additionalNotes: notes || null,
-  },
-});
+
+    // Save updated application
+    await application.save();
+
+    // Send email notification
+    await sendEmail({
+      email: application?.candidate?.email,
+      subject: `Candidate Shortlisted Notification`,
+      template: "candidateShortlistNotification",
+      data: {
+        employerName: CheckEMployer.name,
+        candidateName: application?.candidate?.name,
+        additionalNotes: notes || null,
+      },
+    });
 
     // Respond with results
     res.status(200).json({
       success: true,
       data: {
-        candidateId,
-        forwardedTo: subEmployerIds,
-        forwardingResults,
+        applicationid,
+        forwardedTo: fromEmployerId ? [fromEmployerId] : subEmployerIds,
       },
       message: "CV forwarding process completed",
     });
@@ -540,29 +536,24 @@ const CandidatesForEmployer = async (
       limit = 6,
       page = 1,
     } = req.query as Partial<CandidatQuery>;
-    const userId = res.locals.userId
+    const userId = res.locals.userId;
 
     const checkEmployer = await Employer.findOne({ userId: userId });
-    if(!checkEmployer){
-      throw new AppError("EMployer not Found",400)
+    if (!checkEmployer) {
+      throw new AppError("Employer not Found", 400);
     }
     const employerId = checkEmployer?._id ? new Types.ObjectId(checkEmployer._id as Types.ObjectId) : null;
 
     const matchConditions: any = {};
 
-    // Qualification Match
     if (qualification) {
       matchConditions.education = {
         $elemMatch: { qualification },
       };
     }
-
-    // Keyword Match
     if (keyword) {
       matchConditions.designation = { $regex: keyword, $options: "i" };
     }
-
-    // Category Match
     if (category) {
       matchConditions.employment = {
         $elemMatch: {
@@ -570,25 +561,29 @@ const CandidatesForEmployer = async (
         },
       };
     }
-
-    // Experience Match
     if (experience_from || experience_to) {
       matchConditions.experience = {};
-      if (experience_from)
-        matchConditions.experience.$gte = Number(experience_from);
-      if (experience_to)
-        matchConditions.experience.$lte = Number(experience_to);
+      if (experience_from) matchConditions.experience.$gte = Number(experience_from);
+      if (experience_to) matchConditions.experience.$lte = Number(experience_to);
     }
 
-    // Aggregate Pipeline
     const [results] = await Application.aggregate([
-      // Exclude applications for a specific employer
       {
         $match: {
-          employer: employerId ? { $ne: employerId, } : { $exists: true },
+          employer: employerId,
         },
       },
-      // Lookup candidate details
+      {
+        $lookup: {
+          from: "jobs",
+          localField: "job",
+          foreignField: "_id",
+          as: "jobDetails"
+        }
+      },
+      {
+        $unwind: "$jobDetails"
+      },
       {
         $lookup: {
           from: "candidates",
@@ -597,55 +592,156 @@ const CandidatesForEmployer = async (
           as: "candidate",
         },
       },
-      // Unwind the candidate array (it will be an array of length 1 or 0)
       {
-        $unwind: {
-          path: "$candidate",
-          preserveNullAndEmptyArrays: true, // Keep entries even if no candidate is matched
-        },
+        $unwind: "$candidate"
       },
-      // Replace root to simplify the structure, making the candidate the top-level document
+    
       {
-        $replaceRoot: { newRoot: "$candidate" },
+        $match: matchConditions
       },
-      // Apply additional filtering from matchConditions
       {
-        $match: matchConditions,
+        $addFields: {
+          jobQualification: {
+            $reduce: {
+              input: {
+                $filter: {
+                  input: "$jobDetails.personal_info",
+                  as: "info",
+                  cond: { $eq: ["$$info.info", "Degree and Specialisation"] }
+                }
+              },
+              initialValue: [],
+              in: { $concatArrays: ["$$value", "$$this.assets.label"] }
+            }
+          }
+        }
       },
-      // Group by candidate _id to ensure uniqueness
       {
-        $group: {
-          _id: "$_id", // Group by candidate _id
-          candidate: { $first: "$$ROOT" }, // Take the first occurrence of each candidate
-        },
+        $addFields: {
+          scores: {
+            // Designation/Job Title match (35 points)
+            designationScore: {
+              $let: {
+                vars: {
+                  titleWords: { $split: ["$jobDetails.title", " "] }
+                },
+                in: {
+                  $cond: {
+                    if: {
+                      $anyElementTrue: {
+                        $map: {
+                          input: "$$titleWords",
+                          as: "word",
+                          in: {
+                            $regexMatch: {
+                              input: "$candidate.designation",
+                              regex: { $concat: [".*", "$$word", ".*"] },
+                              options: "i"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    then: 25,
+                    else: 0
+                  }
+                }
+              }
+            },
+            // Qualification match (25 points)
+            qualificationScore: {
+              $cond: {
+                if: {
+                  $anyElementTrue: {
+                    $map: {
+                      input: "$candidate.education",
+                      as: "edu",
+                      in: {
+                        $in: ["$$edu.qualification", "$jobQualification"]
+                      }
+                    }
+                  }
+                },
+                then: 25,
+                else: 0
+              }
+            },
+            // Category match (25 points)
+            categoryScore: {
+              $cond: {
+                if: {
+                  $anyElementTrue: {
+                    $map: {
+                      input: "$candidate.employment",
+                      as: "emp",
+                      in: {
+                        $anyElementTrue: {
+                          $map: {
+                            input: "$$emp.categories",
+                            as: "cat",
+                            in: {
+                              $in: ["$$cat.value", "$jobDetails.categories.value"]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                then: 25,
+                else: 0
+              }
+            },
+            // Experience match (25 points)
+            experienceScore: {
+              $multiply: [
+                {
+                  $min: [
+                    {
+                      $divide: [
+                        "$candidate.experience",
+                        { $max: ["$jobDetails.candidate_requirement.experience", 1] }
+                      ]
+                    },
+                    1
+                  ]
+                },
+                25
+              ]
+            }
+          }
+        }
       },
-      // Flatten back the candidate structure
       {
-        $replaceRoot: { newRoot: "$candidate" },
+        $addFields: {
+          matchScore: {
+            $add: [
+              "$scores.designationScore",
+              "$scores.qualificationScore",
+              "$scores.categoryScore",
+              "$scores.experienceScore"
+            ]
+          }
+        }
       },
-      // Pagination logic (skip and limit)
+      { $sort: { matchScore: -1 } },
       {
         $facet: {
           data: [
             { $skip: (Number(page) - 1) * Number(limit) },
-            { $limit: Number(limit) },
+            { $limit: Number(limit) }
           ],
-          totalCount: [{ $count: "count" }],
-        },
+          totalCount: [{ $count: "count" }]
+        }
       },
-      // Unwind total count to make it easier to access in the response
       {
         $unwind: {
           path: "$totalCount",
-          preserveNullAndEmptyArrays: true,
-        },
-      },
+          preserveNullAndEmptyArrays: true
+        }
+      }
     ]);
-    
-    // Results will have `data` (unique candidates) and `totalCount` (total number of candidates found)
-    
 
-    // Response
     res.status(200).json({
       success: true,
       data: results?.data || [],

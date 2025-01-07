@@ -9,9 +9,9 @@ import Employer from "@/models/portal/employer.model";
 import { sendEmail } from "@/services/emails";
 import { validateMeeting } from "@/validations/subemployer";
 import path from "path";
-import ejs from "ejs";
 import ForwardedCV from "@/models/portal/Forwarwardedcv.model";
 import Meeting from "@/models/portal/CreateMeetingLink.model";
+import { Application } from "@/models/candidate/application.model";
 
 class SubEmployerController {
   async createSubEmployer(req: Request, res: Response, next: NextFunction) {
@@ -287,7 +287,7 @@ class SubEmployerController {
       next(error);
     }
   }
-  async getForwardedCVs(req: Request, res: Response, next: NextFunction) {
+ async getForwardedCVs (req: Request, res: Response, next: NextFunction)  {
     try {
       // Destructure and validate query parameters
       const { SubEmployerId, EmployerId, page = '1', limit = '10' } = req.query as {
@@ -304,22 +304,36 @@ class SubEmployerController {
       // Build the match filter dynamically
       const match: any = {};
       if (SubEmployerId) {
-        match['toSubEmployerId'] = new Types.ObjectId(SubEmployerId);
+        match['toSubEmployers.subEmployerId'] = new Types.ObjectId(SubEmployerId);
       }
       if (EmployerId) {
-        match['fromEmployerId'] = new Types.ObjectId(EmployerId);
+        match['employer'] = new Types.ObjectId(EmployerId);
       }
   
       // Run Aggregation Pipeline with Pagination
       const [data, total] = await Promise.all([
-        ForwardedCV.aggregate([
-          { $match: match }, // Filter documents based on conditions
-          
+        Application.aggregate([
+          { $match: match }, // Filter applications based on conditions
+  
+          // Unwind toSubEmployers to access each entry
+          { $unwind: '$toSubEmployers' },
+  
+          // Apply filters on the unwound documents
+          ...(SubEmployerId
+            ? [
+                {
+                  $match: {
+                    'toSubEmployers.subEmployerId': new Types.ObjectId(SubEmployerId),
+                  },
+                },
+              ]
+            : []),
+  
           // Lookup SubEmployer Details
           {
             $lookup: {
               from: 'subemployers',
-              localField: 'toSubEmployerId',
+              localField: 'toSubEmployers.subEmployerId',
               foreignField: '_id',
               as: 'subEmployerDetails',
             },
@@ -330,12 +344,12 @@ class SubEmployerController {
               preserveNullAndEmptyArrays: true,
             },
           },
-      
+  
           // Lookup Employer Details
           {
             $lookup: {
               from: 'employers',
-              localField: 'fromEmployerId',
+              localField: 'employer',
               foreignField: '_id',
               as: 'employerDetails',
             },
@@ -346,33 +360,12 @@ class SubEmployerController {
               preserveNullAndEmptyArrays: true,
             },
           },
-      
-          // Add dynamic department field
-          {
-            $addFields: {
-              department: {
-                $cond: {
-                  if: { $ne: ['$subEmployerDetails', null] }, // If SubEmployer exists
-                  then: '$subEmployerDetails.department',
-                  else: 'Employer', // Default department
-                },
-              },
-            },
-          },
-          {
-            $addFields: {
-              department: { 
-                $ifNull: ["$subEmployerDetails.department", "Employer"]
-              }
-            }
-          },
-          
-      
+  
           // Lookup Candidate Details
           {
             $lookup: {
               from: 'candidates',
-              localField: 'candidateId',
+              localField: 'candidate',
               foreignField: '_id',
               as: 'candidateDetails',
             },
@@ -383,40 +376,49 @@ class SubEmployerController {
               preserveNullAndEmptyArrays: true,
             },
           },
-      
-          // Group by candidateId
+  
+          // Add dynamic department field
           {
-            $group: {
-              _id: '$candidateId',
-              originalIds: { $first: '$_id' }, // Preserve original _id values
-              mergedData: { $first: '$$ROOT' }, // Take the first document and spread it
-
+            $addFields: {
+              department: {
+                $ifNull: ['$subEmployerDetails.department', 'Employer'],
+              },
             },
           },
+  
+          // Group by applicationId
           {
-            $replaceRoot: { newRoot: { $mergeObjects: ['$mergedData', { candidateId: '$_id' ,},{_id:"$originalIds"}] } }
+            $group: {
+              _id: '$_id',
+              employer: { $first: '$employerDetails' },
+              candidateDetails: { $first: '$candidateDetails' },
+              subEmployers: { $push: '$toSubEmployers' },
+              department: { $first: '$department' },
+              job: { $first: '$job' },
+            },
           },
-         
-      
-         
-      
+  
           // Apply Pagination
           { $skip: skip },
           { $limit: pageSize },
         ]),
-      
+  
         // Total count for pagination metadata
-        ForwardedCV.aggregate([
+        Application.aggregate([
           { $match: match },
-          {
-            $group: {
-              _id: '$candidateId',
-            },
-          },
+          { $unwind: '$toSubEmployers' },
+          ...(SubEmployerId
+            ? [
+                {
+                  $match: {
+                    'toSubEmployers.subEmployerId': new Types.ObjectId(SubEmployerId),
+                  },
+                },
+              ]
+            : []),
           { $count: 'total' },
         ]).then((res) => (res[0] ? res[0].total : 0)),
       ]);
-      
   
       // Respond with paginated data
       return res.status(200).json({
@@ -433,6 +435,7 @@ class SubEmployerController {
       next(error);
     }
   }
+  
   async deleteForwardedCVs(req: Request, res: Response, next: NextFunction) {
     try {
       const data = await ForwardedCV.findByIdAndDelete(req.query.id);

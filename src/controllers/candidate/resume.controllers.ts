@@ -7,6 +7,7 @@ import { validateResume } from "@/validations/resume";
 import { IFile } from "@/types/file";
 import User from "@/models/admin/user.model";
 import Candidate from "@/models/portal/candidate.model";
+import { Application } from "@/models/candidate/application.model";
 
 /**
  @desc      Create an resume
@@ -108,19 +109,22 @@ const getResume = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const id = req.params.id;
 
-        const resume = await Candidate.findById(id)
+        const resume = await Application.findById(id).populate('candidate').lean();
         if (!resume) {
             throw new AppError('Failed to find data', 400);
         }
 
+        const data: any = { ...resume.candidate }; // Spread candidate data
+        data["status"] = resume.status; // Add status field explicitly
+
         res.status(200).json({
             success: true,
-            data: resume,
-            message: 'dara fetched'
+            data: data || {},
+            message: 'Data fetched successfully'
         });
 
     } catch (error) {
-        next(error)
+        next(error);
     }
 };
 

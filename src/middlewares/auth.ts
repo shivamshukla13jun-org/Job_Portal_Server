@@ -65,27 +65,27 @@ const verifyisCandidateLogin = async (req: Request, res: Response, next: NextFun
         }
         const token = bearer?.split(" ")[1];
 
-        let decoded;
+        let decoded:any
         try {
             decoded = jwt.verify(token, JWT_SECRET as string);
         } catch (jwtError) {
             return next(new AppError("Invalid or expired token", 401));
         }
 
-        if (!decoded) {
-            return next(new AppError("Unauthorized user", 403));
+        if (decoded) {
+            res.locals.userId=decoded.id as Types.ObjectId
         }
 
         const user = await Candidate.findOne({userId:(decoded as jwt.JwtPayload).id});
-        if (!user) {
-            return next(new AppError('Unauthorized user', 403));
+        if (user) {
+            res.locals.candidateId = user._id as Types.ObjectId;
         }
 
-        res.locals.candidateId = user._id as Types.ObjectId;
-        res.locals.userId=user.userId as Types.ObjectId
+        
         next();
 
     } catch (error) {
+        console.log(error)
         next(error);
     }
 };

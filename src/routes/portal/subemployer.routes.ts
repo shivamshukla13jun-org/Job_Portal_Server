@@ -2,6 +2,7 @@ import express from 'express';
 import SubEmployerController from '@/controllers/portal/SubEmployer.controllers';
 import { verifyToken, verifyUserTypeToken } from "@/middlewares/auth";
 import { getAllShortlistApplicants } from '@/controllers/candidate/application.controller';
+import meetingControllers from '@/controllers/portal/meeting.controllers';
 
 const router = express.Router();
 
@@ -14,10 +15,13 @@ router.route("/").post(
     SubEmployerController.getSubEmployers
 );
 router.route('/shortlistcvs').get( verifyUserTypeToken(["subemployer","employer"]),SubEmployerController.getForwardedCVs)
-.delete( verifyUserTypeToken(["subemployer","employer"]),SubEmployerController.deleteForwardedCVs)
-router.route('/meetings').get( verifyUserTypeToken(["subemployer","employer"]),SubEmployerController.MeetingLinklists).post( verifyUserTypeToken(["subemployer","employer"]),SubEmployerController.CreateMeetingLink)
+.delete( verifyUserTypeToken(["subemployer","employer"]),SubEmployerController.deleteForwardedCVs
+)
+// Meeting Links
+router.route('/meetings').get( verifyUserTypeToken(["subemployer","employer"]),meetingControllers.MeetingLinklists).post( verifyUserTypeToken(["subemployer","employer"]),meetingControllers.CreateMeetingLink)
+router.route('/meetings/:id').delete(verifyUserTypeToken(["subemployer","employer"]),meetingControllers.deleteMeetingLink)
 
-router.route('/meetings/:id').delete(verifyUserTypeToken(["subemployer","employer"]),SubEmployerController.deleteMeetingLink)
+// End Meeting Links 
 router.route('/activate/:id').put( verifyUserTypeToken(["employer"]),SubEmployerController.ActivateDeactivate);
 // Update sub-employer
 router.route("/:id")

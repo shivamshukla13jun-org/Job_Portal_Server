@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from "express";
 import { sendEmail } from "@/services/emails";
 import Candidate from "@/models/portal/candidate.model";
 import Job from "@/models/portal/job.model";
-import { Application } from "@/models/candidate/application.model";
+import { Application, IApplication } from "@/models/candidate/application.model";
 import { AppError } from "@/middlewares/error";
 import { generateToken } from "@/middlewares/auth";
 import Employer from "@/models/portal/employer.model";
@@ -849,9 +849,8 @@ const updateStatus = async (req: Request, res: Response, next: NextFunction): Pr
     }
 
     status = status.toLowerCase();
-console.log("applicationId",applicationId)
     // Fetch the application
-    const application:any = await Application.findById(applicationId).populate('candidate employer');
+    const application:any = await Application.findByIdAndUpdate(applicationId,{status:status}).populate('candidate employer');
     if (!application) {
       res.status(400).json({
         message: "Application not found.",
@@ -860,41 +859,8 @@ console.log("applicationId",applicationId)
       return;
     }
 
-    // Update application status
-    application.status = status as 'pending' | 'shortlisted' | 'rejected';
     await application.save();
-    const candidateid=application?.candidate?.id
-    const employerid=application?.employer?.id
-    // Handle shortlisted status: Forward CV
-    if (status === 'shortlisted' && candidateid && employerid) {
-      console.log(application)
-      const alreadyForwarded = await ForwardedCV.findOne({
-        candidateId:  candidateid,
-        fromEmployerId:employerid
-      } );
-
-      if (!alreadyForwarded) {
-        await ForwardedCV.create({
-          candidateId: candidateid,
-          fromEmployerId: employerid,
-          status: ForwardingStatus.PENDING,
-          forwardedAt: new Date(),
-          isActive: true,
-        });
-        console.log('CV forwarded successfully');
-      }
-    }
-
-    // Handle rejected status: Delete forwarded CV
-    if (status === 'rejected'  && candidateid && employerid) {
-      console.log(application)
-
-      await ForwardedCV.deleteOne({
-        candidateId: candidateid,
-        fromEmployerId: employerid,
-      });
-      console.log('Forwarded CV deleted successfully');
-    }
+    
     sendEmail({
       email: application?.candidate?.email ,
       subject: "Application Status Update",
@@ -926,9 +892,10 @@ const interviewconfirmation = async (
     const applicationId: Types.ObjectId = new mongoose.Types.ObjectId(
       req.params.id
     );
-
-    const result:any= await Application.findByIdAndUpdate(applicationId,{$set:req.body} ).populate("employer job")
-
+    const result:any= await Application.findByIdAndUpdate(applicationId,{
+      $set:{"meeting.intrviewConfirmation":req.body.intrviewConfirmation}
+    }).populate("employer job")
+   
     if (!result) {
       res.status(400).json({
         message: "Application not found.",
@@ -944,9 +911,9 @@ const interviewconfirmation = async (
         data: {
           employerName: result?.employer?.name,
           jobTitle: result?.job?.title,
-          interviewDate: result?.job?.interview_details?.date,
-          interviewTime: result?.job?.interview_details?.time,
-          interviewLocation: result?.job?.interview_details?.location,
+          interviewDate: result?.meeting?.date,
+          interviewTime: result?.meeting?.time,
+          interviewLocation: result?.meeting?.location,
         }
       });
       

@@ -1,5 +1,9 @@
 import mongoose, { Document, Schema, Types } from 'mongoose';
+export interface IInterviewDetails {
+    message:string;
+    confirm:boolean;
 
+}
 // Define the Meeting interface
 export interface IMeeting extends Document {
     date: string;
@@ -9,6 +13,7 @@ export interface IMeeting extends Document {
     email: string;
     phone: string;
     message: string;
+    intrviewConfirmation: IInterviewDetails;
     meetingLink: string;
     createdBy:string;
 }
@@ -27,7 +32,17 @@ const MeetingSchema: Schema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'User',
         required: [true, 'Creator ID is required']
-    }
+    },
+    intrviewConfirmation: {
+        message: {
+            type: String,
+            default: ""
+        },
+        confirm: {
+            type: Boolean,
+            default: false
+        },
+    },
 }, {
     timestamps: true,
 });

@@ -9,7 +9,7 @@ export enum ForwardingStatus {
 }
 // Update interface to use string representation of ObjectId
 export interface ForwardCVBody {
-    candidateId: Types.ObjectId;
+    applicationid: Types.ObjectId;
     subEmployerIds?: Types.ObjectId[];
     notes?: string;
 }
@@ -18,7 +18,7 @@ export interface ForwardCVBody {
 export interface ForwardingResult {
     toSubEmployerId: Types.ObjectId;
     fromEmployerId: Types.ObjectId;
-    candidateId: Types.ObjectId;
+    applicationid: Types.ObjectId;
     status: string;
     additionalNotes?: string;
     message: string;
@@ -26,7 +26,7 @@ export interface ForwardingResult {
 
 // Interface for ForwardedCV document
 export interface IForwardedCV extends Document {
-    candidateId: Types.ObjectId;
+    applicationid: Types.ObjectId;
     fromEmployerId: Types.ObjectId;
     toSubEmployerId: Types.ObjectId;
     status: ForwardingStatus;
@@ -39,7 +39,7 @@ export interface IForwardedCV extends Document {
 }
 
 const forwardedCVSchema = new Schema<IForwardedCV>({
-    candidateId: {
+    applicationid: {
         type: Schema.Types.ObjectId,
         ref: 'Candidate',
         required: [true, 'Candidate ID is required']
@@ -82,7 +82,7 @@ const forwardedCVSchema = new Schema<IForwardedCV>({
 });
 // Create indexes after schema definition
 forwardedCVSchema.index({ 
-    candidateId: 1, 
+    applicationid: 1, 
     toSubEmployerId: 1 
 }, { 
     unique: true 
@@ -94,11 +94,11 @@ forwardedCVSchema.index({ status: 1 });
 
 // Static method to check if a candidate has already been forwarded to a sub-employer
 forwardedCVSchema.statics.isAlreadyForwarded = async function(
-    candidateId: Types.ObjectId, 
+    applicationid: Types.ObjectId, 
     toSubEmployerId: Types.ObjectId
 ): Promise<boolean> {
     const existingForwarding = await this.findOne({
-        candidateId,
+        applicationid,
         toSubEmployerId,
     });
     return !!existingForwarding;
@@ -125,7 +125,7 @@ forwardedCVSchema.methods.updateStatus = function(
 // Extend the schema with a type-safe static method
 interface ForwardedCVModel extends Model<IForwardedCV> {
     isAlreadyForwarded(
-        candidateId: Types.ObjectId, 
+        applicationid: Types.ObjectId, 
         toSubEmployerId: Types.ObjectId
     ): Promise<boolean>;
 }
