@@ -16,7 +16,7 @@ export interface IEmail {
 
 export const sendEmail = async ({ email, subject, text, template,data }: IEmail) => {
     try {
-        const templatePath = path.join(__dirname, `../templates/${template}.ejs`);
+        const templatePath = path.join(process.cwd(), `views`,`${template}.ejs`);
   const emailBody = await ejs.renderFile(templatePath, data);
 
         const transporter = nodemailer.createTransport({
