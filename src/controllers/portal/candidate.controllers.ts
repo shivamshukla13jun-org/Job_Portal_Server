@@ -275,7 +275,7 @@ const   candidateDashboard = async (req: Request, res: Response, next: NextFunct
         const [Applicationdata]:any[] = await Application.aggregate([
             {
                 $match:{
-                    candidate:userId
+                    candidate:checkCandidate._id
               },
             },
             {

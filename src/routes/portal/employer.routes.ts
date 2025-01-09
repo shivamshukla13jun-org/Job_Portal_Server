@@ -4,6 +4,7 @@ import path from "path";
 import { createEmployer, getEmployers, getEmployer, updateEmployer, deleteEmployer, CandidatesForEmployer,ForwardCV, getSubEmployers } from "@/controllers/portal/employer.controllers";
 import { verifyUserTypeToken } from "@/middlewares/auth";
 import createMulterMiddleware from "@/libs/multer";
+import meetingControllers from "@/controllers/portal/meeting.controllers";
 
 const router = Router();
 
@@ -26,10 +27,15 @@ const upload = createMulterMiddleware({
     ],
     maxFileSize: 1024 * 1024 * 10
 });
+// Forward Cvs
 router.route("/forwardcv").post(verifyUserTypeToken(["employer","admin"]),ForwardCV)
+// Forward candidates
 router.route("/candidates").get(verifyUserTypeToken(["employer"]),CandidatesForEmployer)
+// Forward SubEmployers
 router.route("/getSubEmployers/:id").get(verifyUserTypeToken(["employer","admin"]),getSubEmployers)
-// routes
+// Forward SubEmployers
+router.route("/meetings/:id").get(verifyUserTypeToken(["employer","admin"]),meetingControllers.EmployerMeetingLinklists)
+// Single Employer Details
 router.route("/")
     .get(verifyUserTypeToken(["employer","admin"]), getEmployers)
     .post(
