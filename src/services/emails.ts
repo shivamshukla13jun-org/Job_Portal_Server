@@ -5,7 +5,6 @@ import path from "path";
 import { AppError } from "@/middlewares/error";
 
 dotenv.config()
-
 export interface IEmail {
     email: string;
     subject: string;
@@ -30,20 +29,22 @@ export const sendEmail = async ({ email, subject, text, template,data }: IEmail)
             }
         })
 
-        const mailOptions = {
+        const mailOptions:any = {
             from: process.env.MAIL_USERNAME,
             to: email,
             subject: subject,
             text: text,
-            html: emailBody  as string // Added HTML option
-        }
 
+        }
+        if(emailBody){
+            mailOptions["html"]=emailBody  as any
+        }
         const info = await transporter.sendMail(mailOptions)
 
         return info
     } catch (error) {
         console.error('Email sending error:', error);
-        throw new AppError('Failed to send Email', 500)
+        // throw new AppError('Failed to send Email', 500)
     }
 }
 
