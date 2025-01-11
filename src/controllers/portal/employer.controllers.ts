@@ -555,7 +555,7 @@ const CandidatesForEmployer = async (
       matchConditions.designation = { $regex: keyword, $options: "i" };
     }
     if (category) {
-      matchConditions.employment = {
+      matchConditions["employment"] = {
         $elemMatch: {
           categories: { $elemMatch: { value: category } },
         },

@@ -15,9 +15,7 @@ export interface IEmail {
 
 export const sendEmail = async ({ email, subject, text, template,data }: IEmail) => {
     try {
-        const templatePath = path.join(process.cwd(), `views`,`${template}.ejs`);
-  const emailBody = await ejs.renderFile(templatePath, data);
-
+      
         const transporter = nodemailer.createTransport({
             service: process.env.MAIL_HOST,
             host: "smtp.gmail.com",
@@ -36,7 +34,10 @@ export const sendEmail = async ({ email, subject, text, template,data }: IEmail)
             text: text,
 
         }
-        if(emailBody){
+        
+        if(template ){
+            const templatePath = path.join(process.cwd(), `views`,`${template}.ejs`);
+            const emailBody = await ejs.renderFile(templatePath, data);
             mailOptions["html"]=emailBody  as any
         }
         const info = await transporter.sendMail(mailOptions)
@@ -44,7 +45,7 @@ export const sendEmail = async ({ email, subject, text, template,data }: IEmail)
         return info
     } catch (error) {
         console.error('Email sending error:', error);
-        // throw new AppError('Failed to send Email', 500)
+        throw new AppError('Failed to send Email', 500)
     }
 }
 

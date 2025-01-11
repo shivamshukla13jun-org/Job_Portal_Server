@@ -43,9 +43,17 @@ const employerMenu = [
     id: 6,
     name: "Forwrad Applications",
     icon: "la-bookmark-o",
-    routePath: "/employers-dashboard/shortlisted-resumes",
+    routePath: "/employers-dashboard/forward-resumes",
     active: "",
     paramtype:"EmployerId",
+  },
+  {
+    id: 6,
+    name: "Shortlisted Candidates",
+    icon: "la-bookmark-o",
+    routePath: "/employers-dashboard/shortlisted-candidates/shortlisted",
+    active: "",
+    paramtype:"",
   },
   {
     id: 6,
