@@ -11,7 +11,7 @@ const router = Router();
 // routes
 
 router.route("/employer/:id")
-    .get(verifyUserTypeToken(["employer","admin"]), EmployerDashboard)
+    .get(verifyUserTypeToken(["employer","admin","subemployer"]), EmployerDashboard)
 router.route("/subemployer/:id")
     .get(verifyUserTypeToken(["subemployer","admin"]), EmployerDashboard)
 router.route("/candidate")

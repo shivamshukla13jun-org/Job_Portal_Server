@@ -77,7 +77,7 @@ const employerMenu = [
     icon: "la-user-tie",
     routePath: "/employers-dashboard/meetinglinks",
     active: "",
-    paramtype:"createdBy",
+    paramtype:"",
     userAcitive:""
   },
   // {
