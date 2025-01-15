@@ -1,3 +1,4 @@
+import { StatusPayload } from './../../models/candidate/application.model';
 import mongoose, { Types } from "mongoose";
 import { Request, Response, NextFunction } from "express";
 import { sendEmail } from "@/services/emails";
@@ -393,6 +394,106 @@ const getAllApplicants = async (
       {
         $match: matchQueriesupper,
       },
+       // Lookup SubEmployer Details
+       {
+        $lookup: {
+          from: "subemployers",
+          localField: "toSubEmployers.subEmployerId",
+          foreignField: "_id",
+          as: "subEmployerDetails",
+        },
+      },
+      {
+        $unwind: {
+          path: "$subEmployerDetails",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+
+      // Lookup Employer Details
+      {
+        $lookup: {
+          from: "employers",
+          localField: "employer",
+          foreignField: "_id",
+          as: "employerDetails",
+        },
+      },
+      {
+        $unwind: {
+          path: "$employerDetails",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      // Add dynamic field for shortlistedByName
+      {
+        
+          $addFields: {
+            selectedBy: {
+              $cond: {
+                if: {
+                  $eq: ["$shortlistedby", "$subEmployerDetails.userId"],
+                },
+                then: {
+                  $concat: [
+                    "shortlisted By ",
+                    "$subEmployerDetails.name",
+                    "(",
+                    "$subEmployerDetails.department",
+                    ")",
+                  ],
+                },
+                else: {
+                  $cond: {
+                    if: {
+                      $eq: ["$shortlistedby", "$employerDetails.userId"],
+                    },
+                    then: {
+                      $concat: [
+                        "shortlisted By ",
+                        "$employerDetails.name",
+                        "(Employer)",
+                      ],
+                    },
+                    else: {
+                      $cond: {
+                        if: {
+                          $eq: ["$rejectedby", "$subEmployerDetails.userId"],
+                        },
+                        then: {
+                          $concat: [
+                            "rejected By ",
+                            "$subEmployerDetails.name",
+                            "(",
+                            "$subEmployerDetails.department",
+                            ")",
+                          ],
+                        },
+                        else: {
+                          $cond: {
+                            if: {
+                              $eq: ["$rejectedby", "$employerDetails.userId"],
+                            },
+                            then: {
+                              $concat: [
+                                "rejected By ",
+                                "$employerDetails.name",
+                                "(Employer)",
+                              ],
+                            },
+                            else: null // Default case if neither shortlistedBy nor rejectedBy are set
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        
+        
+      },
       {
         $lookup: {
           from: "jobs",
@@ -428,7 +529,13 @@ const getAllApplicants = async (
         },
       },
       { $unwind: { path: "$candidate", preserveNullAndEmptyArrays: true } },
-       
+      
+      {
+        $project:{
+          "employerDetails":0,
+          "subEmployerDetails":0
+        }
+      },
       {
         $match: {
           ...matchQueries,
@@ -837,20 +944,22 @@ const singleApplicant = async (
 
 const updateStatus = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    let { status }: { status: string } = req.body;
+    let payload:StatusPayload = req.body;
+    const userId = res.locals.userId as Types.ObjectId;
     const applicationId: Types.ObjectId = new mongoose.Types.ObjectId(req.params.id);
 
-    if (!status) {
+    if (!payload.status) {
       res.status(400).json({
         message: "Status is required.",
         success: false,
       });
       return;
     }
+   
 
-    status = status.toLowerCase();
+
     // Fetch the application
-    const application:any = await Application.findByIdAndUpdate(applicationId,{status:status}).populate('candidate employer');
+    const application:any = await Application.findById(applicationId).populate('candidate employer');
     if (!application) {
       res.status(400).json({
         message: "Application not found.",
@@ -858,8 +967,23 @@ const updateStatus = async (req: Request, res: Response, next: NextFunction): Pr
       });
       return;
     }
-
-    await application.save();
+    application.status=payload.status;
+    if (payload.status === "shortlisted") {
+      application.shortlistedby = userId; // Set the shortlistedby field
+      application.rejectedby = undefined; // Mark rejectedby for removal
+    } else if (payload.status === "rejected") {
+      application.rejectedby = userId; // Set the rejectedby field
+      application.shortlistedby = undefined; // Mark shortlistedby for removal
+    }
+    
+    // Use unset to remove fields marked as undefined
+    if (!application.shortlistedby) {
+      application.$unset = { shortlistedby: "" }; // Remove shortlistedby from the document
+    }
+    if (!application.rejectedby) {
+      application.$unset = { ...application.$unset, rejectedby: "" }; // Remove rejectedby from the document
+    }
+    let data=  await application.save();
     
     sendEmail({
       email: application?.candidate?.email ,
@@ -869,13 +993,13 @@ const updateStatus = async (req: Request, res: Response, next: NextFunction): Pr
         candidateName: application?.candidate?.name,
         jobTitle: application?.job?.title,
         employerName: application?.employer?.name,
-        applicationStatus: status,
+        applicationStatus: payload.status,
       }
     });
-    
     res.status(200).json({
-      message: `Applicant status updated to ${status.charAt(0).toUpperCase() + status.slice(1)} successfully.`,
+      message: `Applicant  ${payload.status.charAt(0).toUpperCase() + payload.status.slice(1)} successfully.`,
       success: true,
+      data
     });
   } catch (error) {
     console.error(error);

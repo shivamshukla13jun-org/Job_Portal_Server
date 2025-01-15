@@ -62,25 +62,6 @@ const userSchema = new Schema<IUser>({
     type: Schema.Types.ObjectId,
     ref: 'SubEmployer'
   },
-  
-  // shortListedJobs: [
-  //   {
-  //     jobId: {
-  //       type: Schema.Types.ObjectId,
-  //       ref: 'Job'
-  //     },
-  //     date: { type: Date, required: true }
-  //   }
-  // ],
-  // rejectedJobs: [
-  //   {
-  //     jobId: {
-  //       type: Schema.Types.ObjectId,
-  //       ref: 'Job'
-  //     },
-  //     date: { type: Date, required: true }
-  //   }
-  // ],
   userType: {
     type: Schema.Types.ObjectId, ref: 'UserType'
   },

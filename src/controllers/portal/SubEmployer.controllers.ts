@@ -68,7 +68,7 @@ class SubEmployerController {
       await newUser.save({ session });
       await newSubEmployer.save({ session });
       // Step 8: Send Activation Email
-       sendEmail({
+      sendEmail({
         email,
         subject: "Account Activation",
         text: `Your  Password for Login is ${password}`,
@@ -221,13 +221,13 @@ class SubEmployerController {
         "views",
         "meeting-email.ejs"
       );
-     
+
       // Send email
       sendEmail({
         email,
         subject: "Your Meeting Details",
-       template:"meeting-email",
-       data:req.body
+        template: "meeting-email",
+        data: req.body,
       });
       await session.commitTransaction();
       await session.endSession();
@@ -246,24 +246,26 @@ class SubEmployerController {
   }
   async MeetingLinklists(req: Request, res: Response, next: NextFunction) {
     try {
-      let { page = 1, limit = 10,createdBy } = req.query;
+      let { page = 1, limit = 10, createdBy } = req.query;
 
       const options = {
         page: parseInt(page as string, 10) || 1,
         limit: parseInt(limit as string, 10) || 8,
       };
-  
+
       // Calculate skip value for pagination
       const skip = (options.page - 1) * options.limit;
-  
+
       // Save to the database
-      const newMeeting = await Meeting.find({ createdBy: createdBy }).skip(skip).limit(options.limit)
-      const totalItems=await Meeting.countDocuments()
+      const newMeeting = await Meeting.find({ createdBy: createdBy })
+        .skip(skip)
+        .limit(options.limit);
+      const totalItems = await Meeting.countDocuments();
       // Respond with the created meeting details
       return res.status(201).json({
         message: "Meeting scheduled successfully",
         data: newMeeting,
-        totalPages:Math.ceil((totalItems)/options.limit)
+        totalPages: Math.ceil(totalItems / options.limit),
       });
     } catch (error) {
       next(error);
@@ -287,142 +289,215 @@ class SubEmployerController {
       next(error);
     }
   }
- async getForwardedCVs (req: Request, res: Response, next: NextFunction)  {
+  async getForwardedCVs(req: Request, res: Response, next: NextFunction) {
     try {
       // Destructure and validate query parameters
-      const { SubEmployerId, EmployerId, page = '1', limit = '10' } = req.query as {
+      const {
+        SubEmployerId,
+        EmployerId,
+        page = "1",
+        limit = "10",
+      } = req.query as {
         SubEmployerId?: string;
         EmployerId?: string;
         page?: string;
         limit?: string;
       };
-  
+
       const currentPage = parseInt(page, 10) || 1;
       const pageSize = parseInt(limit, 10) || 10;
       const skip = (currentPage - 1) * pageSize;
-  
+
       // Build the match filter dynamically
       const match: any = {};
       if (SubEmployerId) {
-        match['toSubEmployers.subEmployerId'] = new Types.ObjectId(SubEmployerId);
+        match["toSubEmployers.subEmployerId"] = new Types.ObjectId(
+          SubEmployerId
+        );
       }
       if (EmployerId) {
-        match['employer'] = new Types.ObjectId(EmployerId);
+        match["employer"] = new Types.ObjectId(EmployerId);
       }
-  
+
       // Run Aggregation Pipeline with Pagination
       const [data, total] = await Promise.all([
         Application.aggregate([
           { $match: match }, // Filter applications based on conditions
-  
-          // Unwind toSubEmployers to access each entry
-          { $unwind: '$toSubEmployers' },
-  
-          // Apply filters on the unwound documents
-          ...(SubEmployerId
-            ? [
-                {
-                  $match: {
-                    'toSubEmployers.subEmployerId': new Types.ObjectId(SubEmployerId),
-                  },
-                },
-              ]
-            : []),
-  
+
+         
+
           // Lookup SubEmployer Details
           {
             $lookup: {
-              from: 'subemployers',
-              localField: 'toSubEmployers.subEmployerId',
-              foreignField: '_id',
-              as: 'subEmployerDetails',
+              from: "subemployers",
+              localField: "toSubEmployers.subEmployerId",
+              foreignField: "_id",
+              as: "subEmployerDetails",
             },
           },
           {
             $unwind: {
-              path: '$subEmployerDetails',
+              path: "$subEmployerDetails",
               preserveNullAndEmptyArrays: true,
             },
           },
-  
+
           // Lookup Employer Details
           {
             $lookup: {
-              from: 'employers',
-              localField: 'employer',
-              foreignField: '_id',
-              as: 'employerDetails',
+              from: "employers",
+              localField: "employer",
+              foreignField: "_id",
+              as: "employerDetails",
             },
           },
           {
             $unwind: {
-              path: '$employerDetails',
+              path: "$employerDetails",
               preserveNullAndEmptyArrays: true,
             },
           },
-  
+          // Add dynamic field for shortlistedByName
+          {
+            
+              $addFields: {
+                selectedBy: {
+                  $cond: {
+                    if: {
+                      $eq: ["$shortlistedby", "$subEmployerDetails.userId"],
+                    },
+                    then: {
+                      $concat: [
+                        "shortlisted By ",
+                        "$subEmployerDetails.name",
+                        "(",
+                        "$subEmployerDetails.department",
+                        ")",
+                      ],
+                    },
+                    else: {
+                      $cond: {
+                        if: {
+                          $eq: ["$shortlistedby", "$employerDetails.userId"],
+                        },
+                        then: {
+                          $concat: [
+                            "shortlisted By ",
+                            "$employerDetails.name",
+                            "(Employer)",
+                          ],
+                        },
+                        else: {
+                          $cond: {
+                            if: {
+                              $eq: ["$rejectedby", "$subEmployerDetails.userId"],
+                            },
+                            then: {
+                              $concat: [
+                                "rejected By ",
+                                "$subEmployerDetails.name",
+                                "(",
+                                "$subEmployerDetails.department",
+                                ")",
+                              ],
+                            },
+                            else: {
+                              $cond: {
+                                if: {
+                                  $eq: ["$rejectedby", "$employerDetails.userId"],
+                                },
+                                then: {
+                                  $concat: [
+                                    "rejected By ",
+                                    "$employerDetails.name",
+                                    "(Employer)",
+                                  ],
+                                },
+                                else: null // Default case if neither shortlistedBy nor rejectedBy are set
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            
+            
+          },
           // Lookup Candidate Details
           {
             $lookup: {
-              from: 'candidates',
-              localField: 'candidate',
-              foreignField: '_id',
-              as: 'candidateDetails',
+              from: "candidates",
+              localField: "candidate",
+              foreignField: "_id",
+              as: "candidateDetails",
             },
           },
           {
             $unwind: {
-              path: '$candidateDetails',
+              path: "$candidateDetails",
               preserveNullAndEmptyArrays: true,
             },
           },
-  
-          // Add dynamic department field
+          // Lookup Job Details
           {
-            $addFields: {
-              department: {
-                $ifNull: ['$subEmployerDetails.department', 'Employer'],
-              },
+            $lookup: {
+              from: "jobs",
+              localField: "job",
+              foreignField: "_id",
+              as: "job",
             },
           },
-  
+          {
+            $unwind: {
+              path: "$job",
+              preserveNullAndEmptyArrays: true,
+            },
+          },
           // Group by applicationId
           {
             $group: {
-              _id: '$_id',
-              employer: { $first: '$employerDetails' },
-              candidateDetails: { $first: '$candidateDetails' },
-              subEmployers: { $push: '$toSubEmployers' },
-              department: { $first: '$department' },
-              job: { $first: '$job' },
+              _id: "$_id",
+              employer: { $first: "$employerDetails" },
+              candidateDetails: { $first: "$candidateDetails" },
+              subEmployers: { $push: "$toSubEmployers" },
+              department: { $first: "$department" },
+              job: { $first: "$job" },
+              selectedBy: { $first: "$selectedBy" },
+              meeting: { $first: "$meeting" },
+              
             },
           },
-  
+
           // Apply Pagination
           { $skip: skip },
           { $limit: pageSize },
         ]),
-  
+
         // Total count for pagination metadata
         Application.aggregate([
           { $match: match },
-          { $unwind: '$toSubEmployers' },
+          { $unwind: "$toSubEmployers" },
           ...(SubEmployerId
             ? [
                 {
                   $match: {
-                    'toSubEmployers.subEmployerId': new Types.ObjectId(SubEmployerId),
+                    "toSubEmployers.subEmployerId": new Types.ObjectId(
+                      SubEmployerId
+                    ),
                   },
                 },
               ]
             : []),
-          { $count: 'total' },
+          { $count: "total" },
         ]).then((res) => (res[0] ? res[0].total : 0)),
       ]);
-  
+
       // Respond with paginated data
       return res.status(200).json({
-        message: 'Data fetched successfully',
+        message: "Data fetched successfully",
         data,
         pagination: {
           currentPage,
@@ -435,7 +510,7 @@ class SubEmployerController {
       next(error);
     }
   }
-  
+
   async deleteForwardedCVs(req: Request, res: Response, next: NextFunction) {
     try {
       const data = await ForwardedCV.findByIdAndDelete(req.query.id);
@@ -444,7 +519,7 @@ class SubEmployerController {
       return res.status(200).json({
         message: "CV deleted successfully",
         data: data,
-        success:true
+        success: true,
       });
     } catch (error) {
       next(error);

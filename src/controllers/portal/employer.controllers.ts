@@ -547,15 +547,15 @@ const CandidatesForEmployer = async (
     const matchConditions: any = {};
 
     if (qualification) {
-      matchConditions.education = {
+      matchConditions["candidate.education"] = {
         $elemMatch: { qualification },
       };
     }
     if (keyword) {
-      matchConditions.designation = { $regex: keyword, $options: "i" };
+      matchConditions["candidate.designation"] = { $regex: keyword, $options: "i" };
     }
     if (category) {
-      matchConditions["employment"] = {
+      matchConditions["candidate.employment"] = {
         $elemMatch: {
           categories: { $elemMatch: { value: category } },
         },
@@ -563,8 +563,8 @@ const CandidatesForEmployer = async (
     }
     if (experience_from || experience_to) {
       matchConditions.experience = {};
-      if (experience_from) matchConditions.experience.$gte = Number(experience_from);
-      if (experience_to) matchConditions.experience.$lte = Number(experience_to);
+      if (experience_from) matchConditions["candidate.experience"]["$gte"] = Number(experience_from);
+      if (experience_to) matchConditions["candidate.experience"]["$lte"] = Number(experience_to);
     }
 
     const [results] = await Application.aggregate([

@@ -9,7 +9,7 @@ export interface ICandidate extends Document {
     email: string;
     achievement:object;
     experience:number;
-    currentsalary:number;
+    currentsalary?:number;
     expectedsalary:number;
     gender: 'Male' | 'Female' | 'Other';
     dob: Date;
@@ -68,7 +68,7 @@ const candidateSchema = new Schema<ICandidate>({
     },
     currentsalary: {
         type: Number,
-        required: [true, 'Current Salary is required'],
+        // required: [true, 'Current Salary is required'],
         default:0
     },
     

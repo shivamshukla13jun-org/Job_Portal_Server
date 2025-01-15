@@ -16,18 +16,18 @@ const createCandidate = async (req: Request, res: Response, next: NextFunction) 
     try {
         const payload: ICandidate = req.body;
 
-        // payload["userId"] = new Types.ObjectId(res.locals.userId);
+        payload["userId"] = new Types.ObjectId(res.locals.userId);
 
-        // const candidate = await Candidate.create(payload);
-        // if (!candidate) {
-        //     throw new AppError('Failed to create candidate', 400);
-        // }
+        const candidate = await Candidate.create(payload);
+        if (!candidate) {
+            throw new AppError('Failed to create candidate', 400);
+        }
 
-        // res.status(201).json({
-        //     success: true,
-        //     message: 'Candidate created!',
-        //     data: candidate
-        // })
+        res.status(201).json({
+            success: true,
+            message: 'Candidate created!',
+            data: candidate
+        })
 
     } catch (error) {
         next(error)

@@ -10,11 +10,21 @@ export interface ISubEmployers {
   status: 'pending' | 'shortlisted' | 'rejected';
   additionalNotes?: string;
 }
+export interface StatusPayload {
+  status: 'pending' | 'shortlisted' | 'rejected';
+  shortlistedby?: Types.ObjectId;
+  rejectedby?: Types.ObjectId;
+  
+} 
 
 export interface IApplication extends Document {
   job: mongoose.Types.ObjectId;
+  statusPerformBy?: mongoose.Types.ObjectId;
   candidate: mongoose.Types.ObjectId;
   employer: mongoose.Types.ObjectId;
+  status: 'pending' | 'shortlisted' | 'rejected';
+  shortlistedby?: Types.ObjectId;
+  rejectedby?: Types.ObjectId;
   toSubEmployers: ISubEmployers[]; // Array of sub-employers
   meeting: {
     date: string;
@@ -27,7 +37,6 @@ export interface IApplication extends Document {
     meetingLink: string;
     createdBy?: mongoose.Types.ObjectId;
   };
-  status: 'pending' | 'shortlisted' | 'rejected';
 }
 
 const applicationSchema: Schema<IApplication> = new Schema(
@@ -36,6 +45,10 @@ const applicationSchema: Schema<IApplication> = new Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Job',
       required: true,
+    },
+    statusPerformBy: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
     },
     candidate: {
       type: mongoose.Schema.Types.ObjectId,
@@ -89,6 +102,14 @@ const applicationSchema: Schema<IApplication> = new Schema(
       type: String,
       enum: ['pending', 'shortlisted', 'rejected'],
       default: 'pending',
+    },
+    shortlistedby: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+    },
+    rejectedby: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
     },
   },
   { timestamps: true }
