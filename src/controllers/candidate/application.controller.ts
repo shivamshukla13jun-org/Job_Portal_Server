@@ -529,7 +529,6 @@ const getAllApplicants = async (
         },
       },
       { $unwind: { path: "$candidate", preserveNullAndEmptyArrays: true } },
-      
       {
         $project:{
           "employerDetails":0,

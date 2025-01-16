@@ -63,6 +63,7 @@ const registerUser = async (
 
     payload["email"] = payload.email.toLowerCase();
     payload["userType"] = type._id as Types.ObjectId;
+    
     const user = await User.create(payload);
     if (!user) {
       throw new AppError("Failed to create the user", 400);

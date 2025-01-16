@@ -14,7 +14,7 @@ router.route("/").post(
     verifyUserTypeToken(["employer","admin"]), 
     SubEmployerController.getSubEmployers
 );
-router.route('/shortlistcvs').get( verifyUserTypeToken(["subemployer","employer"]),SubEmployerController.getForwardedCVs)
+router.route('/forwarded').get( verifyUserTypeToken(["subemployer","employer"]),SubEmployerController.getForwardedCVs)
 .delete( verifyUserTypeToken(["subemployer","employer"]),SubEmployerController.deleteForwardedCVs
 )
 // Meeting Links

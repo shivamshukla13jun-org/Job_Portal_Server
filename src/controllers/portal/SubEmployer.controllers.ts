@@ -298,8 +298,8 @@ class SubEmployerController {
         page = "1",
         limit = "10",
       } = req.query as {
-        SubEmployerId?: string;
-        EmployerId?: string;
+        SubEmployerId?: Types.ObjectId;
+        EmployerId?: Types.ObjectId;
         page?: string;
         limit?: string;
       };
@@ -309,23 +309,24 @@ class SubEmployerController {
       const skip = (currentPage - 1) * pageSize;
 
       // Build the match filter dynamically
-      const match: any = {};
+      const match: any = {
+        "toSubEmployers.subEmployerId": { $exists: true }, // Check if subEmployerId exists
+      };
+      
       if (SubEmployerId) {
-        match["toSubEmployers.subEmployerId"] = new Types.ObjectId(
-          SubEmployerId
-        );
+        match["toSubEmployers"] = {
+          $elemMatch: { subEmployerId: new Types.ObjectId(SubEmployerId as Types.ObjectId) },
+        };
       }
+      
       if (EmployerId) {
-        match["employer"] = new Types.ObjectId(EmployerId);
+        match["employer"] = new Types.ObjectId(EmployerId as Types.ObjectId);
       }
-
+      
       // Run Aggregation Pipeline with Pagination
       const [data, total] = await Promise.all([
         Application.aggregate([
           { $match: match }, // Filter applications based on conditions
-
-         
-
           // Lookup SubEmployer Details
           {
             $lookup: {
