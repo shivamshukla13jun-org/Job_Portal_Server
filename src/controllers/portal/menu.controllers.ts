@@ -26,7 +26,6 @@ export const getUserMenu = async (req: Request, res: Response, next: NextFunctio
       throw new AppError("Menu not found for this user type", 404);
     }
 
-    menu = menu.toObject();
     let menus:any[] =[]
     if(menu){
       menus = menu.menuItems.map((item:any) => {
