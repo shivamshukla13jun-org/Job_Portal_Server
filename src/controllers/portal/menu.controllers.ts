@@ -29,7 +29,7 @@ export const getUserMenu = async (req: Request, res: Response, next: NextFunctio
     menu = menu.toObject();
     let menus:any[] =[]
     if(menu){
-      menus = menu.menuItems.map((item) => {
+      menus = menu.menuItems.map((item:any) => {
        let routePath = item.paramtype === 'EmployerId' || item.paramtype === 'SubEmployerId' 
          ? item.routePath + '/' + id 
          : item.paramtype === 'createdBy' 
