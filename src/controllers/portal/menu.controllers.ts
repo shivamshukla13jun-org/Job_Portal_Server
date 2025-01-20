@@ -27,18 +27,21 @@ export const getUserMenu = async (req: Request, res: Response, next: NextFunctio
     }
 
     menu = menu.toObject();
-    let menus = menu.menuItems.map((item) => {
-      let routePath = item.paramtype === 'EmployerId' || item.paramtype === 'SubEmployerId' 
-        ? item.routePath + '/' + id 
-        : item.paramtype === 'createdBy' 
-          ? item.routePath + '/' + user._id 
-          : item.routePath;
-
-      return {
-        ...item,
-        routePath: routePath
-      };
-    });
+    let menus:any[] =[]
+    if(menu){
+      menus = menu.menuItems.map((item) => {
+       let routePath = item.paramtype === 'EmployerId' || item.paramtype === 'SubEmployerId' 
+         ? item.routePath + '/' + id 
+         : item.paramtype === 'createdBy' 
+           ? item.routePath + '/' + user._id 
+           : item.routePath;
+ 
+       return {
+         ...item,
+         routePath: routePath
+       };
+     });
+    }
 
     return res.status(200).json({ success: true, data: menus });
   } catch (error) {
