@@ -497,16 +497,8 @@ const getAllApplicants = async (
       {
         $lookup: {
           from: "jobs",
-          let: { jobId: "$job" },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $eq: ["$_id", "$$jobId"],
-                },
-              },
-            },
-          ],
+          localField:"job",
+           foreignField:"_id",
           as: "job",
         },
       },
@@ -515,16 +507,8 @@ const getAllApplicants = async (
       {
         $lookup: {
           from: "candidates",
-          let: { candidateId: "$candidate" },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $eq: ["$_id", "$$candidateId"],
-                },
-              },
-            },
-          ],
+          localField:"candidate",
+          foreignField:"_id",
           as: "candidate",
         },
       },

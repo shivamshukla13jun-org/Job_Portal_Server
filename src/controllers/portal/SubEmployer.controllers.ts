@@ -431,17 +431,13 @@ class SubEmployerController {
           {
             $lookup: {
               from: "candidates",
-              localField: "candidate",
-              foreignField: "_id",
-              as: "candidateDetails",
+              localField:"candidate",
+              foreignField:"_id",
+              as: "candidate",
             },
           },
-          {
-            $unwind: {
-              path: "$candidateDetails",
-              preserveNullAndEmptyArrays: true,
-            },
-          },
+          { $unwind: { path: "$candidate", preserveNullAndEmptyArrays: true } },
+        
           // Lookup Job Details
           {
             $lookup: {
@@ -462,7 +458,7 @@ class SubEmployerController {
             $group: {
               _id: "$_id",
               employer: { $first: "$employerDetails" },
-              candidateDetails: { $first: "$candidateDetails" },
+              candidate: { $first: "$candidate" },
               subEmployers: { $push: "$toSubEmployers" },
               department: { $first: "$department" },
               job: { $first: "$job" },

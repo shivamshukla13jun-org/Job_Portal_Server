@@ -6,6 +6,7 @@ import Candidate, { ICandidate } from "@/models/portal/candidate.model";
 import { ICandidateFiles } from "@/types/candidate";
 import { validateCandidate } from "@/validations/candidate";
 import { Application } from "@/models/candidate/application.model";
+import User from "@/models/admin/user.model";
 
 /**
  @desc      Create a candidate
@@ -22,6 +23,7 @@ const createCandidate = async (req: Request, res: Response, next: NextFunction) 
         if (!candidate) {
             throw new AppError('Failed to create candidate', 400);
         }
+        await User.updateOne({_id:req.params.id,},{$set:{candidateId:candidate._id}})
 
         res.status(201).json({
             success: true,
@@ -139,21 +141,7 @@ const updateCandidate = async (req: Request, res: Response, next: NextFunction) 
         payload["email"] = payload?.email?.toLowerCase();
         payload.cv = files?.upload_cv?.[0] || payload?.cv;
         payload.profile = files?.profile?.[0] || payload?.profile;
-        // payload.registration_certificate = files?.registration_certificate?.[0] || payload?.registration_certificate;
-        let currentEducationFileIndex = 0;
-        // payload.education = payload?.education.map((item) => {
-        //     const hasCertificate = item.certificate && typeof item.certificate === 'object' && Object.keys(item.certificate).length > 0;
-        //     if (!hasCertificate) {
-        //         if (files["certificate[]"] && files["certificate[]"][currentEducationFileIndex]) {
-        //             item.certificate = files["certificate[]"][currentEducationFileIndex];
-        //         }
-        //         currentEducationFileIndex++;
-        //     }
-        //     return item;
-        // });
-        // payload.english_language.score_card = files?.score_card?.[0] || payload?.english_language?.score_card;
-
-
+        
         // validate the data
         const check = await validateCandidate(payload);
         if (!check) {
@@ -167,6 +155,7 @@ const updateCandidate = async (req: Request, res: Response, next: NextFunction) 
             if (!newCandidate) {
                 throw new AppError('Failed to create candidate', 400);
             }
+            await User.updateOne({_id:req.params.id,},{$set:{candidateId:newCandidate._id}})
             return res.status(201).json({
                 success: true,
                 message: 'Candidate created!',

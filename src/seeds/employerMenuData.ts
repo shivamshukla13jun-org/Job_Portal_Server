@@ -5,7 +5,8 @@ const employerMenu = [
     icon: "la-home",
     routePath: "/employers-dashboard/dashboard",
     active: "active",
-    paramtype:"",
+    permissions: ["view", "edit", "delete", "meeting", "export", "import", "reject", "approve","download"],
+    paramtype: "",
   },
   {
     id: 2,
@@ -13,7 +14,8 @@ const employerMenu = [
     icon: "la-user-tie",
     routePath: "/employers-dashboard/company-profile",
     active: "",
-    paramtype:"",
+    permissions: ["view", "edit", "delete", "meeting", "export", "import", "reject", "approve","download"],
+    paramtype: "",
   },
   {
     id: 3,
@@ -21,7 +23,8 @@ const employerMenu = [
     icon: "la-paper-plane",
     routePath: "/employers-dashboard/post-jobs",
     active: "",
-    paramtype:"",
+    permissions: ["view", "edit", "delete", "meeting", "export", "import", "reject", "approve","download"],
+    paramtype: "",
   },
   {
     id: 4,
@@ -29,7 +32,8 @@ const employerMenu = [
     icon: "la-briefcase",
     routePath: "/employers-dashboard/manage-jobs",
     active: "",
-    paramtype:"",
+    permissions: ["view", "edit", "delete", "meeting", "export", "import", "reject", "approve","download"],
+    paramtype: "",
   },
   {
     id: 5,
@@ -37,7 +41,8 @@ const employerMenu = [
     icon: "la-file-invoice",
     routePath: "/employers-dashboard/all-applicants",
     active: "",
-    paramtype:"",
+    permissions: ["view", "edit", "delete", "meeting", "export", "import", "reject", "approve","download"],
+    paramtype: "",
   },
   {
     id: 6,
@@ -45,7 +50,8 @@ const employerMenu = [
     icon: "la-bookmark-o",
     routePath: "/employers-dashboard/forward-resumes",
     active: "",
-    paramtype:"EmployerId",
+    permissions: ["view", "edit", "delete", "meeting", "export", "import", "reject", "approve","download"],
+    paramtype: "EmployerId",
   },
   {
     id: 6,
@@ -53,7 +59,8 @@ const employerMenu = [
     icon: "la-bookmark-o",
     routePath: "/employers-dashboard/shortlisted-candidates/shortlisted",
     active: "",
-    paramtype:"",
+    permissions: ["view", "edit", "delete", "meeting", "export", "import", "reject", "approve","download"],
+    paramtype: "",
   },
   {
     id: 6,
@@ -61,40 +68,27 @@ const employerMenu = [
     icon: "la-bookmark-o",
     routePath: "/employers-dashboard/subemployer",
     active: "",
-    paramtype:"",
+    permissions: ["view", "edit", "delete", "meeting", "export", "import", "reject", "approve","download"],
+    paramtype: "",
   },
-  // {
-  //   id: 6,
-  //   name: "Messages",
-  //   icon: "la-bookmark-o",
-  //   routePath: "/employers-dashboard/messages",
-  //   active: "",
-  //   paramtype:"",
-  // },
   {
     id: 2,
     name: "Meeting links",
     icon: "la-user-tie",
     routePath: "/employers-dashboard/meetinglinks",
     active: "",
-    paramtype:"",
-    userAcitive:""
+    permissions: ["view", "edit", "delete", "meeting", "export", "import", "reject", "approve","download"],
+    paramtype: "",
+    userAcitive: "",
   },
-  // {
-  //   id: 7,
-  //   name: "Packages",
-  //   icon: "la-box",
-  //   routePath: "/employers-dashboard/packages",
-  //   active: "",
-  // paramtype:"",
-  // },
   {
     id: 10,
     name: "Change Password",
     icon: "la-lock",
     routePath: "/employers-dashboard/change-password",
     active: "",
-    paramtype:"",
+    permissions: ["view", "edit", "delete", "meeting", "export", "import", "reject", "approve","download"],
+    paramtype: "",
   },
   {
     id: 11,
@@ -102,7 +96,8 @@ const employerMenu = [
     icon: "la-sign-out",
     routePath: "/login",
     active: "",
-    paramtype:"",
+    permissions: ["view", "edit", "delete", "meeting", "export", "import", "reject", "approve","download"],
+    paramtype: "",
   },
   {
     id: 12,
@@ -110,7 +105,8 @@ const employerMenu = [
     icon: "la-trash",
     routePath: "/",
     active: "",
-    paramtype:"",
+    permissions: ["view", "edit", "delete", "meeting", "export", "import", "reject", "approve","download"],
+    paramtype: "",
   },
 ];
-export default  employerMenu
+export default employerMenu;

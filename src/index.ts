@@ -11,6 +11,7 @@ import { errorHandler, notFound } from "@/middlewares/error";
 import router from "@/routes";
 import path from "path";
 import seedMenus from "./seeds/menuSeeder";
+// import seedMenus from "./seeds/menuSeeder";
 
 const app = express();
 // defining cors format
@@ -73,6 +74,7 @@ const numCPUs = os.cpus().length;
 connectToDb()
   .then(() => {
     console.log("Connected to mongodb");
+    // updateUsers()
     seedMenus()
     app.listen(PORT, () => console.log(`Listening to ${PORT}`));
   })

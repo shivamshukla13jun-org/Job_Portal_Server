@@ -19,6 +19,7 @@ import ForwardedCV, {
 } from "@/models/portal/Forwarwardedcv.model";
 import { EmployerDashBoardGraph } from "@/utils/employerdashboardGraph";
 import { sendEmail } from "@/services/emails";
+import User from "@/models/admin/user.model";
 
 /**
  @desc      Create an employer
@@ -40,6 +41,7 @@ const createEmployer = async (
     if (!employer) {
       throw new AppError("Failed to create employer", 400);
     }
+    await User.updateOne({_id:req.params.id,},{$set:{employer:employer._id}})
 
     res.status(201).json({
       success: true,
@@ -456,6 +458,8 @@ const updateEmployer = async (
       if (!newEmployer) {
         throw new AppError("Failed to create employer", 400);
       }
+      await User.updateOne({_id:req.params.id,},{$set:{employer:newEmployer._id}})
+
       return res.status(201).json({
         success: true,
         message: "Employer created!",
