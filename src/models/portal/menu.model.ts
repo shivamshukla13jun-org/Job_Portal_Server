@@ -1,14 +1,15 @@
 import { Schema, Document, model, Types } from "mongoose";
 // Interfaces
-interface IMenuItem {
+export interface IMenuItem {
   name: string;
   routePath: string;
+  key:string;
   icon: string;
   paramtype?: string;
   permissions?: string[]; // Array of permissions
 }
 
-interface IMenu extends Document {
+export interface IMenu extends Document {
   userType: Types.ObjectId;
   menuItems: IMenuItem[];
 }
@@ -17,6 +18,7 @@ interface IMenu extends Document {
 const menuItemSchema = new Schema<IMenuItem>({
   name: { type: String, required: true },
   routePath: { type: String, required: true },
+  key:{type:String},
   icon: { type: String, required: true },
   paramtype: { type: String },
   permissions: { type: [String], default: [] } // Array of permissions

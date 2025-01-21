@@ -1,6 +1,6 @@
 import User, { IUser } from '@/models/admin/user.model';
 import { AppError } from '@/middlewares/error';
-import { Menu } from '@/models/portal/menu.model';
+import { IMenu, IMenuItem, Menu } from '@/models/portal/menu.model';
 import { Request, Response, NextFunction } from 'express';
 import mongoose from 'mongoose';
 // Get user-specific menu
@@ -20,15 +20,14 @@ export const getUserMenu = async (req: Request, res: Response, next: NextFunctio
     }
 
     const id = user.candidateId || user.employerId || user.subEmployerId;
-    let menu = await Menu.findOne({ userType: user?.userType?._id });
+    let menu :IMenu | null= await Menu.findOne({ userType: user?.userType?._id });
 
     if (!menu) {
       throw new AppError("Menu not found for this user type", 404);
     }
-
-    let menus:any[] =[]
+    menu=menu.toObject()
     if(menu){
-      menus = menu.menuItems.map((item:any) => {
+     menu.menuItems.map((item:IMenuItem) => {
        let routePath = item.paramtype === 'EmployerId' || item.paramtype === 'SubEmployerId' 
          ? item.routePath + '/' + id 
          : item.paramtype === 'createdBy' 
@@ -42,7 +41,7 @@ export const getUserMenu = async (req: Request, res: Response, next: NextFunctio
      });
     }
 
-    return res.status(200).json({ success: true, data: menus });
+    return res.status(200).json({ success: true, data: menu });
   } catch (error) {
     next(error);
   }
@@ -105,32 +104,33 @@ export const getMenuByUserType = async (req: Request, res: Response, next: NextF
 // Update menu
 export const updateMenu = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { userTypeId } = req.params;
-    const { menuItems } = req.body;
+    const { permissionId } = req.params; // ID of the menu item
+    const { permissions } = req.body; // Updated permissions array
 
-    if (!mongoose.Types.ObjectId.isValid(userTypeId)) {
-      throw new AppError('Invalid userType ID format', 400);
+    if (!mongoose.Types.ObjectId.isValid(permissionId)) {
+      throw new AppError('Invalid permission ID format', 400);
     }
 
     const updatedMenu = await Menu.findOneAndUpdate(
-      { userType: userTypeId },
-      { $set: { menuItems } },
+      { "menuItems._id": permissionId }, // Locate the menu item within menuItems array
+      { $set: { "menuItems.$.permissions": permissions } }, // Update the permissions for the specific menu item
       { new: true, runValidators: true }
     );
 
     if (!updatedMenu) {
-      throw new AppError('Menu not found for this user type', 404);
+      throw new AppError('Menu item not found for the given ID', 404);
     }
 
     res.json({
       success: true,
-      message: 'Menu updated successfully',
-      data: updatedMenu
+      message: 'Permissions updated successfully',
+      data: updatedMenu,
     });
   } catch (error) {
     next(error);
   }
 };
+
 
 // Delete menu
 export const deleteMenu = async (req: Request, res: Response, next: NextFunction) => {

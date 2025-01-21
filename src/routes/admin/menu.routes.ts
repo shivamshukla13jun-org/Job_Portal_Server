@@ -13,7 +13,6 @@ const router: Router = express.Router();
 // Menu management routes
 router.post('/', createMenu);
 router.get('/:userTypeId', getMenuByUserType);
-router.put('/:userTypeId', updateMenu);
-router.delete('/:userTypeId', deleteMenu);
+router.put('/:permissionId', updateMenu);
 
 export default router;
