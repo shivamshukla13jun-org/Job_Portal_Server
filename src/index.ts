@@ -75,7 +75,7 @@ connectToDb()
   .then(() => {
     console.log("Connected to mongodb");
     // updateUsers()
-    seedMenus()
+    // seedMenus()
     app.listen(PORT, () => console.log(`Listening to ${PORT}`));
   })
   .catch((err: Error) => console.log(err.message));
