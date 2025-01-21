@@ -6,7 +6,7 @@ const employerMenu = [
     icon: "la-home",
     routePath: "/employers-dashboard/dashboard",
     active: "active",
-    permissions: ["view", "edit", "delete", "meeting", "export", "import", "reject", "approve","download"],
+    permissions: { view: true },
     paramtype: "",
   },
   {
@@ -16,7 +16,7 @@ const employerMenu = [
     icon: "la-user-tie",
     routePath: "/employers-dashboard/company-profile",
     active: "",
-    permissions: ["view", "edit", "delete", "meeting", "export", "import", "reject", "approve","download"],
+    permissions: { view: true, edit: true, delete: true },
     paramtype: "",
   },
   {
@@ -26,7 +26,7 @@ const employerMenu = [
     icon: "la-paper-plane",
     routePath: "/employers-dashboard/post-jobs",
     active: "",
-    permissions: ["view"],
+    permissions: { view: true },
     paramtype: "",
   },
   {
@@ -36,7 +36,7 @@ const employerMenu = [
     icon: "la-briefcase",
     routePath: "/employers-dashboard/manage-jobs",
     active: "",
-    permissions: ["view", "edit", "delete", "meeting", "export", "import", "reject", "approve","download"],
+    permissions: { view: true, edit: true, delete: true },
     paramtype: "",
   },
   {
@@ -46,7 +46,7 @@ const employerMenu = [
     icon: "la-file-invoice",
     routePath: "/employers-dashboard/all-applicants",
     active: "",
-    permissions: ["view", "edit", "delete", "meeting", "export", "import", "reject", "approve","download"],
+    permissions: { view: true, delete: true, meeting: true, reject: true, approve: true, download: true },
     paramtype: "",
   },
   {
@@ -56,7 +56,7 @@ const employerMenu = [
     key:"forwardapplications",
     routePath: "/employers-dashboard/forward-resumes",
     active: "",
-    permissions: ["view", "edit", "delete", "meeting", "export", "import", "reject", "approve","download"],
+    permissions: { view: true, delete: true, meeting: true, reject: true, approve: true, download: true },
     paramtype: "EmployerId",
   },
   {
@@ -66,7 +66,7 @@ const employerMenu = [
     icon: "la-bookmark-o",
     routePath: "/employers-dashboard/shortlisted-candidates/shortlisted",
     active: "",
-    permissions: ["view", "edit", "delete", "meeting", "export", "import", "reject", "approve","download"],
+    permissions: { view: true, delete: true, meeting: true, reject: true, approve: true, download: true },
     paramtype: "",
   },
   {
@@ -76,7 +76,7 @@ const employerMenu = [
     icon: "la-bookmark-o",
     routePath: "/employers-dashboard/subemployer",
     active: "",
-    permissions: ["view", "edit", "delete", "meeting", "export", "import", "reject", "approve","download"],
+    permissions: { view: true, edit: true, delete: true },
     paramtype: "",
   },
   {
@@ -86,7 +86,7 @@ const employerMenu = [
     key:"meetinglinks",
     routePath: "/employers-dashboard/meetinglinks",
     active: "",
-    permissions: ["view", "edit", "delete", "meeting", "export", "import", "reject", "approve","download"],
+    permissions: { view: true, delete: true },
     paramtype: "",
     userAcitive: "",
   },
@@ -98,7 +98,7 @@ const employerMenu = [
     icon: "la-trash",
     routePath: "/",
     active: "",
-    permissions: ["view", "edit", "delete", "meeting", "export", "import", "reject", "approve","download"],
+    permissions: { view: true },
     paramtype: "",
   },
 ];

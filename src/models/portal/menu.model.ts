@@ -6,7 +6,7 @@ export interface IMenuItem {
   key:string;
   icon: string;
   paramtype?: string;
-  permissions?: string[]; // Array of permissions
+  permissions?: { };
 }
 
 export interface IMenu extends Document {
@@ -21,7 +21,10 @@ const menuItemSchema = new Schema<IMenuItem>({
   key:{type:String},
   icon: { type: String, required: true },
   paramtype: { type: String },
-  permissions: { type: [String], default: [] } // Array of permissions
+  permissions: { 
+    type: Object, 
+    default: {  } 
+  }
 });
 
 const menuSchema = new Schema<IMenu>({

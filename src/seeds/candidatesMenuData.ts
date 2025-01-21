@@ -6,7 +6,7 @@ const candidateMenus = [
     routePath: "/candidates-dashboard/dashboard",
     active: "active",
     key:"dashbord",
-    permissions: ["view", "edit", "delete", "meeting", "export", "import", "reject", "approve","download"]
+    permissions: { view: true, edit: true, delete: true, meeting: true, export: true, import: true, reject: true, approve: true, download: true }
   },
   {
     id: 2,
@@ -15,7 +15,7 @@ const candidateMenus = [
     key:"myprofile",
     routePath: "/candidates-dashboard/my-profile",
     active: "",
-    permissions: ["view", "edit", "delete", "meeting", "export", "import", "reject", "approve","download"]
+    permissions: { view: true, edit: true, delete: true, meeting: true, export: true, import: true, reject: true, approve: true, download: true }
   },
   {
     id: 3,
@@ -24,7 +24,7 @@ const candidateMenus = [
     icon: "la la-file-invoice",
     routePath: "/candidates-dashboard/my-resume",
     active: "",
-    permissions: ["view", "edit", "delete", "meeting", "export", "import", "reject", "approve","download"]
+    permissions: { view: true, edit: true, delete: true, meeting: true, export: true, import: true, reject: true, approve: true, download: true }
   },
   {
     id: 4,
@@ -33,17 +33,16 @@ const candidateMenus = [
     icon: "la-briefcase",
     routePath: "/candidates-dashboard/applied-jobs",
     active: "",
-    permissions: ["view", "edit", "delete", "meeting", "export", "import", "reject", "approve","download"]
+    permissions: { view: true, edit: true, delete: true, meeting: true, export: true, import: true, reject: true, approve: true, download: true }
   },
   {
     id: 4,
     name: "Saved Jobs",
     key:"savedjobs",
-
     icon: "la-briefcase",
     routePath: "/candidates-dashboard/saved-jobs",
     active: "",
-    permissions: ["view", "edit", "delete", "meeting", "export", "import", "reject", "approve","download"]
+    permissions: { view: true, edit: true, delete: true, meeting: true, export: true, import: true, reject: true, approve: true, download: true }
   },
   {
     id: 6,
@@ -52,10 +51,8 @@ const candidateMenus = [
     icon: "la-bookmark-o",
     routePath: "/candidates-dashboard/short-listed-jobs",
     active: "",
-    permissions: ["view", "edit", "delete", "meeting", "export", "import", "reject", "approve","download"]
+    permissions: { view: true, edit: true, delete: true, meeting: true, export: true, import: true, reject: true, approve: true, download: true }
   },
- 
- 
   {
     id: 12,
     name: "Delete Profile",
@@ -63,7 +60,7 @@ const candidateMenus = [
     icon: "la-trash",
     routePath: "/",
     active: "",
-    permissions: ["view", "edit", "delete", "meeting", "export", "import", "reject", "approve","download"]
+    permissions: { view: true }
   },
 ];
 export default candidateMenus;

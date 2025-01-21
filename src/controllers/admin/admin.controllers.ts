@@ -1277,6 +1277,7 @@ export const Dashboard = async (req: Request, res: Response, next: NextFunction)
           },
         ],
         stats: baseStats, // Wrap `baseStats` in an array
+        shortlistedstats:baseStats,
       },
     },
     // Unwind each facet result, preserving empty or null fields

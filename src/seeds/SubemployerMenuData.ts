@@ -6,7 +6,7 @@ const SubemployerMenu = [
     key:"dashboard",
     routePath: "/subemployers-dashboard/dashboard",
     active: "active",
-    permissions: ["view", "edit", "delete", "meeting", "export", "import", "reject", "approve","download"],
+    permissions: { view: true, edit: true, delete: true, meeting: true, export: true, import: true, reject: true, approve: true, download: true },
     paramtype: "",
   },
   {
@@ -17,7 +17,7 @@ const SubemployerMenu = [
     routePath: "/subemployers-dashboard/meetinglinks",
     active: "",
     paramtype: "createdBy",
-    permissions: ["view", "edit", "delete", "meeting", "export", "import", "reject", "approve","download"],
+    permissions: { view: true, edit: true, delete: true, meeting: true, export: true, import: true, reject: true, approve: true, download: true },
     userAcitive: ""
   },
   {
@@ -27,7 +27,7 @@ const SubemployerMenu = [
     icon: "la-bookmark-o",
     routePath: "/subemployers-dashboard/forward-resumes",
     active: "",
-    permissions: ["view", "edit", "delete", "meeting", "export", "import", "reject", "approve","download"],
+    permissions: { view: true, edit: true, delete: true, meeting: true, export: true, import: true, reject: true, approve: true, download: true },
     paramtype: "SubEmployerId",
   },
  

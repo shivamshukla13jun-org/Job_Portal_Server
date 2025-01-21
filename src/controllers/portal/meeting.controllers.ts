@@ -80,7 +80,7 @@ class MeetingController {
      const pageSize = parseInt(limit as string, 10) || 10;
      const skip = (pageNumber - 1) * pageSize;
  
-  const applications = await Application.aggregate([
+     const [applications] = await Application.aggregate([
       // Match applications based on employer ID
       {
         $match: {
@@ -98,7 +98,7 @@ class MeetingController {
         },
       },
       { $unwind: { path: '$creator', preserveNullAndEmptyArrays: true } },
-
+    
       // Lookup userType details
       {
         $lookup: {
@@ -109,12 +109,14 @@ class MeetingController {
         },
       },
       { $unwind: { path: '$userType', preserveNullAndEmptyArrays: true } },
-    // Convert userType.name to lowercase
-    {
-      $addFields: {
-        'userType.name': { $toLower: '$userType.name' },
+    
+      // Convert userType.name to lowercase
+      {
+        $addFields: {
+          'userType.name': { $toLower: '$userType.name' },
+        },
       },
-    },
+    
       // Lookup employer details if userType is 'employer'
       {
         $lookup: {
@@ -124,7 +126,7 @@ class MeetingController {
           as: 'employerDetails',
         },
       },
-
+    
       // Lookup subEmployer details if userType is 'subemployer'
       {
         $lookup: {
@@ -134,7 +136,7 @@ class MeetingController {
           as: 'subEmployerDetails',
         },
       },
-
+    
       // Add scheduledBy field dynamically
       {
         $addFields: {
@@ -153,24 +155,24 @@ class MeetingController {
           },
         },
       },
-
+    
       // Project necessary fields
       {
         $project: {
-          'meeting': 1,
+          meeting: 1,
           'creator.name': 1,
           'creator.email': 1,
           'userType.name': 1,
-          'scheduledBy': 1,
-          'createdAt': 1,
+          scheduledBy: 1,
+          createdAt: 1,
         },
       },
-
+    
       // Sort by creation date
       {
         $sort: { createdAt: -1 },
       },
-
+    
       // Use $facet for pagination and total count
       {
         $facet: {
@@ -183,19 +185,32 @@ class MeetingController {
           ],
         },
       },
+    
+      // Handle totalItems gracefully
+      {
+        $project: {
+          applications: 1,
+          totalItems: { $arrayElemAt: ['$totalItems.total', 0] },
+        },
+      },
     ]);
-     const data=applications[0].applications || []
-     const totalItems=applications[0].totalItems[0].total || 0
-     return res.status(200).json({
-       message: 'Applications fetched successfully',
-       data: data,
-       pagination: {
-         currentPage: pageNumber,
-         pageSize,
-         totalItems: totalItems,
-         totalPages: Math.ceil(totalItems / pageSize),
-       },
-     });
+    
+    // Fallback values if applications or totalItems are undefined
+    const data = applications?.applications || [];
+    const totalItems = applications?.totalItems || 0;
+    
+    // Return the response
+    return res.status(200).json({
+      message: 'Applications fetched successfully',
+      data: data,
+      pagination: {
+        currentPage: pageNumber,
+        pageSize,
+        totalItems: totalItems,
+        totalPages: Math.ceil(totalItems / pageSize),
+      },
+    });
+    
     } catch (error) {
       next(error);
     }

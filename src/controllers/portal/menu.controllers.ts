@@ -28,16 +28,23 @@ export const getUserMenu = async (req: Request, res: Response, next: NextFunctio
     menu=menu.toObject()
     if(menu){
      menu.menuItems.map((item:IMenuItem) => {
-       let routePath = item.paramtype === 'EmployerId' || item.paramtype === 'SubEmployerId' 
-         ? item.routePath + '/' + id 
-         : item.paramtype === 'createdBy' 
-           ? item.routePath + '/' + user._id 
-           : item.routePath;
- 
-       return {
-         ...item,
-         routePath: routePath
-       };
+           switch (item.paramtype) {
+            case "EmployerId":
+              item.routePath= item.routePath + '/' + id
+              break;
+            case "SubEmployerId":
+              item.routePath=item.routePath + '/' + id
+              break;
+            case "createdBy":
+              item.routePath=item.routePath + '/' + user._id 
+              break;
+           
+            default:
+              break;
+           }
+
+          
+       return item
      });
     }
 
