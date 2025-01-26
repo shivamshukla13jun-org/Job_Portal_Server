@@ -182,6 +182,132 @@ const Options = async (req: Request, res: Response, next: NextFunction) => {
         next(error);
     }
 };
+const ApplicationOptions = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        let { type, id } = req.params as OptionsQuery;
+        const status=req.query.status;
+        let data: any[] = [];
+
+        if (!type) {
+            throw new AppError("Provide type", 400);
+        }
+        const match: Record<string, any> = {
+            employer: new Types.ObjectId(id),
+        };
+        if(status){
+            match["status"]=status
+        }
+        // Base pipeline
+        const pipeline: any[] = [
+            { $match: match},
+            {
+                $lookup:{
+                    from:"candidates",
+                    localField:"candidate",
+                    foreignField:"_id",
+                    as:"candidate"
+                }
+            },
+            {
+                $unwind:"$candidate"
+            },  
+        ]
+        // Handle specific types
+        if (type === "personal_info.info.degree") {
+            pipeline.push(
+                          
+                 { $unwind: "$candidate.education" },
+                {
+                    $group: {
+                        _id: `$candidate.education.qualification`,
+                        total: { $sum: 1 },
+                    },
+                },
+                { $project: { _id: 0, value: "$_id", total: 1 } },
+                { $sort: { value: 1 } }
+            );
+        } 
+        else if (type === "categories.label") {
+            // type="categories.label"
+            pipeline.push(
+                { $unwind: "$candidate.employment" },
+                { $unwind: "$candidate.employment.categories" },
+                {
+                    $group: {
+                        _id: `$candidate.employment.categories.label`,
+                        total: { $sum: 1 },
+                    },
+                },
+                { $project: { _id: 0, value: "$_id", total: 1 } },
+                { $sort: { value: 1 } }
+            );
+        } 
+        
+        else if (type === "salary_experience") {
+            // Add grouping stages for max and min salary and experience
+            pipeline.push(
+                {
+                    $group: {
+                        _id: null, // No grouping by fields, we want global max/min
+                        minSalary: { $min: "$candidate.currentsalary" },
+                        maxSalary: { $max: "$candidate.currentsalary" },
+                    },
+                },
+                {
+                    $project: {
+                        _id: 0,
+                        maxSalary: 1,
+                        minSalary: 1,
+                    },
+                }
+            );
+        } 
+        else if (type === "experience") {
+            // Add grouping stages for max and min salary and experience
+            pipeline.push(
+                {
+                    $group: {
+                        _id: null, // No grouping by fields, we want global max/min
+                        minExperience: { $min: "$candidate.experience" },
+                        maxExperience: { $max: "$candidate.experience" },
+                    },
+                },
+                {
+                    $project: {
+                        _id: 0,
+                        minExperience: 1,
+                        maxExperience: 1,
+                    },
+                }
+            );
+        } 
+        else{
+
+            pipeline.push(
+                    {
+                        $group: {
+                            _id: `$candidate.${type}`,
+                            total: { $sum: 1 },
+                        },
+                    },
+                    { $project: { _id: 0, value: "$_id", total: 1 } },
+                    { $sort: { value: 1 } }
+                );
+        }  
+          if( type === "salary_experience"  ||type==="experience"){
+            [data]=await Application.aggregate(pipeline)
+          }else{
+            data=await Application.aggregate(pipeline);
+          }
+        res.status(200).json({
+            success: true,
+            data: data,
+            message: "Data fetched successfully",
+        });
+    } catch (error) {
+        next(error);
+    }
+};
 
 
 const ContactUs = async (req: Request, res: Response, next: NextFunction) => {
@@ -219,5 +345,5 @@ const ContactUs = async (req: Request, res: Response, next: NextFunction) => {
 
 
 export {
-     getEmployer,ContactUs,Options
+     getEmployer,ContactUs,Options,ApplicationOptions
 }

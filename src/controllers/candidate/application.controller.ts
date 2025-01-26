@@ -285,12 +285,8 @@ const getAllApplicants = async (
 ): Promise<void> => {
   try {
     const userId = res.locals.userId as Types.ObjectId;
-    let { page="1", limit="10", status,jobid, qualification, 
-      keyword, 
-      category, 
-      experience_from, 
-      experience_to, createdAt, ...queries } = req.query as ApplicationQuery;
-    
+    let { page = "1", limit = "10", status, jobid, qualification, keyword, category, experience_from, experience_to, createdAt, ...queries } = req.query as ApplicationQuery;
+
     const checkEmployer = await Employer.findOne({ userId: userId });
     if (!checkEmployer) {
       throw new AppError(`Failed to find an employer`, 400);
@@ -304,29 +300,25 @@ const getAllApplicants = async (
     const matchQueriesupper: Record<string, any> = {
       employer: checkEmployer._id,
     };
-    if(jobid){
-      matchQueriesupper["job"]=new Types.ObjectId(jobid)
+    if (jobid) {
+      matchQueriesupper["job"] = new Types.ObjectId(jobid);
     }
-    const matchQueries: Record<string, any> = {};
-    const createRegex = (value: string) =>
-      new RegExp(`.*${value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}.*`, "gi");
-    // Handle date filter
+    if (status) {
+      matchQueriesupper["status"] = status;
+    }
     if (createdAt) {
       let startDate = postedatesCondition(createdAt as string);
       if (startDate) {
         matchQueriesupper["createdAt"] = { $gte: startDate };
       }
     }
-    if (status) {
-      matchQueriesupper["status"] = status;
-    }
+
+    const matchQueries: Record<string, any> = {};
+    const createRegex = (value: string) =>
+      new RegExp(`.*${value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}.*`, "gi");
 
     for (const [key, value] of Object.entries(queries)) {
-      if (
-        typeof value === "string" &&
-        value !== "" &&
-        !["createdAt", "status", "name"].includes(key)
-      ) {
+      if (typeof value === "string" && value !== "" && !["createdAt", "status", "name"].includes(key)) {
         matchQueries[key] = createRegex(value);
       }
       if (typeof value === "string" && value !== "") {
@@ -335,67 +327,33 @@ const getAllApplicants = async (
         }
       }
     }
-    const matchConditions: any = {};
 
-
-      // Build base conditions without adding them to matchConditions yet
-      const qualificationMatch = qualification ? {
-        "candidate.education": {
-          $elemMatch: {
-            "qualification": qualification
-          }
-        }
-      } : null;
-  
-      const keywordMatch = keyword ? {
-        "candidate.designation": { $regex: keyword, $options: "i" }
-      } : null;
-  
-      const categoryMatch = category ? {
-        "candidate.employment": {
-          $elemMatch: {
-            "categories": {
-              $elemMatch: {
-                "value": category
-              }
-            }
-          }
-        }
-      } : null;
-  
-      const dateConditions: any = {};
+    if (qualification) {
+      matchQueries["candidate.education"] = { $elemMatch: { qualification } };
+    }
+    if (keyword) {
+      matchQueries["candidate.designation"] = { $regex: keyword, $options: "i" };
+    }
+    if (category) {
+      matchQueries["candidate.employment"] = { $elemMatch: { categories: { $elemMatch: { value: category } } } };
+    }
+    if (experience_from || experience_to) {
+      let experience:number[]=[]
+     
       if (experience_from) {
-        dateConditions["$lte"] = new Date(
-          new Date().setFullYear(new Date().getFullYear() - experience_from)
-        );
+        experience.push(+experience_from)
       }
       if (experience_to) {
-        dateConditions["$gte"] = new Date(
-          new Date().setFullYear(new Date().getFullYear() - experience_to)
-        );
+        experience.push(+experience_to)
       }
-      
-      const experienceMatch = (experience_from || experience_to) ? {
-        "candidate.employment": {
-          $elemMatch: {
-            "from": dateConditions
-          }
-        }
-      } : null;
-  
-      // Combine conditions for final match
-      Object.assign(matchConditions, 
-        qualificationMatch,
-        keywordMatch ? { "$or": [keywordMatch] } : null,
-        categoryMatch,
-        experienceMatch
-      );
+      matchQueries["candidate.experience"] = {
+        $in:experience
+      };
+    }
+console.log(matchQueries)
     const [results] = await Application.aggregate([
+      { $match: matchQueriesupper },
       {
-        $match: matchQueriesupper,
-      },
-       // Lookup SubEmployer Details
-       {
         $lookup: {
           from: "subemployers",
           localField: "toSubEmployers.subEmployerId",
@@ -403,14 +361,7 @@ const getAllApplicants = async (
           as: "subEmployerDetails",
         },
       },
-      {
-        $unwind: {
-          path: "$subEmployerDetails",
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-
-      // Lookup Employer Details
+      { $unwind: { path: "$subEmployerDetails", preserveNullAndEmptyArrays: true } },
       {
         $lookup: {
           from: "employers",
@@ -419,112 +370,84 @@ const getAllApplicants = async (
           as: "employerDetails",
         },
       },
+      { $unwind: { path: "$employerDetails", preserveNullAndEmptyArrays: true } },
       {
-        $unwind: {
-          path: "$employerDetails",
-          preserveNullAndEmptyArrays: true,
+        $addFields: {
+          selectedBy: {
+            $cond: {
+              if: { $eq: ["$shortlistedby", "$subEmployerDetails.userId"] },
+              then: {
+                $concat: [
+                  "shortlisted By ",
+                  { $arrayElemAt: [{ $split: ["$subEmployerDetails.name", " "] }, 0] },
+                  "(",
+                  "$subEmployerDetails.department",
+                  ")",
+                ],
+              },
+              else: {
+                $cond: {
+                  if: { $eq: ["$shortlistedby", "$employerDetails.userId"] },
+                  then: {
+                    $concat: [
+                      "shortlisted By ",
+                      { $arrayElemAt: [{ $split: ["$employerDetails.name", " "] }, 0] },
+                      "(Employer)",
+                    ],
+                  },
+                  else: {
+                    $cond: {
+                      if: { $eq: ["$rejectedby", "$subEmployerDetails.userId"] },
+                      then: {
+                        $concat: [
+                          "rejected By ",
+                          { $arrayElemAt: [{ $split: ["$subEmployerDetails.name", " "] }, 0] },
+                          "(",
+                          "$subEmployerDetails.department",
+                          ")",
+                        ],
+                      },
+                      else: {
+                        $cond: {
+                          if: { $eq: ["$rejectedby", "$employerDetails.userId"] },
+                          then: {
+                            $concat: [
+                              "rejected By ",
+                              "$employerDetails.name",
+                              "(Employer)",
+                            ],
+                          },
+                          else: null,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
         },
-      },
-      // Add dynamic field for shortlistedByName
-      {
-        
-          $addFields: {
-            selectedBy: {
-              $cond: {
-                if: {
-                  $eq: ["$shortlistedby", "$subEmployerDetails.userId"],
-                },
-                then: {
-                  $concat: [
-                    "shortlisted By ",
-                    "$subEmployerDetails.name",
-                    "(",
-                    "$subEmployerDetails.department",
-                    ")",
-                  ],
-                },
-                else: {
-                  $cond: {
-                    if: {
-                      $eq: ["$shortlistedby", "$employerDetails.userId"],
-                    },
-                    then: {
-                      $concat: [
-                        "shortlisted By ",
-                        "$employerDetails.name",
-                        "(Employer)",
-                      ],
-                    },
-                    else: {
-                      $cond: {
-                        if: {
-                          $eq: ["$rejectedby", "$subEmployerDetails.userId"],
-                        },
-                        then: {
-                          $concat: [
-                            "rejected By ",
-                            "$subEmployerDetails.name",
-                            "(",
-                            "$subEmployerDetails.department",
-                            ")",
-                          ],
-                        },
-                        else: {
-                          $cond: {
-                            if: {
-                              $eq: ["$rejectedby", "$employerDetails.userId"],
-                            },
-                            then: {
-                              $concat: [
-                                "rejected By ",
-                                "$employerDetails.name",
-                                "(Employer)",
-                              ],
-                            },
-                            else: null // Default case if neither shortlistedBy nor rejectedBy are set
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        
-        
       },
       {
         $lookup: {
           from: "jobs",
-          localField:"job",
-           foreignField:"_id",
+          localField: "job",
+          foreignField: "_id",
           as: "job",
         },
       },
       { $unwind: { path: "$job", preserveNullAndEmptyArrays: true } },
-
       {
         $lookup: {
           from: "candidates",
-          localField:"candidate",
-          foreignField:"_id",
+          localField: "candidate",
+          foreignField: "_id",
           as: "candidate",
         },
       },
       { $unwind: { path: "$candidate", preserveNullAndEmptyArrays: true } },
-      {
-        $project:{
-          "employerDetails":0,
-          "subEmployerDetails":0
-        }
-      },
-      {
-        $match: {
-          ...matchQueries,
-          ...matchConditions
-        },
-      },
+      { $match: matchQueries },
+      { $project: { employerDetails: 0, subEmployerDetails: 0 } },
       {
         $facet: {
           total: [{ $count: "count" }],
@@ -532,19 +455,18 @@ const getAllApplicants = async (
             { $skip: (pageOptions.page - 1) * pageOptions.limit },
             { $limit: pageOptions.limit },
           ],
-          ...Applicationsstats
+          ...Applicationsstats,
         },
       },
       ...ApplicationsstatsUnwindPath,
-    
     ]);
+
     const application = results?.application || [];
     const totalApplications: number = results?.total[0]?.count || 0;
-   
- 
+
     res.status(200).json({
       data: application,
-      stats:results.stats,
+      stats: results.stats,
       currentPage: pageOptions.page,
       totalPages: Math.ceil(totalApplications / pageOptions.limit),
       count: totalApplications,

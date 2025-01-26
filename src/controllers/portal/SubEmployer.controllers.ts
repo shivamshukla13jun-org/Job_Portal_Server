@@ -370,7 +370,7 @@ class SubEmployerController {
                     then: {
                       $concat: [
                         "shortlisted By ",
-                        "$subEmployerDetails.name",
+                        { $arrayElemAt: [{ $split: ["$subEmployerDetails.name", " "] }, 0] }, // Extract the first name
                         "(",
                         "$subEmployerDetails.department",
                         ")",
@@ -384,7 +384,7 @@ class SubEmployerController {
                         then: {
                           $concat: [
                             "shortlisted By ",
-                            "$employerDetails.name",
+                            { $arrayElemAt: [{ $split: ["$employerDetails.name", " "] }, 0] }, // Extract the first name
                             "(Employer)",
                           ],
                         },
@@ -396,7 +396,7 @@ class SubEmployerController {
                             then: {
                               $concat: [
                                 "rejected By ",
-                                "$subEmployerDetails.name",
+                                { $arrayElemAt: [{ $split: ["$subEmployerDetails.name", " "] }, 0] }, // Extract the first name
                                 "(",
                                 "$subEmployerDetails.department",
                                 ")",
@@ -410,7 +410,7 @@ class SubEmployerController {
                                 then: {
                                   $concat: [
                                     "rejected By ",
-                                    "$employerDetails.name",
+                                    { $arrayElemAt: [{ $split: ["$subEmployerDetails.name", " "] }, 0] }, // Extract the first name
                                     "(Employer)",
                                   ],
                                 },

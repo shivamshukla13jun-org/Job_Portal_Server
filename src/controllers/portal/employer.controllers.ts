@@ -552,7 +552,7 @@ const CandidatesForEmployer = async (
 
     if (qualification) {
       matchConditions["candidate.education"] = {
-        $elemMatch: { qualification },
+        $elemMatch: { qualification:qualification },
       };
     }
     if (keyword) {
@@ -565,10 +565,19 @@ const CandidatesForEmployer = async (
         },
       };
     }
+  
     if (experience_from || experience_to) {
-      matchConditions.experience = {};
-      if (experience_from) matchConditions["candidate.experience"]["$gte"] = Number(experience_from);
-      if (experience_to) matchConditions["candidate.experience"]["$lte"] = Number(experience_to);
+      let experience:number[]=[]
+     
+      if (experience_from) {
+        experience.push(+experience_from)
+      }
+      if (experience_to) {
+        experience.push(+experience_to)
+      }
+      matchConditions["candidate.experience"] = {
+        $in:experience
+      };
     }
 
     const [results] = await Application.aggregate([

@@ -130,6 +130,7 @@ const getJobs = async (req: Request, res: Response, next: NextFunction) => {
             }
            // Salary range filter
            if (key === 'candidate_requirement.salary_from' && value) {
+            console.log("f=salary from",value)
             matchQueries['candidate_requirement.salary_from']= {$gte: parseInt(value as string)} 
         }
         if (key === 'candidate_requirement.salary_to' && value) {

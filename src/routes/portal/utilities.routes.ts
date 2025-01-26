@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import {  ContactUs, getEmployer ,Options} from "@/controllers/portal/utillities.controller";
+import {  ApplicationOptions, ContactUs, getEmployer ,Options} from "@/controllers/portal/utillities.controller";
 
 const router = Router();
 
@@ -12,5 +12,7 @@ router.route("/maxsalaryandexp")
     .get( getEmployer)
 router.route("/options/:id/:type")
     .get( Options)
+router.route("/applicationoptions/:id/:type")
+    .get(ApplicationOptions)
 
 export default router;
