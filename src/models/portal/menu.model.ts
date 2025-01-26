@@ -3,11 +3,18 @@ import { Schema, Document, model, Types } from "mongoose";
 export interface IMenuItem {
   name: string;
   routePath: string;
-  key:string;
+  key: string;
   icon: string;
   paramtype?: string;
-  permissions?: { };
+  permissions?: {
+    view?: boolean;
+    edit?: boolean;
+    delete?: boolean;
+    [key: string]: boolean | undefined; // For additional permissions
+  };
+  subMenu?: IMenuItem[]; // New field for sub-menu items
 }
+
 
 export interface IMenu extends Document {
   userType: Types.ObjectId;
@@ -18,14 +25,26 @@ export interface IMenu extends Document {
 const menuItemSchema = new Schema<IMenuItem>({
   name: { type: String, required: true },
   routePath: { type: String, required: true },
-  key:{type:String},
+  key: { type: String },
   icon: { type: String, required: true },
   paramtype: { type: String },
-  permissions: { 
-    type: Object, 
-    default: {  } 
-  }
+  permissions: {
+    type: Object,
+    default: {},
+  },
+  subMenu: [
+    {
+      name: { type: String, required: true },
+      routePath: { type: String, required: true },
+      key: { type: String },
+      icon: { type: String, required: true },
+      paramtype: { type: String },
+      permissions: { type: Object, default: {} },
+    },
+  ],
 });
+
+
 
 const menuSchema = new Schema<IMenu>({
   userType: {

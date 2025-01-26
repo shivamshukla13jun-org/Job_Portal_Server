@@ -6,6 +6,24 @@ const candidateMenus = [
     routePath: "/candidates-dashboard/dashboard",
     active: "active",
     key:"dashbord",
+    subMenu: [
+      {
+        id: 1.1,
+        name: "Matching Jobs",
+        key: "matchingjobs",
+        icon: "la-user",
+        routePath: "/employers-candidates/dashboard",
+        permissions: { view: true },
+      },
+      {
+        id: 1.2,
+        name: "Applied Jobs",
+        key: "appliedjobs",
+        icon: "la-users",
+        routePath: "/candidates-dashboard/dashboard",
+        permissions: { view: true },
+      },
+    ],
     permissions: { view: true, edit: true, delete: true, meeting: true, export: true, import: true, reject: true, approve: true, download: true }
   },
   {
