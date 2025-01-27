@@ -556,7 +556,7 @@ const CandidatesForEmployer = async (
       };
     }
     if (keyword) {
-      matchConditions["candidate.designation"] = { $regex: keyword, $options: "i" };
+      matchConditions["jobDetails.title"] = { $regex: keyword.trim(), $options: "i" };
     }
     if (category) {
       matchConditions["candidate.employment"] = {
