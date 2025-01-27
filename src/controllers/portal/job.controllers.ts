@@ -102,7 +102,7 @@ const getJobs = async (req: Request, res: Response, next: NextFunction) => {
                         "title": createRegex(value)
                     },
                     {
-                        "company.business_name": createRegex(value)
+                        "employerId.business_name": createRegex(value)
                     },
                     {
                         "employerId.keywords": createRegex(value)
