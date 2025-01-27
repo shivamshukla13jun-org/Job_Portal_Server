@@ -99,10 +99,10 @@ const getJobs = async (req: Request, res: Response, next: NextFunction) => {
                 matchQueries["$and"] = [
                   {"$or":[
                     {
-                        title: createRegex(value)
+                        "title": createRegex(value)
                     },
                     {
-                        "company.name": createRegex(value)
+                        "company.business_name": createRegex(value)
                     },
                     {
                         "employerId.keywords": createRegex(value)

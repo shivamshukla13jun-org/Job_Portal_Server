@@ -354,76 +354,109 @@ console.log(matchQueries)
     const [results] = await Application.aggregate([
       { $match: matchQueriesupper },
       {
-      $lookup: {
-        from: "subemployers",
-        localField: "toSubEmployers.subEmployerId",
-        foreignField: "_id",
-        as: "subEmployerDetails",
-      },
+        $lookup: {
+          from: "subemployers",
+          localField: "toSubEmployers.subEmployerId",
+          foreignField: "_id",
+          as: "subEmployerDetails",
+        },
       },
       { $unwind: { path: "$subEmployerDetails", preserveNullAndEmptyArrays: true } },
       {
-      $addFields: {
-        selectedBy: {
-        $cond: {
-          if: { $eq: ["$shortlistedby", "$subEmployerDetails.userId"] },
-          then: {
-          $concat: [
-            "shortlisted By ",
-            { $arrayElemAt: [{ $split: ["$subEmployerDetails.name", " "] }, 0] },
-            "(",
-            "$subEmployerDetails.department",
-            ")",
-          ],
-          },
-          else: {
-          $cond: {
-            if: { $eq: ["$rejectedby", "$subEmployerDetails.userId"] },
-            then: {
-            $concat: [
-              "rejected By ",
-              { $arrayElemAt: [{ $split: ["$subEmployerDetails.name", " "] }, 0] },
-              "(",
-              "$subEmployerDetails.department",
-              ")",
-            ],
-            },
-            else: null,
-          },
-          },
-        },
+        $lookup: {
+          from: "employers",
+          localField: "employer",
+          foreignField: "_id",
+          as: "employerDetails",
         },
       },
+      { $unwind: { path: "$employerDetails", preserveNullAndEmptyArrays: true } },
+      {
+        $addFields: {
+          selectedBy: {
+            $cond: {
+              if: { $eq: ["$shortlistedby", "$subEmployerDetails.userId"] },
+              then: {
+                $concat: [
+                  "shortlisted By ",
+                  { $arrayElemAt: [{ $split: ["$subEmployerDetails.name", " "] }, 0] },
+                  "(",
+                  "$subEmployerDetails.department",
+                  ")",
+                ],
+              },
+              else: {
+                $cond: {
+                  if: { $eq: ["$shortlistedby", "$employerDetails.userId"] },
+                  then: {
+                    $concat: [
+                      "shortlisted By ",
+                      { $arrayElemAt: [{ $split: ["$employerDetails.name", " "] }, 0] },
+                      "(Employer)",
+                    ],
+                  },
+                  else: {
+                    $cond: {
+                      if: { $eq: ["$rejectedby", "$subEmployerDetails.userId"] },
+                      then: {
+                        $concat: [
+                          "rejected By ",
+                          { $arrayElemAt: [{ $split: ["$subEmployerDetails.name", " "] }, 0] },
+                          "(",
+                          "$subEmployerDetails.department",
+                          ")",
+                        ],
+                      },
+                      else: {
+                        $cond: {
+                          if: { $eq: ["$rejectedby", "$employerDetails.userId"] },
+                          then: {
+                            $concat: [
+                              "rejected By ",
+                              "$employerDetails.name",
+                              "(Employer)",
+                            ],
+                          },
+                          else: null,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
       },
       {
-      $lookup: {
-        from: "jobs",
-        localField: "job",
-        foreignField: "_id",
-        as: "job",
-      },
+        $lookup: {
+          from: "jobs",
+          localField: "job",
+          foreignField: "_id",
+          as: "job",
+        },
       },
       { $unwind: { path: "$job", preserveNullAndEmptyArrays: true } },
       {
-      $lookup: {
-        from: "candidates",
-        localField: "candidate",
-        foreignField: "_id",
-        as: "candidate",
-      },
+        $lookup: {
+          from: "candidates",
+          localField: "candidate",
+          foreignField: "_id",
+          as: "candidate",
+        },
       },
       { $unwind: { path: "$candidate", preserveNullAndEmptyArrays: true } },
       { $match: matchQueries },
-      { $project: { subEmployerDetails: 0 } },
+      { $project: { employerDetails: 0, subEmployerDetails: 0 } },
       {
-      $facet: {
-        total: [{ $count: "count" }],
-        application: [
-        { $skip: (pageOptions.page - 1) * pageOptions.limit },
-        { $limit: pageOptions.limit },
-        ],
-        ...Applicationsstats,
-      },
+        $facet: {
+          total: [{ $count: "count" }],
+          application: [
+            { $skip: (pageOptions.page - 1) * pageOptions.limit },
+            { $limit: pageOptions.limit },
+          ],
+          ...Applicationsstats,
+        },
       },
       ...ApplicationsstatsUnwindPath,
     ]);

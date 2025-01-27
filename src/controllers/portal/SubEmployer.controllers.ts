@@ -360,37 +360,72 @@ class SubEmployerController {
           },
           // Add dynamic field for shortlistedByName
           {
-            $addFields: {
-              selectedBy: {
-              $cond: {
-                if: { $eq: ["$shortlistedby", "$subEmployerDetails.userId"] },
-                then: {
-                $concat: [
-                  "shortlisted By ",
-                  { $arrayElemAt: [{ $split: ["$subEmployerDetails.name", " "] }, 0] },
-                  "(",
-                  "$subEmployerDetails.department",
-                  ")",
-                ],
-                },
-                else: {
-                $cond: {
-                  if: { $eq: ["$rejectedby", "$subEmployerDetails.userId"] },
-                  then: {
-                  $concat: [
-                    "rejected By ",
-                    { $arrayElemAt: [{ $split: ["$subEmployerDetails.name", " "] }, 0] },
-                    "(",
-                    "$subEmployerDetails.department",
-                    ")",
-                  ],
-                  },
-                  else: null,
-                },
-                },
-              },
-              },
-            },
+            
+              $addFields: {
+                selectedBy: {
+                  $cond: {
+                    if: {
+                      $eq: ["$shortlistedby", "$subEmployerDetails.userId"],
+                    },
+                    then: {
+                      $concat: [
+                        "shortlisted By ",
+                        { $arrayElemAt: [{ $split: ["$subEmployerDetails.name", " "] }, 0] }, // Extract the first name
+                        "(",
+                        "$subEmployerDetails.department",
+                        ")",
+                      ],
+                    },
+                    else: {
+                      $cond: {
+                        if: {
+                          $eq: ["$shortlistedby", "$employerDetails.userId"],
+                        },
+                        then: {
+                          $concat: [
+                            "shortlisted By ",
+                            { $arrayElemAt: [{ $split: ["$employerDetails.name", " "] }, 0] }, // Extract the first name
+                            "(Employer)",
+                          ],
+                        },
+                        else: {
+                          $cond: {
+                            if: {
+                              $eq: ["$rejectedby", "$subEmployerDetails.userId"],
+                            },
+                            then: {
+                              $concat: [
+                                "rejected By ",
+                                { $arrayElemAt: [{ $split: ["$subEmployerDetails.name", " "] }, 0] }, // Extract the first name
+                                "(",
+                                "$subEmployerDetails.department",
+                                ")",
+                              ],
+                            },
+                            else: {
+                              $cond: {
+                                if: {
+                                  $eq: ["$rejectedby", "$employerDetails.userId"],
+                                },
+                                then: {
+                                  $concat: [
+                                    "rejected By ",
+                                    { $arrayElemAt: [{ $split: ["$subEmployerDetails.name", " "] }, 0] }, // Extract the first name
+                                    "(Employer)",
+                                  ],
+                                },
+                                else: null // Default case if neither shortlistedBy nor rejectedBy are set
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            
+            
           },
           // Lookup Candidate Details
           {
