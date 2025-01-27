@@ -93,8 +93,8 @@ const applicationSchema: Schema<IApplication> = new Schema(
         ref: 'User',
       },
       intrviewConfirmation: {
-        message: { type: String, default: '' },
-        confirm: { type: Boolean, default: false },
+        message: { type: String,   },
+        confirm: { type: Boolean, },
       },
     },
 
