@@ -80,13 +80,11 @@ const jobSchema = new Schema<IJob>({
         },
         salary_from: {
             type: Number,
-            default:null
-            // required: [true, "Salary from is required"]
+            required: [true, "Salary from is required"]
         },
         salary_to: {
             type: Number,
-            default:null
-            // required: [true, "Salary to is required"]
+            required: [true, "Salary to is required"]
         },
         bonus: {
             type: Boolean,

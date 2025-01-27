@@ -1,4 +1,4 @@
-import mongoose, { Types } from "mongoose";
+import mongoose, { mongo, Types } from "mongoose";
 import { NextFunction, Request, Response } from "express";
 
 import Job, { IJob } from "@/models/portal/job.model";
@@ -9,6 +9,7 @@ import { generateToken } from "@/middlewares/auth";
 import { postedatesCondition } from "@/utils/postedadate";
 import { Subscription } from "@/models/portal/subscription.model";
 import { Application } from "@/models/candidate/application.model";
+import { SavedJobs } from "@/models/candidate/savedjobs";
 
 /**
  @desc      Create an job
@@ -116,8 +117,12 @@ const getJobs = async (req: Request, res: Response, next: NextFunction) => {
                     {
                         location: createRegex(value)
                     },
+                  
                     {
                         place: createRegex(value)
+                    },
+                    {
+                        "address.pin_code": createRegex(value)
                     },
                 ]
             };
@@ -365,6 +370,7 @@ const getEmployerJobs = async (req: Request, res: Response, next: NextFunction) 
     try {
         const { page: reqPage, limit: reqLimit,createdAt,experience_from,experience_to, ...queries } = req.query;
         const today = new Date();
+        const candidateId = res.locals.candidateId as Types.ObjectId
 
         // Parse and set page and limit with fallback
         const page =  parseInt(reqPage as string, 10) || 1  // Ensure page is at least 0
@@ -393,10 +399,10 @@ const getEmployerJobs = async (req: Request, res: Response, next: NextFunction) 
                 matchQueries["$and"] = [
                   {"$or":[
                     {
-                        title: createRegex(value)
+                        "title": createRegex(value)
                     },
                     {
-                        "company.name": createRegex(value)
+                        "employerId.business_name": createRegex(value)
                     },
                     {
                         "employerId.keywords": createRegex(value)
@@ -410,8 +416,12 @@ const getEmployerJobs = async (req: Request, res: Response, next: NextFunction) 
                     {
                         location: createRegex(value)
                     },
+                  
                     {
                         place: createRegex(value)
+                    },
+                    {
+                        "address.pin_code": createRegex(value)
                     },
                 ]
             };
@@ -424,6 +434,7 @@ const getEmployerJobs = async (req: Request, res: Response, next: NextFunction) 
             }
            // Salary range filter
            if (key === 'candidate_requirement.salary_from' && value) {
+            console.log("f=salary from",value)
             matchQueries['candidate_requirement.salary_from']= {$gte: parseInt(value as string)} 
         }
         if (key === 'candidate_requirement.salary_to' && value) {
@@ -437,7 +448,7 @@ const getEmployerJobs = async (req: Request, res: Response, next: NextFunction) 
     if (experience_to && experience_from) {
         matchQueries['candidate_requirement.experience']= {$gte: parseInt(experience_from as string),$lte: parseInt(experience_to as string) }
     }
-        const userId = new Types.ObjectId(res.locals.userId);
+    const userId = new Types.ObjectId(res.locals.userId);
         const checkEmployer = await Employer.findOne({ userId });
         if (!checkEmployer) {
             throw new AppError('Failed to find employer', 400)
@@ -471,7 +482,7 @@ const getEmployerJobs = async (req: Request, res: Response, next: NextFunction) 
             {
                 $facet: {
                     data: [
-                        { $skip: (pageOptions.skip) * pageOptions.limit },
+                        { $skip: (pageOptions.skip) },
                         { $limit: pageOptions.limit },
                         
                     ],
@@ -611,11 +622,15 @@ const updateJob = async (req: Request, res: Response, next: NextFunction) => {
  @access    Employer
  */
 const deleteJob = async (req: Request, res: Response, next: NextFunction) => {
+    const session=await mongoose.startSession()
+    await session.startTransaction()
     try {
         const id = req.params.id;
 
-        const job = await Job.findByIdAndDelete(id);
-        await Application.deleteMany({job:id})
+        const job = await Job.findByIdAndDelete(id).session(session)
+        await Application.deleteMany({job:id}).session(session)
+        await SavedJobs.updateMany({ jobs: id }, { $pull: { jobs: id } }).session(session);
+
         if (!job) {
             throw new AppError('Failed to find job', 400);
         }

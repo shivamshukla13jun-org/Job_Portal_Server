@@ -350,7 +350,6 @@ const getAllApplicants = async (
         $in:experience
       };
     }
-console.log(matchQueries)
     const [results] = await Application.aggregate([
       { $match: matchQueriesupper },
       {
