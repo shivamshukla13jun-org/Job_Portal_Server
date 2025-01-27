@@ -413,7 +413,7 @@ console.log(matchQueries)
                           then: {
                             $concat: [
                               "rejected By ",
-                              "$employerDetails.name",
+                              { $arrayElemAt: [{ $split: ["$employerDetails.name", " "] }, 0] },
                               "(Employer)",
                             ],
                           },

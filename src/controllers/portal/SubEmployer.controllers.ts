@@ -295,8 +295,8 @@ class SubEmployerController {
       const {
         SubEmployerId,
         EmployerId,
-        page = "1",
-        limit = "10",
+        page = 1 as any,
+        limit = 10 as any,
       } = req.query as {
         SubEmployerId?: Types.ObjectId;
         EmployerId?: Types.ObjectId;
@@ -309,7 +309,7 @@ class SubEmployerController {
       const skip = (currentPage - 1) * pageSize;
 
       // Build the match filter dynamically
-      const match: any = {
+      const match: Record<string,any> = {
         "toSubEmployers.subEmployerId": { $exists: true }, // Check if subEmployerId exists
       };
       
