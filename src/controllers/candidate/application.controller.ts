@@ -328,7 +328,8 @@ const getAllApplicants = async (
               then: {
                 $concat: [
                   "shortlisted By ",
-                  { $arrayElemAt: [{ $split: ["$subEmployerDetails.name", " "] }, 0] },
+                  "$subEmployerDetails.name",
+                  // { $arrayElemAt: [{ $split: ["$subEmployerDetails.name", " "] }, 0] },
                   "(",
                   "$subEmployerDetails.department",
                   ")",
@@ -350,7 +351,8 @@ const getAllApplicants = async (
                       then: {
                         $concat: [
                           "rejected By ",
-                          { $arrayElemAt: [{ $split: ["$subEmployerDetails.name", " "] }, 0] },
+                          "$subEmployerDetails.name",
+                          // { $arrayElemAt: [{ $split: ["$subEmployerDetails.name", " "] }, 0] },
                           "(",
                           "$subEmployerDetails.department",
                           ")",
@@ -396,7 +398,7 @@ const getAllApplicants = async (
       },
       { $unwind: { path: "$candidate", preserveNullAndEmptyArrays: true } },
       { $match: matchQueries },
-      { $project: { employerDetails: 0, subEmployerDetails: 0 } },
+      { $project: { employerDetails: 0,  } },
       {
         $facet: {
           total: [{ $count: "count" }],
