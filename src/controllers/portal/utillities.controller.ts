@@ -49,7 +49,6 @@ interface OptionsQuery {
 const Options = async (req: Request, res: Response, next: NextFunction) => {
     try {
         let { type, id } = req.params as OptionsQuery;
-        const status=req.query.status;
         let data: any[] = [];
 
         if (!type) {
@@ -57,29 +56,13 @@ const Options = async (req: Request, res: Response, next: NextFunction) => {
         }
 
         const match: Record<string, any> = {
-            employer: new Types.ObjectId(id),
-            ...(status && { status: status }),
+            employerId: new Types.ObjectId(id),
         };
 
         // Base pipeline
         const pipeline: any[] = [
             { $match: match},
-            {
-                $lookup:{
-                    from:"jobs",
-                    localField:"job",
-                    foreignField:"_id",
-                    as:"job"
-                }
-            },
-            {
-                $unwind:"$job"
-            },
-             {$group: {
-                _id:"$job._id",
-                job:{$first:"$job"}
-            }},
-            
+       
 
         ]
 
@@ -87,14 +70,14 @@ const Options = async (req: Request, res: Response, next: NextFunction) => {
         if (type === "personal_info.info.degree") {
             type = "personal_info.assets.label";
             pipeline.push(
-                { $unwind: "$job.personal_info" },
-                { $unwind: "$job.personal_info.assets" },
+                { $unwind: "$personal_info" },
+                { $unwind: "$personal_info.assets" },
                 {$match:{
-                    "job.personal_info.info":"Degree and Specialisation"
+                    "personal_info.info":"Degree and Specialisation"
                 }},
                 {
                     $group: {
-                        _id: `$job.${type}`,
+                        _id: `$${type}`,
                         total: { $sum: 1 },
                     },
                 },
@@ -105,10 +88,10 @@ const Options = async (req: Request, res: Response, next: NextFunction) => {
         else if (type === "categories.label") {
             // type="categories.label"
             pipeline.push(
-                { $unwind: "$job.categories" },
+                { $unwind: "$categories" },
                 {
                     $group: {
-                        _id: `$job.${type}`,
+                        _id: `$${type}`,
                         total: { $sum: 1 },
                     },
                 },
@@ -123,8 +106,8 @@ const Options = async (req: Request, res: Response, next: NextFunction) => {
                 {
                     $group: {
                         _id: null, // No grouping by fields, we want global max/min
-                        minSalary: { $min: "$job.candidate_requirement.salary_from" },
-                        maxSalary: { $max: "$job.candidate_requirement.salary_to" },
+                        minSalary: { $min: "$candidate_requirement.salary_from" },
+                        maxSalary: { $max: "$candidate_requirement.salary_to" },
                     },
                 },
                 {
@@ -142,8 +125,8 @@ const Options = async (req: Request, res: Response, next: NextFunction) => {
                 {
                     $group: {
                         _id: null, // No grouping by fields, we want global max/min
-                        minExperience: { $min: "$job.candidate_requirement.experience" },
-                        maxExperience: { $max: "$job.candidate_requirement.experience" },
+                        minExperience: { $min: "$candidate_requirement.experience" },
+                        maxExperience: { $max: "$candidate_requirement.experience" },
                     },
                 },
                 {
@@ -160,7 +143,7 @@ const Options = async (req: Request, res: Response, next: NextFunction) => {
             pipeline.push(
                     {
                         $group: {
-                            _id: `$job.${type}`,
+                            _id: `$${type}`,
                             total: { $sum: 1 },
                         },
                     },
@@ -169,9 +152,9 @@ const Options = async (req: Request, res: Response, next: NextFunction) => {
                 );
         }  
           if( type === "salary_experience"  ||type==="experience"){
-            [data]=await Application.aggregate(pipeline)
+            [data]=await Job.aggregate(pipeline)
           }else{
-            data=await Application.aggregate(pipeline);
+            data=await Job.aggregate(pipeline);
           }
         res.status(200).json({
             success: true,

@@ -34,7 +34,7 @@ router.route("/candidates").get(verifyUserTypeToken(["employer"]),CandidatesForE
 // Forward SubEmployers
 router.route("/getSubEmployers/:id").get(verifyUserTypeToken(["employer","admin"]),getSubEmployers)
 // Forward SubEmployers
-router.route("/meetings/:id").get(verifyUserTypeToken(["employer","admin"]),meetingControllers.EmployerMeetingLinklists)
+router.route("/meetings/:id").get(verifyUserTypeToken(["employer","admin","subemployer"]),meetingControllers.EmployerMeetingLinklists)
 // Single Employer Details
 router.route("/")
     .get(verifyUserTypeToken(["employer","admin"]), getEmployers)
