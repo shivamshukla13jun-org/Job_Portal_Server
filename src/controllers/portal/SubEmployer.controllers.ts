@@ -13,6 +13,7 @@ import ForwardedCV from "@/models/portal/Forwarwardedcv.model";
 import Meeting from "@/models/portal/CreateMeetingLink.model";
 import { Application } from "@/models/candidate/application.model";
 import { FilterApplications } from "@/utils/ApplicationStats";
+import { postedatesCondition } from "@/utils/postedadate";
 
 class SubEmployerController {
   async createSubEmployer(req: Request, res: Response, next: NextFunction) {
@@ -292,44 +293,77 @@ class SubEmployerController {
   }
   async getForwardedCVs(req: Request, res: Response, next: NextFunction) {
     try {
-      // Destructure and validate query parameters
       const {
         SubEmployerId,
         EmployerId,
         page = 1 as any,
         limit = 10 as any,
+        jobid = "",
+        createdAt = "",
+        status = ""
       } = req.query as {
         SubEmployerId?: Types.ObjectId;
         EmployerId?: Types.ObjectId;
         page?: string;
         limit?: string;
+        jobid?: string;
+        createdAt?: string;
+        status?: string;
       };
-
+  
       const currentPage = parseInt(page, 10) || 1;
       const pageSize = parseInt(limit, 10) || 10;
       const skip = (currentPage - 1) * pageSize;
-
-      // Build the match filter dynamically
-      const match: Record<string,any> = {
-        "toSubEmployers.subEmployerId": { $exists: true }, // Check if subEmployerId exists
+  
+      const match: Record<string, any> = {
+        "toSubEmployers.subEmployerId": { $exists: true },
       };
-      
+  
       if (SubEmployerId) {
         match["toSubEmployers"] = {
           $elemMatch: { subEmployerId: new Types.ObjectId(SubEmployerId as Types.ObjectId) },
         };
       }
-      
+  
       if (EmployerId) {
         match["employer"] = new Types.ObjectId(EmployerId as Types.ObjectId);
       }
-      const{matchQueries}= FilterApplications(req)
-
-      // Run Aggregation Pipeline with Pagination
-      const [data, total] = await Promise.all([
-        Application.aggregate([
-          { $match: match }, // Filter applications based on conditions
-          // Lookup SubEmployer Details
+      if (jobid) {
+        match["job"] = new Types.ObjectId(jobid);
+      }
+      if (status) {
+        match["status"] = status;
+      }
+      if (createdAt) {
+        let startDate = postedatesCondition(createdAt);
+        if (startDate) {
+          match["createdAt"] = { $gte: startDate };
+        }
+      }
+  
+      const { matchQueries } = FilterApplications(req);
+      console.log("matchQueries",matchQueries)
+      const result = await Application.aggregate([
+        { $match: match },
+          {
+            $lookup: {
+              from: "candidates",
+              localField: "candidate",
+              foreignField: "_id",
+              as: "candidate",
+            },
+          },
+          { $unwind: { path: "$candidate", preserveNullAndEmptyArrays: true } },
+          {
+            $lookup: {
+              from: "jobs",
+              localField: "job",
+              foreignField: "_id",
+              as: "job",
+            },
+          },
+          { $unwind: { path: "$job", preserveNullAndEmptyArrays: true } },
+          { $match: matchQueries },
           {
             $lookup: {
               from: "subemployers",
@@ -344,8 +378,6 @@ class SubEmployerController {
               preserveNullAndEmptyArrays: true,
             },
           },
-
-          // Lookup Employer Details
           {
             $lookup: {
               from: "employers",
@@ -360,64 +392,53 @@ class SubEmployerController {
               preserveNullAndEmptyArrays: true,
             },
           },
-          // Add dynamic field for shortlistedByName
           {
-            
-              $addFields: {
-                selectedBy: {
-                  $cond: {
-                    if: {
-                      $eq: ["$shortlistedby", "$subEmployerDetails.userId"],
-                    },
-                    then: {
-                      $concat: [
-                        "shortlisted By ",
-                        { $arrayElemAt: [{ $split: ["$subEmployerDetails.name", " "] }, 0] }, // Extract the first name
-                        "(",
-                        "$subEmployerDetails.department",
-                        ")",
-                      ],
-                    },
-                    else: {
-                      $cond: {
-                        if: {
-                          $eq: ["$shortlistedby", "$employerDetails.userId"],
-                        },
-                        then: {
-                          $concat: [
-                            "shortlisted By ",
-                            { $arrayElemAt: [{ $split: ["$employerDetails.name", " "] }, 0] }, // Extract the first name
-                            "(Employer)",
-                          ],
-                        },
-                        else: {
-                          $cond: {
-                            if: {
-                              $eq: ["$rejectedby", "$subEmployerDetails.userId"],
-                            },
-                            then: {
-                              $concat: [
-                                "rejected By ",
-                                { $arrayElemAt: [{ $split: ["$subEmployerDetails.name", " "] }, 0] }, // Extract the first name
-                                "(",
-                                "$subEmployerDetails.department",
-                                ")",
-                              ],
-                            },
-                            else: {
-                              $cond: {
-                                if: {
-                                  $eq: ["$rejectedby", "$employerDetails.userId"],
-                                },
-                                then: {
-                                  $concat: [
-                                    "rejected By ",
-                                    { $arrayElemAt: [{ $split: ["$subEmployerDetails.name", " "] }, 0] }, // Extract the first name
-                                    "(Employer)",
-                                  ],
-                                },
-                                else: null // Default case if neither shortlistedBy nor rejectedBy are set
-                              }
+            $addFields: {
+              selectedBy: {
+                $cond: {
+                  if: { $eq: ["$shortlistedby", "$subEmployerDetails.userId"] },
+                  then: {
+                    $concat: [
+                      "shortlisted By ",
+                      { $arrayElemAt: [{ $split: ["$subEmployerDetails.name", " "] }, 0] },
+                      "(",
+                      "$subEmployerDetails.department",
+                      ")",
+                    ],
+                  },
+                  else: {
+                    $cond: {
+                      if: { $eq: ["$shortlistedby", "$employerDetails.userId"] },
+                      then: {
+                        $concat: [
+                          "shortlisted By ",
+                          { $arrayElemAt: [{ $split: ["$employerDetails.name", " "] }, 0] },
+                          "(Employer)",
+                        ],
+                      },
+                      else: {
+                        $cond: {
+                          if: { $eq: ["$rejectedby", "$subEmployerDetails.userId"] },
+                          then: {
+                            $concat: [
+                              "rejected By ",
+                              { $arrayElemAt: [{ $split: ["$subEmployerDetails.name", " "] }, 0] },
+                              "(",
+                              "$subEmployerDetails.department",
+                              ")",
+                            ],
+                          },
+                          else: {
+                            $cond: {
+                              if: { $eq: ["$rejectedby", "$employerDetails.userId"] },
+                              then: {
+                                $concat: [
+                                  "rejected By ",
+                                  { $arrayElemAt: [{ $split: ["$employerDetails.name", " "] }, 0] },
+                                  "(Employer)",
+                                ],
+                              },
+                              else: null
                             }
                           }
                         }
@@ -426,36 +447,8 @@ class SubEmployerController {
                   }
                 }
               }
-            
-            
+            }
           },
-          // Lookup Candidate Details
-          {
-            $lookup: {
-              from: "candidates",
-              localField:"candidate",
-              foreignField:"_id",
-              as: "candidate",
-            },
-          },
-          { $unwind: { path: "$candidate", preserveNullAndEmptyArrays: true } },
-        
-          // Lookup Job Details
-          {
-            $lookup: {
-              from: "jobs",
-              localField: "job",
-              foreignField: "_id",
-              as: "job",
-            },
-          },
-          {
-            $unwind: {
-              path: "$job",
-              preserveNullAndEmptyArrays: true,
-            },
-          },
-          // Group by applicationId
           {
             $group: {
               _id: "$_id",
@@ -466,44 +459,35 @@ class SubEmployerController {
               job: { $first: "$job" },
               selectedBy: { $first: "$selectedBy" },
               meeting: { $first: "$meeting" },
-              
-            },
+            }
           },
-          // {$match:matchQueries},
-
-          // Apply Pagination
-          { $skip: skip },
-          { $limit: pageSize },
-        ]),
-
-        // Total count for pagination metadata
-        Application.aggregate([
-          { $match: match },
-          { $unwind: "$toSubEmployers" },
-          ...(SubEmployerId
-            ? [
-                {
-                  $match: {
-                    "toSubEmployers.subEmployerId": new Types.ObjectId(
-                      SubEmployerId
-                    ),
-                  },
-                },
-              ]
-            : []),
-          { $count: "total" },
-        ]).then((res) => (res[0] ? res[0].total : 0)),
+        
+        {
+          $facet: {
+            data:[
+              
+                { $skip: skip },
+                { $limit: pageSize }
+              
+            ],
+            total: [
+              { $count: "count" }
+            ]
+          }
+        }
       ]);
-
-      // Respond with paginated data
+  
+      const data = result[0].data;
+      const totalItems = result[0].total[0]?.count || 0;
+  
       return res.status(200).json({
         message: "Data fetched successfully",
         data,
         pagination: {
           currentPage,
           pageSize,
-          totalItems: total,
-          totalPages: Math.ceil(total / pageSize),
+          totalItems,
+          totalPages: Math.ceil(totalItems / pageSize),
         },
       });
     } catch (error) {

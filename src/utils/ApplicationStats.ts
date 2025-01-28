@@ -12,6 +12,8 @@ export interface ApplicationQuery {
   category?:string;
   experience_from?:number
   experience_to?:number;
+  SubEmployerId?:Types.ObjectId,
+  EmployerId?:Types.ObjectId,
 
 }
 export const getApplicationStats = (statuses: string[]) => {
@@ -61,7 +63,7 @@ const Applicationsstats = getApplicationStats(statuses);
 const ApplicationsstatsUnwindPath = getApplicationStatsUnwind();
 
 const FilterApplications=(req:Request)=>{
-  let {  status, jobid, qualification, keyword, category, experience_from, experience_to, createdAt, ...queries } = req.query as ApplicationQuery;
+  let {  status, jobid,page,limit,EmployerId,SubEmployerId, qualification, keyword, category, experience_from, experience_to, createdAt, ...queries } = req.query as ApplicationQuery;
   const matchQueries: Record<string, any> = {};
   const createRegex = (value: string) =>
     new RegExp(`.*${value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}.*`, "gi");
@@ -70,18 +72,18 @@ const FilterApplications=(req:Request)=>{
     if (typeof value === "string" && value !== "" && !["createdAt", "status", "name"].includes(key)) {
       matchQueries[key] = createRegex(value);
     }
-    if (typeof value === "string" && value !== "") {
-      if (key === "name") {
-        matchQueries["candidate.name"] = createRegex(value);
-      }
-    }
+    // if (typeof value === "string" && value !== "") {
+    //   if (key === "name") {
+    //     matchQueries["candidate.name"] = createRegex(value);
+    //   }
+    // }
   }
 
   if (qualification) {
     matchQueries["candidate.education"] = { $elemMatch: { qualification } };
   }
   if (keyword) {
-    matchQueries["job.title"] = { $regex: keyword, $options: "i" };
+    matchQueries["job.title"] = createRegex(keyword)
   }
   if (category) {
     matchQueries["candidate.employment"] = { $elemMatch: { categories: { $elemMatch: { value: category } } } };
