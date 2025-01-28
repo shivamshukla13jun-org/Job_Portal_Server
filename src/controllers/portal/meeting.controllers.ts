@@ -97,6 +97,16 @@ class MeetingController {
           as: 'creator',
         },
       },
+      // Lookup candidate details
+      {
+        $lookup: {
+          from: 'candidates',
+          localField: 'candidate',
+          foreignField: '_id',
+          as: 'candidate',
+        },
+      },
+      { $unwind: { path: '$candidate', preserveNullAndEmptyArrays: true } },
       { $unwind: { path: '$creator', preserveNullAndEmptyArrays: true } },
     
       // Lookup userType details
@@ -165,6 +175,7 @@ class MeetingController {
           'userType.name': 1,
           scheduledBy: 1,
           createdAt: 1,
+          candidate:1
         },
       },
     
@@ -249,7 +260,16 @@ async  EmployerMeetingLinklists(req: Request, res: Response, next: NextFunction)
           },
         },
         { $unwind: { path: '$creator', preserveNullAndEmptyArrays: true } },
-  
+        // Lookup candidate details
+        {
+          $lookup: {
+            from: 'candidates',
+            localField: 'candidate',
+            foreignField: '_id',
+            as: 'candidate',
+          },
+        },
+        { $unwind: { path: '$candidate', preserveNullAndEmptyArrays: true } },
         // Lookup userType details
         {
           $lookup: {
@@ -314,6 +334,7 @@ async  EmployerMeetingLinklists(req: Request, res: Response, next: NextFunction)
             'userType.name': 1,
             'scheduledBy': 1,
             'createdAt': 1,
+            candidate:1
           },
         },
   

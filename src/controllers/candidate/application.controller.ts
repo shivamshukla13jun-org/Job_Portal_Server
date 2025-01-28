@@ -10,7 +10,7 @@ import { generateToken } from "@/middlewares/auth";
 import Employer from "@/models/portal/employer.model";
 import { postedatesCondition } from "@/utils/postedadate";
 import SubEmployer from "@/models/portal/SubEmployer.model";
-import { Applicationsstats, ApplicationsstatsUnwindPath } from "@/utils/ApplicationStats";
+import { ApplicationQuery, Applicationsstats, ApplicationsstatsUnwindPath, FilterApplications } from "@/utils/ApplicationStats";
 import ForwardedCV, { ForwardingStatus } from "@/models/portal/Forwarwardedcv.model";
 import ejs from "ejs"
 import path from "path";
@@ -264,20 +264,7 @@ const getAppliedJobs = async (
     next(error);
   }
 };
-interface ApplicationQuery {
-  page?:string;
-  limit?:string;
-  status?:string;
-  jobid?:Types.ObjectId;
-  createdAt?:any;
-  queries?:object;
-  qualification?:string;
-  keyword?:string;
-  category?:string;
-  experience_from?:number
-  experience_to?:number;
 
-}
 const getAllApplicants = async (
   req: Request,
   res: Response,
@@ -312,44 +299,7 @@ const getAllApplicants = async (
         matchQueriesupper["createdAt"] = { $gte: startDate };
       }
     }
-
-    const matchQueries: Record<string, any> = {};
-    const createRegex = (value: string) =>
-      new RegExp(`.*${value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}.*`, "gi");
-
-    for (const [key, value] of Object.entries(queries)) {
-      if (typeof value === "string" && value !== "" && !["createdAt", "status", "name"].includes(key)) {
-        matchQueries[key] = createRegex(value);
-      }
-      if (typeof value === "string" && value !== "") {
-        if (key === "name") {
-          matchQueries["candidate.name"] = createRegex(value);
-        }
-      }
-    }
-
-    if (qualification) {
-      matchQueries["candidate.education"] = { $elemMatch: { qualification } };
-    }
-    if (keyword) {
-      matchQueries["candidate.designation"] = { $regex: keyword, $options: "i" };
-    }
-    if (category) {
-      matchQueries["candidate.employment"] = { $elemMatch: { categories: { $elemMatch: { value: category } } } };
-    }
-    if (experience_from || experience_to) {
-      let experience:number[]=[]
-     
-      if (experience_from) {
-        experience.push(+experience_from)
-      }
-      if (experience_to) {
-        experience.push(+experience_to)
-      }
-      matchQueries["candidate.experience"] = {
-        $in:experience
-      };
-    }
+   const{matchQueries}= FilterApplications(req)
     const [results] = await Application.aggregate([
       { $match: matchQueriesupper },
       {

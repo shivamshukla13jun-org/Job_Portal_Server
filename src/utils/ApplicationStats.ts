@@ -1,4 +1,19 @@
+import { Types } from "mongoose";
+import { Request } from "express";
+export interface ApplicationQuery {
+  page?:string;
+  limit?:string;
+  status?:string;
+  jobid?:Types.ObjectId;
+  createdAt?:any;
+  queries?:object;
+  qualification?:string;
+  keyword?:string;
+  category?:string;
+  experience_from?:number
+  experience_to?:number;
 
+}
 export const getApplicationStats = (statuses: string[]) => {
     const stats: Record<string, any[]> = {};
     statuses.forEach((status) => {
@@ -44,6 +59,48 @@ export const getApplicationStats = (statuses: string[]) => {
 
 const Applicationsstats = getApplicationStats(statuses);
 const ApplicationsstatsUnwindPath = getApplicationStatsUnwind();
-export {Applicationsstats,ApplicationsstatsUnwindPath}
+
+const FilterApplications=(req:Request)=>{
+  let {  status, jobid, qualification, keyword, category, experience_from, experience_to, createdAt, ...queries } = req.query as ApplicationQuery;
+  const matchQueries: Record<string, any> = {};
+  const createRegex = (value: string) =>
+    new RegExp(`.*${value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}.*`, "gi");
+
+  for (const [key, value] of Object.entries(queries)) {
+    if (typeof value === "string" && value !== "" && !["createdAt", "status", "name"].includes(key)) {
+      matchQueries[key] = createRegex(value);
+    }
+    if (typeof value === "string" && value !== "") {
+      if (key === "name") {
+        matchQueries["candidate.name"] = createRegex(value);
+      }
+    }
+  }
+
+  if (qualification) {
+    matchQueries["candidate.education"] = { $elemMatch: { qualification } };
+  }
+  if (keyword) {
+    matchQueries["job.title"] = { $regex: keyword, $options: "i" };
+  }
+  if (category) {
+    matchQueries["candidate.employment"] = { $elemMatch: { categories: { $elemMatch: { value: category } } } };
+  }
+  if (experience_from || experience_to) {
+    let experience:number[]=[]
+   
+    if (experience_from) {
+      experience.push(+experience_from)
+    }
+    if (experience_to) {
+      experience.push(+experience_to)
+    }
+    matchQueries["candidate.experience"] = {
+      $in:experience
+    };
+  }
+  return {matchQueries}
+}
+export {Applicationsstats,ApplicationsstatsUnwindPath,FilterApplications}
 
   

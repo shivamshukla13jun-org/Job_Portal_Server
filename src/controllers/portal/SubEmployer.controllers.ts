@@ -12,6 +12,7 @@ import path from "path";
 import ForwardedCV from "@/models/portal/Forwarwardedcv.model";
 import Meeting from "@/models/portal/CreateMeetingLink.model";
 import { Application } from "@/models/candidate/application.model";
+import { FilterApplications } from "@/utils/ApplicationStats";
 
 class SubEmployerController {
   async createSubEmployer(req: Request, res: Response, next: NextFunction) {
@@ -322,7 +323,8 @@ class SubEmployerController {
       if (EmployerId) {
         match["employer"] = new Types.ObjectId(EmployerId as Types.ObjectId);
       }
-      
+      const{matchQueries}= FilterApplications(req)
+
       // Run Aggregation Pipeline with Pagination
       const [data, total] = await Promise.all([
         Application.aggregate([
@@ -467,6 +469,7 @@ class SubEmployerController {
               
             },
           },
+          // {$match:matchQueries},
 
           // Apply Pagination
           { $skip: skip },
