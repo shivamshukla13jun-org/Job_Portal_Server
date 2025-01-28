@@ -328,8 +328,8 @@ const getAllApplicants = async (
               then: {
                 $concat: [
                   "shortlisted By ",
-                  "$subEmployerDetails.name",
-                  // { $arrayElemAt: [{ $split: ["$subEmployerDetails.name", " "] }, 0] },
+                  // "$subEmployerDetails.name",
+                  { $arrayElemAt: [{ $split: ["$subEmployerDetails.name", " "] }, 0] },
                   "(",
                   "$subEmployerDetails.department",
                   ")",
@@ -351,8 +351,8 @@ const getAllApplicants = async (
                       then: {
                         $concat: [
                           "rejected By ",
-                          "$subEmployerDetails.name",
-                          // { $arrayElemAt: [{ $split: ["$subEmployerDetails.name", " "] }, 0] },
+                          // "$subEmployerDetails.name",
+                          { $arrayElemAt: [{ $split: ["$subEmployerDetails.name", " "] }, 0] },
                           "(",
                           "$subEmployerDetails.department",
                           ")",
