@@ -438,7 +438,7 @@ const getAllEmployers = async (
     const result = await Employer.aggregate([
       { $match: matchQueries }, // Apply filters
       { $sort: { createdAt: -1 } }, // Sort by latest
-      { $project: { _id: 1, business_name: 1, name: 1 } }, // Select fields
+      { $project: { business_name: 1, name: 1,logo:1 } }, // Select fields
       {
         $facet: {
           metadata: [{ $count: "total" }], // Get total count
