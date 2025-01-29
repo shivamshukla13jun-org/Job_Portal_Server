@@ -8,7 +8,10 @@ import Employer, {
 import { AppError } from "@/middlewares/error";
 import { validateEmployer } from "@/validations/employer";
 import Job from "@/models/portal/job.model";
-import { Application, ISubEmployers } from "@/models/candidate/application.model";
+import {
+  Application,
+  ISubEmployers,
+} from "@/models/candidate/application.model";
 import SubEmployer from "@/models/portal/SubEmployer.model";
 import Candidate from "@/models/portal/candidate.model";
 import ForwardedCV, {
@@ -20,6 +23,8 @@ import ForwardedCV, {
 import { EmployerDashBoardGraph } from "@/utils/employerdashboardGraph";
 import { sendEmail } from "@/services/emails";
 import User from "@/models/admin/user.model";
+import { postedatesCondition } from "@/utils/postedadate";
+import { createRegex } from "@/libs/createRegx";
 
 /**
  @desc      Create an employer
@@ -41,7 +46,10 @@ const createEmployer = async (
     if (!employer) {
       throw new AppError("Failed to create employer", 400);
     }
-    await User.updateOne({_id:req.params.id,},{$set:{employer:employer._id}})
+    await User.updateOne(
+      { _id: req.params.id },
+      { $set: { employer: employer._id } }
+    );
 
     res.status(201).json({
       success: true,
@@ -283,7 +291,7 @@ const getEmployers = async (
       {
         $facet: {
           data: [
-            { $skip: (pageOptions.page-1) * pageOptions.limit },
+            { $skip: (pageOptions.page - 1) * pageOptions.limit },
             { $limit: pageOptions.limit },
           ],
           count: [{ $count: "total" }],
@@ -355,12 +363,14 @@ const ForwardCV = async (req: Request, res: Response, next: NextFunction) => {
     const { applicationid, subEmployerIds, notes } = req.body as ForwardCVBody;
 
     // Validate candidate ID
-   // Validate Application
-   const application:any = await Application.findById(applicationid).populate("candidate");
-   if (!application) {
-     throw new AppError("Application not found", 404);
-   }
-     
+    // Validate Application
+    const application: any = await Application.findById(applicationid).populate(
+      "candidate"
+    );
+    if (!application) {
+      throw new AppError("Application not found", 404);
+    }
+
     // Prepare forwarding results
     const forwardingResults: Array<ForwardingResult> = [];
     if (subEmployerIds && subEmployerIds.length > 0) {
@@ -369,15 +379,15 @@ const ForwardCV = async (req: Request, res: Response, next: NextFunction) => {
         const subEmployerIdObj = new Types.ObjectId(subEmployerId);
 
         // Check if already forwarded
-        const alreadyForwarded  = application.toSubEmployers.some(
-          (entry:ISubEmployers) => entry.subEmployerId.equals(subEmployerIdObj)
+        const alreadyForwarded = application.toSubEmployers.some(
+          (entry: ISubEmployers) => entry.subEmployerId.equals(subEmployerIdObj)
         );
 
         if (!alreadyForwarded) {
           application.toSubEmployers.push({
             subEmployerId: subEmployerIdObj,
-            status: 'pending',
-            additionalNotes: notes || '',
+            status: "pending",
+            additionalNotes: notes || "",
           });
         }
       }
@@ -458,7 +468,10 @@ const updateEmployer = async (
       if (!newEmployer) {
         throw new AppError("Failed to create employer", 400);
       }
-      await User.updateOne({_id:req.params.id,},{$set:{employer:newEmployer._id}})
+      await User.updateOne(
+        { _id: req.params.id },
+        { $set: { employer: newEmployer._id } }
+      );
 
       return res.status(201).json({
         success: true,
@@ -521,8 +534,12 @@ interface CandidatQuery {
   category?: string;
   experience_from?: number;
   experience_to?: number;
-  limit: number;
-  page: number;
+  limit?: number;
+  page?: number;
+  sort?:string;
+  gender?:string;
+  location?:string;
+  createdAt?:string;
 }
 
 const CandidatesForEmployer = async (
@@ -546,17 +563,22 @@ const CandidatesForEmployer = async (
     if (!checkEmployer) {
       throw new AppError("Employer not Found", 400);
     }
-    const employerId = checkEmployer?._id ? new Types.ObjectId(checkEmployer._id as Types.ObjectId) : null;
+    const employerId = checkEmployer?._id
+      ? new Types.ObjectId(checkEmployer._id as Types.ObjectId)
+      : null;
 
     const matchConditions: any = {};
 
     if (qualification) {
       matchConditions["candidate.education"] = {
-        $elemMatch: { qualification:qualification },
+        $elemMatch: { qualification: qualification },
       };
     }
     if (keyword) {
-      matchConditions["jobDetails.title"] = { $regex: keyword.trim(), $options: "i" };
+      matchConditions["jobDetails.title"] = {
+        $regex: keyword.trim(),
+        $options: "i",
+      };
     }
     if (category) {
       matchConditions["candidate.employment"] = {
@@ -565,18 +587,18 @@ const CandidatesForEmployer = async (
         },
       };
     }
-  
+
     if (experience_from || experience_to) {
-      let experience:number[]=[]
-     
+      let experience: number[] = [];
+
       if (experience_from) {
-        experience.push(+experience_from)
+        experience.push(+experience_from);
       }
       if (experience_to) {
-        experience.push(+experience_to)
+        experience.push(+experience_to);
       }
       matchConditions["candidate.experience"] = {
-        $in:experience
+        $in: experience,
       };
     }
 
@@ -591,11 +613,11 @@ const CandidatesForEmployer = async (
           from: "jobs",
           localField: "job",
           foreignField: "_id",
-          as: "jobDetails"
-        }
+          as: "jobDetails",
+        },
       },
       {
-        $unwind: "$jobDetails"
+        $unwind: "$jobDetails",
       },
       {
         $lookup: {
@@ -606,11 +628,11 @@ const CandidatesForEmployer = async (
         },
       },
       {
-        $unwind: "$candidate"
+        $unwind: "$candidate",
       },
-    
+
       {
-        $match: matchConditions
+        $match: matchConditions,
       },
       {
         $addFields: {
@@ -620,14 +642,14 @@ const CandidatesForEmployer = async (
                 $filter: {
                   input: "$jobDetails.personal_info",
                   as: "info",
-                  cond: { $eq: ["$$info.info", "Degree and Specialisation"] }
-                }
+                  cond: { $eq: ["$$info.info", "Degree and Specialisation"] },
+                },
               },
               initialValue: [],
-              in: { $concatArrays: ["$$value", "$$this.assets.label"] }
-            }
-          }
-        }
+              in: { $concatArrays: ["$$value", "$$this.assets.label"] },
+            },
+          },
+        },
       },
       {
         $addFields: {
@@ -636,7 +658,7 @@ const CandidatesForEmployer = async (
             designationScore: {
               $let: {
                 vars: {
-                  titleWords: { $split: ["$jobDetails.title", " "] }
+                  titleWords: { $split: ["$jobDetails.title", " "] },
                 },
                 in: {
                   $cond: {
@@ -649,17 +671,17 @@ const CandidatesForEmployer = async (
                             $regexMatch: {
                               input: "$candidate.designation",
                               regex: { $concat: [".*", "$$word", ".*"] },
-                              options: "i"
-                            }
-                          }
-                        }
-                      }
+                              options: "i",
+                            },
+                          },
+                        },
+                      },
                     },
                     then: 25,
-                    else: 0
-                  }
-                }
-              }
+                    else: 0,
+                  },
+                },
+              },
             },
             // Qualification match (25 points)
             qualificationScore: {
@@ -670,14 +692,14 @@ const CandidatesForEmployer = async (
                       input: "$candidate.education",
                       as: "edu",
                       in: {
-                        $in: ["$$edu.qualification", "$jobQualification"]
-                      }
-                    }
-                  }
+                        $in: ["$$edu.qualification", "$jobQualification"],
+                      },
+                    },
+                  },
                 },
                 then: 25,
-                else: 0
-              }
+                else: 0,
+              },
             },
             // Category match (25 points)
             categoryScore: {
@@ -693,17 +715,20 @@ const CandidatesForEmployer = async (
                             input: "$$emp.categories",
                             as: "cat",
                             in: {
-                              $in: ["$$cat.value", "$jobDetails.categories.value"]
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
+                              $in: [
+                                "$$cat.value",
+                                "$jobDetails.categories.value",
+                              ],
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
                 },
                 then: 25,
-                else: 0
-              }
+                else: 0,
+              },
             },
             // Experience match (25 points)
             experienceScore: {
@@ -713,17 +738,22 @@ const CandidatesForEmployer = async (
                     {
                       $divide: [
                         "$candidate.experience",
-                        { $max: ["$jobDetails.candidate_requirement.experience", 1] }
-                      ]
+                        {
+                          $max: [
+                            "$jobDetails.candidate_requirement.experience",
+                            1,
+                          ],
+                        },
+                      ],
                     },
-                    1
-                  ]
+                    1,
+                  ],
                 },
-                25
-              ]
-            }
-          }
-        }
+                25,
+              ],
+            },
+          },
+        },
       },
       {
         $addFields: {
@@ -732,27 +762,27 @@ const CandidatesForEmployer = async (
               "$scores.designationScore",
               "$scores.qualificationScore",
               "$scores.categoryScore",
-              "$scores.experienceScore"
-            ]
-          }
-        }
+              "$scores.experienceScore",
+            ],
+          },
+        },
       },
       { $sort: { matchScore: -1 } },
       {
         $facet: {
           data: [
             { $skip: (Number(page) - 1) * Number(limit) },
-            { $limit: Number(limit) }
+            { $limit: Number(limit) },
           ],
-          totalCount: [{ $count: "count" }]
-        }
+          totalCount: [{ $count: "count" }],
+        },
       },
       {
         $unwind: {
           path: "$totalCount",
-          preserveNullAndEmptyArrays: true
-        }
-      }
+          preserveNullAndEmptyArrays: true,
+        },
+      },
     ]);
 
     res.status(200).json({
@@ -777,8 +807,12 @@ const AllCandidates = async (
       category,
       experience_from,
       experience_to,
+      gender="",
+      location="",
+      sort="",
       limit = 6,
       page = 1,
+      createdAt=""
     } = req.query as Partial<CandidatQuery>;
     const userId = res.locals.userId;
 
@@ -790,84 +824,124 @@ const AllCandidates = async (
 
     if (qualification) {
       matchConditions["candidate.education"] = {
-        $elemMatch: { qualification:qualification },
+        $elemMatch: { qualification: qualification },
       };
     }
+      if (createdAt) {
+                let startDate=postedatesCondition(createdAt   )
+                if (startDate) {
+                  matchConditions['createdAt'] = { $gte: startDate };
+                }
+                
+            }
     if (keyword) {
-      matchConditions["jobDetails.title"] = { $regex: keyword.trim(), $options: "i" };
+      let trimword=keyword.trim()
+
+      matchConditions["candidate.designation"] = createRegex(trimword)
+    }
+    if (gender) {
+      matchConditions["candidate.gender"] = gender
+    }
+    if (location) {
+      const trilocation=location.trim()
+      matchConditions["$or"] = [
+        {'candidate.contact.current_address.city':createRegex(trilocation)},
+        {'candidate.contact.current_address.pin_code':createRegex(trilocation)},
+      ]
     }
     if (category) {
       matchConditions["candidate.employment"] = {
         $elemMatch: {
-          categories: { $elemMatch: { value: category } },
+          categories: { $elemMatch: { label:createRegex(category) } },
         },
       };
     }
-  
+
     if (experience_from || experience_to) {
-      let experience:number[]=[]
-     
+      matchConditions["candidate.experience"]={}
       if (experience_from) {
-        experience.push(+experience_from)
+        matchConditions["candidate.experience"] = { $gte: +experience_from };
       }
       if (experience_to) {
-        experience.push(+experience_to)
+        matchConditions["candidate.experience"] = {
+          $lte: +experience_to,
+        };
       }
-      matchConditions["candidate.experience"] = {
-        $in:experience
-      };
     }
 
-
     const [results] = await Application.aggregate([
-      
       {
-        $lookup: {
-          from: "jobs",
-          localField: "job",
-          foreignField: "_id",
-          as: "jobDetails"
-        }
+      $lookup: {
+        from: "jobs",
+        localField: "job",
+        foreignField: "_id",
+        as: "jobDetails",
+      },
       },
       {
-        $unwind: "$jobDetails"
+      $unwind: "$jobDetails",
       },
       {
-        $lookup: {
-          from: "candidates",
-          localField: "candidate",
-          foreignField: "_id",
-          as: "candidate",
+      $lookup: {
+        from: "candidates",
+        localField: "candidate",
+        foreignField: "_id",
+        as: "candidate",
+      },
+      },
+      {
+      $unwind: { path: "$candidate", preserveNullAndEmptyArrays: true },
+      },
+      {
+      $unwind: { path: "$candidate.current_company", preserveNullAndEmptyArrays: true },
+      },
+      {
+      $match: {
+        $expr: {
+        $or: [
+          { $eq: ["$candidate.current_company", null] },
+          { $ne: [checkEmployer._id, "$candidate.current_company"] },
+        ],
         },
       },
-      {
-        $unwind: "$candidate"
       },
       {
-        $match: {
-          $expr: {
-            $ne: [checkEmployer._id, "$candidate.current_company"]
-          }
-        }
+      $match: matchConditions,
       },
       {
-        $match: matchConditions
+      $group: {
+        _id: "$candidate._id",
+        candidate: { $first: "$candidate" },
+        jobDetails: { $first: "$jobDetails" },
+        applicationid: { $first: "$_id" },
+        createdAt: { $first: "$createdAt" }, // Preserve `createdAt` for sorting
+      },
       },
       {
-        $facet: {
-          data: [
-            { $skip: (Number(page) - 1) * Number(limit) },
-            { $limit: Number(limit) }
-          ],
-          totalCount: [{ $count: "count" }]
-        }
-      },
-      {
-        $unwind: {
-          path: "$totalCount",
-          preserveNullAndEmptyArrays: true
-        }
+      $addFields: {
+        "_id": "$applicationid"
       }
+      },
+      ...(sort ? [{
+      $sort: {
+        createdAt: sort === 'new' ? -1 as -1 : 1 as 1
+      }
+      }] : []),
+      {
+      $facet: {
+        data: [
+        { $skip: (Number(page) - 1) * Number(limit) },
+        { $limit: Number(limit) },
+        ],
+        totalCount: [{ $count: "count" }],
+      },
+      },
+      {
+      $unwind: {
+        path: "$totalCount",
+        preserveNullAndEmptyArrays: true,
+      },
+      },
     ]);
 
     res.status(200).json({
@@ -1132,5 +1206,6 @@ export {
   EmployerDashboard,
   CandidateMatchGraphByEmployer,
   ForwardCV,
-  getSubEmployers,AllCandidates
+  getSubEmployers,
+  AllCandidates,
 };
