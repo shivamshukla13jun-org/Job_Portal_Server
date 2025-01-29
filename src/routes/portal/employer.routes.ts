@@ -1,7 +1,7 @@
 import { Router } from "express";
 import path from "path";
 
-import { createEmployer, getEmployers, getEmployer, updateEmployer, deleteEmployer, CandidatesForEmployer,ForwardCV, getSubEmployers } from "@/controllers/portal/employer.controllers";
+import { createEmployer, getEmployers, getEmployer, updateEmployer, deleteEmployer, CandidatesForEmployer,ForwardCV, getSubEmployers, AllCandidates } from "@/controllers/portal/employer.controllers";
 import { verifyUserTypeToken } from "@/middlewares/auth";
 import createMulterMiddleware from "@/libs/multer";
 import meetingControllers from "@/controllers/portal/meeting.controllers";
@@ -31,13 +31,14 @@ const upload = createMulterMiddleware({
 router.route("/forwardcv").post(verifyUserTypeToken(["employer","admin"]),ForwardCV)
 // Forward candidates
 router.route("/candidates").get(verifyUserTypeToken(["employer"]),CandidatesForEmployer)
+router.route("/allcandidates").get(verifyUserTypeToken(["employer"]),AllCandidates)
 // Forward SubEmployers
 router.route("/getSubEmployers/:id").get(verifyUserTypeToken(["employer","admin"]),getSubEmployers)
 // Forward SubEmployers
 router.route("/meetings/:id").get(verifyUserTypeToken(["employer","admin","subemployer"]),meetingControllers.EmployerMeetingLinklists)
 // Single Employer Details
 router.route("/")
-    .get(verifyUserTypeToken(["employer","admin"]), getEmployers)
+    .get(verifyUserTypeToken(["employer","admin",]), getEmployers)
     .post(
         verifyUserTypeToken(["employer","admin"]),
         upload.fields([

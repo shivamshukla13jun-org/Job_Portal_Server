@@ -29,6 +29,7 @@ export interface ICandidate extends Document {
     companies_resume_visible: Types.ObjectId[];
     coverletter:string,
     isresume:boolean
+    current_company?:Types.ObjectId
 };
 export interface IContactUs extends Document {
     username: string;
@@ -75,6 +76,10 @@ const candidateSchema = new Schema<ICandidate>({
     dob: {
         type: Date,
         required: [true, 'Date of birth is required']
+    },
+    current_company:{
+        type:Types.ObjectId,
+        ref:"Employer"
     },
     marital_status: {
         type: String,
@@ -163,6 +168,7 @@ const candidateSchema = new Schema<ICandidate>({
                 type: String,
                 required: [true, 'Qualification is required']
             },
+          
         }
     ],
     employment: [
@@ -184,6 +190,7 @@ const candidateSchema = new Schema<ICandidate>({
                 type: Date,
                 required: [true, 'From is required']
             },
+          
             categories: [
                 {
                     value: {

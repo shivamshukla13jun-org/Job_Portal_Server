@@ -283,7 +283,7 @@ const getEmployers = async (
       {
         $facet: {
           data: [
-            { $skip: pageOptions.page * pageOptions.limit },
+            { $skip: (pageOptions.page-1) * pageOptions.limit },
             { $limit: pageOptions.limit },
           ],
           count: [{ $count: "total" }],
@@ -765,6 +765,121 @@ const CandidatesForEmployer = async (
     next(error);
   }
 };
+const AllCandidates = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const {
+      qualification,
+      keyword,
+      category,
+      experience_from,
+      experience_to,
+      limit = 6,
+      page = 1,
+    } = req.query as Partial<CandidatQuery>;
+    const userId = res.locals.userId;
+
+    const checkEmployer = await Employer.findOne({ userId: userId });
+    if (!checkEmployer) {
+      throw new AppError("Employer not Found", 400);
+    }
+    const matchConditions: any = {};
+
+    if (qualification) {
+      matchConditions["candidate.education"] = {
+        $elemMatch: { qualification:qualification },
+      };
+    }
+    if (keyword) {
+      matchConditions["jobDetails.title"] = { $regex: keyword.trim(), $options: "i" };
+    }
+    if (category) {
+      matchConditions["candidate.employment"] = {
+        $elemMatch: {
+          categories: { $elemMatch: { value: category } },
+        },
+      };
+    }
+  
+    if (experience_from || experience_to) {
+      let experience:number[]=[]
+     
+      if (experience_from) {
+        experience.push(+experience_from)
+      }
+      if (experience_to) {
+        experience.push(+experience_to)
+      }
+      matchConditions["candidate.experience"] = {
+        $in:experience
+      };
+    }
+
+
+    const [results] = await Application.aggregate([
+      
+      {
+        $lookup: {
+          from: "jobs",
+          localField: "job",
+          foreignField: "_id",
+          as: "jobDetails"
+        }
+      },
+      {
+        $unwind: "$jobDetails"
+      },
+      {
+        $lookup: {
+          from: "candidates",
+          localField: "candidate",
+          foreignField: "_id",
+          as: "candidate",
+        },
+      },
+      {
+        $unwind: "$candidate"
+      },
+      {
+        $match: {
+          $expr: {
+            $ne: [checkEmployer._id, "$candidate.current_company"]
+          }
+        }
+      },
+      {
+        $match: matchConditions
+      },
+      {
+        $facet: {
+          data: [
+            { $skip: (Number(page) - 1) * Number(limit) },
+            { $limit: Number(limit) }
+          ],
+          totalCount: [{ $count: "count" }]
+        }
+      },
+      {
+        $unwind: {
+          path: "$totalCount",
+          preserveNullAndEmptyArrays: true
+        }
+      }
+    ]);
+
+    res.status(200).json({
+      success: true,
+      data: results?.data || [],
+      totalCount: results?.totalCount?.count || 0,
+      totalPages: Math.ceil((results?.totalCount?.count || 0) / Number(limit)),
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 const CandidateMatchGraphByEmployer = async (
   req: Request,
   res: Response,
@@ -1017,5 +1132,5 @@ export {
   EmployerDashboard,
   CandidateMatchGraphByEmployer,
   ForwardCV,
-  getSubEmployers,
+  getSubEmployers,AllCandidates
 };

@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import {  ApplicationOptions, ContactUs, getEmployer ,Options} from "@/controllers/portal/utillities.controller";
+import {  ApplicationOptions, ContactUs, getAllEmployers, getSalaryRnage ,Options} from "@/controllers/portal/utillities.controller";
 
 const router = Router();
 
@@ -9,7 +9,9 @@ const router = Router();
 router.route("/contactus")
     .post( ContactUs)
 router.route("/maxsalaryandexp")
-    .get( getEmployer)
+    .get( getSalaryRnage)
+router.route("/employers")
+    .get( getAllEmployers)
 router.route("/options/:id/:type")
     .get( Options)
 router.route("/applicationoptions/:id/:type")

@@ -68,7 +68,7 @@ const getCandidates = async (req: Request, res: Response, next: NextFunction) =>
             {
                 $facet: {
                     data: [
-                        { $skip: pageOptions.page * pageOptions.limit },
+                        { $skip: (pageOptions.page-1) * pageOptions.limit },
                         { $limit: pageOptions.limit }
                     ],
                     count: [

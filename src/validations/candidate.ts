@@ -60,7 +60,7 @@ const candidateSchema = Yup.object().shape({
             note: Yup.string()
         })
     ),
-    
+    current_company:Yup.string().notRequired(),
     hear_about_us: Yup.array().of(Yup.string()).required('Please specify how you heard about us'),
     cv: Yup.mixed().required('CV upload is required'),
     profile: Yup.mixed().required('Profile upload is required'),
