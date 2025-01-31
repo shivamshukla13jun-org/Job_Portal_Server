@@ -24,7 +24,7 @@ import { EmployerDashBoardGraph } from "@/utils/employerdashboardGraph";
 import { sendEmail } from "@/services/emails";
 import User from "@/models/admin/user.model";
 import { postedatesCondition } from "@/utils/postedadate";
-import { createRegex } from "@/libs/createRegx";
+import { createRegex } from "@/libs";
 
 /**
  @desc      Create an employer
@@ -913,7 +913,7 @@ const AllCandidates = async (
         candidate: { $first: "$candidate" },
         jobDetails: { $first: "$jobDetails" },
         applicationid: { $first: "$_id" },
-        createdAt: { $first: "$createdAt" }, // Preserve `createdAt` for sorting
+        createdAt: { $first: "$candidate.createdAt" }, // Preserve `createdAt` for sorting
       },
       },
       {
@@ -923,7 +923,7 @@ const AllCandidates = async (
       },
       ...(sort ? [{
       $sort: {
-        createdAt: sort === 'new' ? -1 as -1 : 1 as 1
+        "createdAt": sort === 'new' ? -1 as -1 : 1 as 1
       }
       }] : []),
       {

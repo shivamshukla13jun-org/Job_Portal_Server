@@ -27,25 +27,37 @@ export const getUserMenu = async (req: Request, res: Response, next: NextFunctio
     }
     menu=menu.toObject()
     if(menu){
-     menu.menuItems.map((item:IMenuItem) => {
-           switch (item.paramtype) {
-            case "EmployerId":
-              item.routePath= item.routePath + '/' + id
-              break;
-            case "SubEmployerId":
-              item.routePath=item.routePath + '/' + id
-              break;
-            case "createdBy":
-              item.routePath=item.routePath + '/' + user._id 
-              break;
-           
-            default:
-              break;
-           }
-
-          
-       return item
-     });
+      menu.menuItems = menu.menuItems
+      .filter((item: IMenuItem) => {
+        let idToAdd = null;
+    
+        // Check for paramtype and assign the corresponding ID
+        switch (item.paramtype) {
+          case "EmployerId":
+            idToAdd = id; // EmployerId should use `id`
+            break;
+          case "SubEmployerId":
+            idToAdd = id; // SubEmployerId should use `id`
+            break;
+          case "createdBy":
+            idToAdd = user._id; // createdBy should use `user._id`
+            break;
+          default:
+            // For items without a paramtype, always keep them
+            idToAdd = null; // No ID check needed for other items
+            break;
+        }
+    
+        // If the item has a valid ID to add or no paramtype, keep the item
+        if (idToAdd && item.paramtype) {
+         item.routePath = item.routePath + '/' + idToAdd;
+          return true; // Keep the item
+        }else if(!idToAdd && !item.paramtype){
+          return true; // Remove the item
+        }
+        return false
+      });
+    
     }
 
     return res.status(200).json({ success: true, data: menu });

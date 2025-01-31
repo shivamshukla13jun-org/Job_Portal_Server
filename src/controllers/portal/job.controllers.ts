@@ -10,6 +10,8 @@ import { postedatesCondition } from "@/utils/postedadate";
 import { Subscription } from "@/models/portal/subscription.model";
 import { Application } from "@/models/candidate/application.model";
 import { SavedJobs } from "@/models/candidate/savedjobs";
+import { fromStringToJSON } from "@/libs";
+import { FilterJob } from "@/utils/FilterJobs";
 
 /**
  @desc      Create an job
@@ -82,73 +84,7 @@ const getJobs = async (req: Request, res: Response, next: NextFunction) => {
             skip: (page-1) * limit,
             limit: limit
         };
-        const matchQueries: Record<string, any> = {};
-        const createRegex = (value: string) => new RegExp(`.*${value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}.*`, "gi");
-         // Handle date filter
-         if (createdAt) {
-            let startDate=postedatesCondition(createdAt  as string )
-            if (startDate) {
-                matchQueries['createdAt'] = { $gte: startDate };
-            }
-            
-        }
-        for (let [key, value] of Object.entries(queries)) {
-            if (typeof value === 'string' && value !== '' && !['keyword', 'sort', 'location', 'categories','jobtype'].includes(key)) {
-                matchQueries[key] = createRegex(value)
-            };
-            if (typeof value === 'string' && value !== '' && key === 'keyword') {
-                matchQueries["$and"] = [
-                  {"$or":[
-                    {
-                        "title": createRegex(value)
-                    },
-                    {
-                        "employerId.business_name": createRegex(value)
-                    },
-                    {
-                        "employerId.keywords": createRegex(value)
-                    },
-                  ]}
-                ]
-            };
-
-            if (typeof value === 'string' && value !== '' && key === 'location') {
-                matchQueries["$or"] = [
-                    {
-                        location: createRegex(value)
-                    },
-                  
-                    {
-                        place: createRegex(value)
-                    },
-                    {
-                        "address.pin_code": createRegex(value)
-                    },
-                ]
-            };
-
-            if (typeof value === 'string' && value !== '' && key === 'categories') {
-                matchQueries["categories.label"] = {$in:value.split(",")}
-            }
-            if (typeof value === 'string' && value !== '' && key === 'jobtype') {
-                matchQueries["jobtype"] = {$in:value.split(",")}
-            }
-           // Salary range filter
-           if (key === 'candidate_requirement.salary_from' && value) {
-            console.log("f=salary from",value)
-            matchQueries['candidate_requirement.salary_from']= {$gte: parseInt(value as string)} 
-        }
-        if (key === 'candidate_requirement.salary_to' && value) {
-            matchQueries['candidate_requirement.salary_to']= {$lte: parseInt(value as string) }
-        }
-        if (key === 'candidate_requirement.experience' && value) {
-            matchQueries['candidate_requirement.experience']= {$lte: parseInt(value as string) }
-        }
-    }
-    
-    if (experience_to && experience_from) {
-        matchQueries['candidate_requirement.experience']= {$gte: parseInt(experience_from as string),$lte: parseInt(experience_to as string) }
-    }
+      const {matchQueries}= FilterJob(req)
         const jobs = await Job.aggregate([
            
             {

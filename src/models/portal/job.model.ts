@@ -31,6 +31,7 @@ export interface IJob extends Document {
     isActive?: boolean;
     createdBy: Types.ObjectId;
     updatedBy?: Types.ObjectId;
+    isFeatured:boolean;
 }
 
 const jobSchema = new Schema<IJob>({
@@ -136,6 +137,10 @@ const jobSchema = new Schema<IJob>({
     isActive: {
         type: Boolean,
         default: true
+    },
+    isFeatured: {
+        type: Boolean,
+        default: false
     },
     createdBy: {
         type: Schema.Types.ObjectId,

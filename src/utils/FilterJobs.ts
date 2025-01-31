@@ -1,0 +1,79 @@
+import { Request } from "express";
+import { postedatesCondition } from "./postedadate";
+import { fromStringToJSON } from "@/libs";
+
+const FilterJob=(req:Request)=>{
+    const { page: reqPage, limit: reqLimit,createdAt,experience_from,experience_to, ...queries } = req.query;
+
+    const matchQueries: Record<string, any> = {};
+    const createRegex = (value: string) => new RegExp(`.*${value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}.*`, "gi");
+     // Handle date filter
+     if (createdAt) {
+        let startDate=postedatesCondition(createdAt  as string )
+        if (startDate) {
+            matchQueries['createdAt'] = { $gte: startDate };
+        }
+        
+    }
+    for (let [key, value] of Object.entries(queries)) {
+        if (typeof value === 'string' && value !== '' && !['keyword', 'sort', 'location', 'categories','jobtype','isFeatured'].includes(key)) {
+            matchQueries[key] = createRegex(value)
+        };
+        if (typeof value === 'string' && value !== '' && key === 'keyword') {
+            matchQueries["$and"] = [
+              {"$or":[
+                {
+                    "title": createRegex(value)
+                },
+                {
+                    "employerId.business_name": createRegex(value)
+                },
+                {
+                    "employerId.keywords": createRegex(value)
+                },
+              ]}
+            ]
+        };
+
+        if (typeof value === 'string' && value !== '' && key === 'location') {
+            matchQueries["$or"] = [
+                {
+                    location: createRegex(value)
+                },
+              
+                {
+                    place: createRegex(value)
+                },
+                {
+                    "address.pin_code": createRegex(value)
+                },
+            ]
+        };
+
+        if (typeof value === 'string' && value !== '' && key === 'categories') {
+            matchQueries["categories.label"] = {$in:value.split(",")}
+        }
+        if (typeof value === 'string' && value !== '' && key === 'jobtype') {
+            matchQueries["jobtype"] = {$in:value.split(",")}
+        }
+        if (typeof value === 'string' && value !== '' && key === 'isFeatured') {
+            matchQueries["isFeatured"] =fromStringToJSON(value)
+        }
+       // Salary range filter
+       if (key === 'candidate_requirement.salary_from' && value) {
+        matchQueries['candidate_requirement.salary_from']= {$gte: parseInt(value as string)} 
+    }
+    if (key === 'candidate_requirement.salary_to' && value) {
+        matchQueries['candidate_requirement.salary_to']= {$lte: parseInt(value as string) }
+    }
+    if (key === 'candidate_requirement.experience' && value) {
+        matchQueries['candidate_requirement.experience']= {$lte: parseInt(value as string) }
+    }
+}
+
+if (experience_to && experience_from) {
+    matchQueries['candidate_requirement.experience']= {$gte: parseInt(experience_from as string),$lte: parseInt(experience_to as string) }
+}
+  return {matchQueries}
+}
+export {FilterJob}
