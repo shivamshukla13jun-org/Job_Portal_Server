@@ -400,6 +400,15 @@ const getAllApplicants = async (
       { $match: matchQueries },
       { $project: { employerDetails: 0,  } },
       {
+        $group: {
+          _id: "$_id", // Unique identifier
+          doc: { $first: "$$ROOT" } // Pick the first occurrence
+        }
+      },
+      {
+        $replaceRoot: { newRoot: "$doc" }
+      },
+      {
         $facet: {
           total: [{ $count: "count" }],
           application: [

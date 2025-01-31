@@ -31,7 +31,7 @@ const upload = createMulterMiddleware({
 router.route("/forwardcv").post(verifyUserTypeToken(["employer","admin"]),ForwardCV)
 // Forward candidates
 router.route("/candidates").get(verifyUserTypeToken(["employer"]),CandidatesForEmployer)
-router.route("/allcandidates").get(verifyUserTypeToken(["employer"]),AllCandidates)
+router.route("/allcandidates/:id").get(verifyUserTypeToken(["employer","subemployer"]),AllCandidates)
 // Forward SubEmployers
 router.route("/getSubEmployers/:id").get(verifyUserTypeToken(["employer","admin"]),getSubEmployers)
 // Forward SubEmployers

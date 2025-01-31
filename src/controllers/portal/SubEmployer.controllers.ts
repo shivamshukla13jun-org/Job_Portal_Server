@@ -342,7 +342,6 @@ class SubEmployerController {
       }
   
       const { matchQueries } = FilterApplications(req);
-      console.log("matchQueries",matchQueries)
       const result = await Application.aggregate([
         { $match: match },
           {

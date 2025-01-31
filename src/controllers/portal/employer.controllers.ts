@@ -814,10 +814,9 @@ const AllCandidates = async (
       page = 1,
       createdAt=""
     } = req.query as Partial<CandidatQuery>;
-    const userId = res.locals.userId;
+    const {id} = req.params;
 
-    const checkEmployer = await Employer.findOne({ userId: userId });
-    if (!checkEmployer) {
+    if (!id) {
       throw new AppError("Employer not Found", 400);
     }
     const matchConditions: any = {};
@@ -900,7 +899,7 @@ const AllCandidates = async (
         $expr: {
         $or: [
           { $eq: ["$candidate.current_company", null] },
-          { $ne: [checkEmployer._id, "$candidate.current_company"] },
+          { $ne: [id, "$candidate.current_company"] },
         ],
         },
       },
