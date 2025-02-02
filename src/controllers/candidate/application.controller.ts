@@ -2,18 +2,19 @@ import { StatusPayload } from './../../models/candidate/application.model';
 import mongoose, { Types } from "mongoose";
 import { Request, Response, NextFunction } from "express";
 import { sendEmail } from "@/services/emails";
-import Candidate from "@/models/portal/candidate.model";
-import Job from "@/models/portal/job.model";
+import Candidate, { ICandidate } from "@/models/portal/candidate.model";
+import Job, { IJob } from "@/models/portal/job.model";
 import { Application, IApplication } from "@/models/candidate/application.model";
 import { AppError } from "@/middlewares/error";
 import { generateToken } from "@/middlewares/auth";
-import Employer from "@/models/portal/employer.model";
+import Employer, { IEmployer } from "@/models/portal/employer.model";
 import { postedatesCondition } from "@/utils/postedadate";
-import SubEmployer from "@/models/portal/SubEmployer.model";
+import SubEmployer, { ISubEmployer } from "@/models/portal/SubEmployer.model";
 import { ApplicationQuery, Applicationsstats, ApplicationsstatsUnwindPath, FilterApplications } from "@/utils/ApplicationStats";
 import ForwardedCV, { ForwardingStatus } from "@/models/portal/Forwarwardedcv.model";
 import ejs from "ejs"
 import path from "path";
+import User, { IUser } from '@/models/admin/user.model';
 const applyJob = async (
   req: Request,
   res: Response,
@@ -824,7 +825,7 @@ const updateStatus = async (req: Request, res: Response, next: NextFunction): Pr
 
 
     // Fetch the application
-    const application:any = await Application.findById(applicationId).populate('candidate employer');
+    const application = await Application.findById(applicationId).populate("candidate job employer") as IApplication | null;
     if (!application) {
       res.status(400).json({
         message: "Application not found.",
@@ -842,25 +843,71 @@ const updateStatus = async (req: Request, res: Response, next: NextFunction): Pr
     }
     
     // Use unset to remove fields marked as undefined
-    if (!application.shortlistedby) {
-      application.$unset = { shortlistedby: "" }; // Remove shortlistedby from the document
+    const updateFields = { status: payload.status } as IApplication 
+    if (payload.status === "shortlisted") {
+      updateFields.shortlistedby = userId;
+    } else if (payload.status === "rejected") {
+      updateFields.rejectedby = userId;
     }
-    if (!application.rejectedby) {
-      application.$unset = { ...application.$unset, rejectedby: "" }; // Remove rejectedby from the document
+
+    const unsetFields = {} as any;
+    if (payload.status === "shortlisted") {
+      unsetFields.rejectedby = "";
+    } else if (payload.status === "rejected") {
+      unsetFields.shortlistedby = "";
     }
-    let data=  await application.save();
-    
-    sendEmail({
-      email: application?.candidate?.email ,
-      subject: "Application Status Update",
-      template: "applicationStatusUpdate",
-      data: {
-        candidateName: application?.candidate?.name,
-        jobTitle: application?.job?.title,
-        employerName: application?.employer?.name,
-        applicationStatus: payload.status,
+
+    const data = await Application.findByIdAndUpdate(
+      applicationId,
+      { $set: updateFields, $unset: unsetFields },
+      { new: true }
+    ).populate("candidate job shortlistedby rejectedby employer")
+
+       // Get action performer details
+       let hrName = '';
+       let hrRole = '';
+       const performer = await User.findById(userId) 
+         .populate({
+           path: 'subEmployerId',
+           select: 'name department'
+         })
+         .populate({
+           path: 'employerId',
+           select: 'business_name'
+         }) as IUser
+   
+       if (performer?.subEmployerId) {
+        let subemployerpermer=performer.subEmployerId as unknown  as ISubEmployer
+         hrName =subemployerpermer.name.split(' ')[0]; // First name
+         hrRole =subemployerpermer.department;
+       } else if (performer?.employerId) {
+        let employerpermer=performer.employerId as unknown  as IEmployer
+
+         hrName = employerpermer.business_name
+         hrRole = 'Employer';
+       }
+       let subject="Application Update"
+       if (payload.status === "shortlisted") {
+        subject="Your Profile Has Been Shortlisted"
+      } else if (payload.status === "rejected") {
+        subject="Your Profile Has Been Rejected"
       }
-    });
+      console.log({ websiteLink: `${process.env.CLIENT_URL}/job/${(application.job as unknown  as IJob)?._id}`,
+    })
+       sendEmail({
+         email: (application.candidate as any)?.email,
+         subject:subject,
+         template: "applicationStatusUpdate",
+         data: {
+           candidateName: (application.candidate as unknown  as ICandidate)?.name,
+           jobTitle: (application.job as unknown  as IJob)?.title,
+          websiteLink: `${process.env.CLIENT_URL}/job/${(application.job as unknown  as IJob)?._id}`,
+           employerName: (application.employer as unknown  as IEmployer)?.business_name,
+           applicationStatus: payload.status,
+           hrName,
+           hrRole
+         }
+       });
     res.status(200).json({
       message: `Applicant  ${payload.status.charAt(0).toUpperCase() + payload.status.slice(1)} successfully.`,
       success: true,

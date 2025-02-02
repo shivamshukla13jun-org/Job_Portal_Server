@@ -30,6 +30,15 @@ const SubemployerMenu = [
     permissions: { view: true, edit: true, delete: true, meeting: true, export: true, import: true, reject: true, approve: true, download: true },
     paramtype: "SubEmployerId",
   },
+  {
+    id: 12,
+    name: "Delete Profile",
+    key:"profiledelete",
+    icon: "la-trash",
+    routePath: "/",
+    active: "",
+    permissions: { view: true }
+  },
  
 ];
 export default SubemployerMenu;

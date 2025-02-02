@@ -41,7 +41,7 @@ export const sendEmail = async ({ email, subject, text, template,data }: IEmail)
             mailOptions["html"]=emailBody  as any
         }
         const info = await transporter.sendMail(mailOptions)
-
+        console.log("info",info)
         return info
     } catch (error) {
         console.error('Email sending error:', error);
