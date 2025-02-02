@@ -824,38 +824,13 @@ export const getAllApplicants = async (
       {
         $lookup: {
           from: "candidates",
-          let: { candidateId: "$candidate" },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $eq: ["$userId", "$$candidateId"],
-                },
-              },
-            },
-          ],
+          localField:"candidate",
+          foreignField:"_id",
           as: "candidate",
         },
       },
       { $unwind: { path: "$candidate", preserveNullAndEmptyArrays: true } },
-      {
-        $lookup: {
-          from: "resumes",
-          let: { candidateId: "$candidate._id" },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $eq: ["$candidateId", "$$candidateId"],
-                },
-              },
-            },
-          ],
-          as: "resume",
-        },
-      },
-      { $unwind: { path: "$resume", preserveNullAndEmptyArrays: true } },
-      {
+     {
         $match: {
           ...matchQueries,
         },
@@ -1086,6 +1061,7 @@ export const Dashboard = async (req: Request, res: Response, next: NextFunction)
     let  baseStats=getDashboardstats(req,matchStage,"Jobs")
     // Jobs statistics
     const [jobStats] = await Job.aggregate([
+      {$match:matchStage},
       {
           $facet: {
               total: [
@@ -1114,6 +1090,7 @@ export const Dashboard = async (req: Request, res: Response, next: NextFunction)
   ]);
   baseStats=getDashboardstats(req,matchStage,"Employers")
    const [EmployersStats] = await Employer.aggregate([
+    {$match:matchStage},
     {
       $facet: {
         total: [
@@ -1142,6 +1119,7 @@ export const Dashboard = async (req: Request, res: Response, next: NextFunction)
   ]);
   baseStats=getDashboardstats(req,matchStage,"Candidates")
   const [candidateStats]= await Candidate.aggregate([
+    {$match:matchStage},
     {
       $facet: {
         total: [
@@ -1171,6 +1149,7 @@ export const Dashboard = async (req: Request, res: Response, next: NextFunction)
 
   baseStats=getDashboardstats(req,matchStage,"Applications")
   const [applicationStats] = await Application.aggregate([
+    {$match:matchStage},
     {
       $facet: {
         total: [
@@ -1314,6 +1293,7 @@ export const Dashboard = async (req: Request, res: Response, next: NextFunction)
   
   baseStats=getDashboardstats(req,matchStage,"SubEmployers")
   const [suemployersStats] = await SubEmployer.aggregate([
+    {$match:matchStage},
     {
       $facet: {
         total: [
