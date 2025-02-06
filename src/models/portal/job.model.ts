@@ -1,9 +1,11 @@
-import  { Schema, Document, Types, model } from "mongoose";
+import { Schema, Document, Types, model } from "mongoose";
 import { IJobCandidate, IJobCompany, IJobPersonal, IJobSelect } from "@/types/company";
+
 export type IJobCandidateStatus = {
     candidateId: Types.ObjectId;
     date: Date;
 }
+
 export interface IInterviewDetails {
     date: Date;
     time: string;
@@ -11,14 +13,15 @@ export interface IInterviewDetails {
     type: 'in_person' | 'online' | 'phone';
     notes?: string;
 }
+
 export interface IJob extends Document {
     employerId: Types.ObjectId;
-    subscription:Types.ObjectId;
+    subscription: Types.ObjectId;
     title: string;
     location: string;
     place: string;
     opening: number;
-    jobtype:string,
+    jobtype: string;
     candidate_requirement: IJobCandidate;
     categories: IJobSelect[];
     personal_info: IJobPersonal[];
@@ -31,7 +34,8 @@ export interface IJob extends Document {
     isActive?: boolean;
     createdBy: Types.ObjectId;
     updatedBy?: Types.ObjectId;
-    isFeatured:boolean;
+    isFeatured: boolean;
+    deadline: Date;
 }
 
 const jobSchema = new Schema<IJob>({
@@ -63,17 +67,15 @@ const jobSchema = new Schema<IJob>({
         type: String,
         required: [true, "Place is required"]
     },
-   
     opening: {
         type: Number,
         required: [true, "Opening is required"]
     },
     jobtype: {
         type: String,
-        enum:[ "freelancer", "full-time", "part-time", "temporary" ],
+        enum: ["freelancer", "full-time", "part-time", "temporary"],
         required: [true, "Job Type is required"]
     },
-  
     candidate_requirement: {
         experience: {
             type: Number,
@@ -149,13 +151,16 @@ const jobSchema = new Schema<IJob>({
     subscription: {
         type: Schema.Types.ObjectId,
         ref: 'subscriptions',
-        unique:true,
-        required:[true,"Package is Required"]
+        unique: true,
+        required: [true, "Package is Required"]
     },
-
     updatedBy: {
         type: Schema.Types.ObjectId,
         ref: 'User'
+    },
+    deadline: {
+        type: Date,
+        default: () => new Date(new Date().setMonth(new Date().getMonth() + 2))
     }
 }, { timestamps: true });
 

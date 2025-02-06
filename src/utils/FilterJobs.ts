@@ -2,10 +2,9 @@ import { Request } from "express";
 import { postedatesCondition } from "./postedadate";
 import { fromStringToJSON } from "@/libs";
 
-const FilterJob=(req:Request)=>{
+const FilterJob=(req:Request,matchQueries: Record<string, any> = {})=>{
     const { page: reqPage, limit: reqLimit,createdAt,experience_from,experience_to, ...queries } = req.query;
 
-    const matchQueries: Record<string, any> = {};
     const createRegex = (value: string) => new RegExp(`.*${value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}.*`, "gi");
      // Handle date filter
      if (createdAt) {

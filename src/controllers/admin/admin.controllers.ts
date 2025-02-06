@@ -1,4 +1,3 @@
-
 import { generateToken } from "@/middlewares/auth";
 import { AppError } from "@/middlewares/error";
 import Admin from "@/models/admin/admin.model";
@@ -9,7 +8,12 @@ import Employer from "@/models/portal/employer.model";
 import Job from "@/models/portal/job.model";
 import { JobportalPlan } from "@/models/portal/plan.model";
 import SubEmployer from "@/models/portal/SubEmployer.model";
-import { getDashboardstats, getNumericPercentageStats,getStringPercentageStats } from "@/utils/DashboardStats";
+import {
+  getDashboardstats,
+  getNumericPercentageStats,
+  getStringPercentageStats,
+} from "@/utils/DashboardStats";
+import { OptionsQuery } from "@/utils/Options";
 import { postedatesCondition } from "@/utils/postedadate";
 import { NextFunction, Request, Response } from "express";
 import mongoose, { Types, PipelineStage } from "mongoose";
@@ -23,6 +27,8 @@ interface ListQueryParams {
   sortOrder?: "asc" | "desc";
   fromdate?: Date;
   todate?: Date;
+  categories?: string;
+  jobtype?: string;
 }
 interface PaginatedResult {
   data: {
@@ -85,10 +91,10 @@ export const loginUser = async (
   try {
     const { email, password } = req.body;
 
-    const user :any= await User.findOne({ email }).populate("userType");
-    
+    const user: any = await User.findOne({ email }).populate("userType");
+
     if (user) {
-      if(!user?.userType?.forAdmin){
+      if (!user?.userType?.forAdmin) {
         throw new AppError("Loagin as A admin Email", 400);
       }
       const isMatch = await user.matchPassword(password as string);
@@ -213,7 +219,7 @@ export const listUsers = async (
     next(error);
   }
 };
-export const subemployers = async (
+export const  subemployers = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -316,6 +322,8 @@ export const Employers = async (
       search = "",
       sortBy = "createdAt",
       sortOrder = "desc",
+      categories = "",
+      jobtype = "",
       fromdate,
       todate,
     } = req.query as ListQueryParams;
@@ -325,6 +333,7 @@ export const Employers = async (
     const skip = (pageNumber - 1) * limitNumber;
 
     const matchQueries: Record<string, any> = {};
+    const matchjobQueries: Record<string, any> = {};
     const searchMatch: Record<string, any> = {};
 
     if (search) {
@@ -343,11 +352,15 @@ export const Employers = async (
     if (todate) {
       matchQueries["createdAt"]["$lte"] = new Date(todate);
     }
-
+    if (categories) {
+      matchQueries["categories"] = {$elemMatch:{value:{ $in: categories.split(",") }}};
+    }
+    if (jobtype) {
+      matchjobQueries["jobsPosted.jobtype"] = { $in: jobtype.split(",") };
+    }
     const sortStage = {
       [sortBy]: sortOrder === "asc" ? 1 : -1,
     };
-
     const aggregationPipeline: any[] = [
       { $match: matchQueries },
       { $match: searchMatch },
@@ -359,7 +372,9 @@ export const Employers = async (
           as: "jobsPosted",
         },
       },
-
+      {
+        $match:matchjobQueries
+      },
       {
         $lookup: {
           from: "applications",
@@ -384,35 +399,58 @@ export const Employers = async (
         },
       },
       {
-        $project: {
-          applicationsReceived: 0,
-          jobsPosted: 0,
-          // "user.email":1,"user.isActive":1
+        $facet: {
+          data: [
+            { $sort: sortStage },
+            { $skip: skip },
+            { $limit: limitNumber },
+            {
+              $project: {
+                applicationsReceived: 0,
+                jobsPosted: 0,
+              },
+            },
+          ],
+          totalCount: [{ $count: "total" }],
         },
       },
     ];
-    const [results, totalCount] = await Promise.all([
-      Employer.aggregate([
-        ...aggregationPipeline,
-        { $sort: sortStage },
-        { $skip: skip },
-        { $limit: limitNumber },
-      ]),
-      Employer.aggregate([...aggregationPipeline, { $count: "total" }]),
-    ]);
 
-    const total = totalCount[0]?.total || 0;
-    const totalPages = Math.ceil(total / limitNumber);
+    const result = await Employer.aggregate(aggregationPipeline);
+
+    const results = result[0]?.data || [];
+    const totalCount = result[0]?.totalCount[0]?.total || 0;
+    const totalPages = Math.ceil(totalCount / limitNumber);
 
     res.status(200).json({
       users: results,
       pagination: {
         currentPage: pageNumber,
         totalPages,
-        totalUsers: total,
+        totalUsers: totalCount,
         pageSize: limitNumber,
       },
     });
+  } catch (error) {
+    console.error("Error in listUsers:", error);
+    next(error);
+  }
+};
+export const EmployersOptions = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    let result = {};
+    const { type } = req.params;
+    const queryFunction = OptionsQuery[type as keyof typeof OptionsQuery];
+    if (typeof queryFunction === "function") {
+      result = await queryFunction();
+    } else {
+      throw new AppError("Invalid type", 400);
+    }
+    res.status(200).json({data:result});
   } catch (error) {
     console.error("Error in listUsers:", error);
     next(error);
@@ -572,14 +610,12 @@ export const planList = async (
       .limit(Number(limit));
     let count = await JobportalPlan.countDocuments();
 
-    return res
-      .status(200)
-      .json({
-        status: 200,
-        message: "data found",
-        data: planData || [],
-        total: count,
-      });
+    return res.status(200).json({
+      status: 200,
+      message: "data found",
+      data: planData || [],
+      total: count,
+    });
   } catch (error) {
     next(error);
   }
@@ -824,13 +860,13 @@ export const getAllApplicants = async (
       {
         $lookup: {
           from: "candidates",
-          localField:"candidate",
-          foreignField:"_id",
+          localField: "candidate",
+          foreignField: "_id",
           as: "candidate",
         },
       },
       { $unwind: { path: "$candidate", preserveNullAndEmptyArrays: true } },
-     {
+      {
         $match: {
           ...matchQueries,
         },
@@ -1048,297 +1084,322 @@ export const deleteAdmin = async (
     next(error);
   }
 };
-export const Dashboard = async (req: Request, res: Response, next: NextFunction) => {
+export const Dashboard = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
-    const { createdAt="12m" } = req.query;
-    const matchStage:Record<string,any>={}
+    const { createdAt = "12m" } = req.query;
+    const matchStage: Record<string, any> = {};
     if (createdAt) {
       let startDate = postedatesCondition(createdAt as string);
       if (startDate) {
         matchStage["createdAt"] = { $gte: startDate };
       }
     }
-    let  baseStats=getDashboardstats(req,matchStage,"Jobs")
+    let baseStats = getDashboardstats(req, matchStage, "Jobs");
     // Jobs statistics
     const [jobStats] = await Job.aggregate([
-      {$match:matchStage},
+      { $match: matchStage },
       {
-          $facet: {
-              total: [
-                  { $group: { _id: null, total: { $sum: 1 } } },
-                  { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } }
-              ],
-              active: [
-                  { $match: { isActive: true } },
-                  { $group: { _id: null, total: { $sum: 1 } } },
-                  { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } }
-              ],
-              stats: baseStats, // Wrap `baseStats` in an array
-             
-          }
+        $facet: {
+          total: [
+            { $group: { _id: null, total: { $sum: 1 } } },
+            { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } },
+          ],
+          active: [
+            { $match: { isActive: true } },
+            { $group: { _id: null, total: { $sum: 1 } } },
+            { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } },
+          ],
+          stats: baseStats, // Wrap `baseStats` in an array
+        },
       },
       { $unwind: { path: "$total", preserveNullAndEmptyArrays: true } },
       { $unwind: { path: "$active", preserveNullAndEmptyArrays: true } },
       { $unwind: { path: "$stats", preserveNullAndEmptyArrays: true } },
       {
-          $project:{
-            total:"$total.total",
-            active:"$active.total",
-            stats:"$stats"
-          }
-      }
-  ]);
-  baseStats=getDashboardstats(req,matchStage,"Employers")
-   const [EmployersStats] = await Employer.aggregate([
-    {$match:matchStage},
-    {
-      $facet: {
-        total: [
-          { $group: { _id: null, total: { $sum: 1 } } },
-          { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } },
-        ],
-        active: [
-          { $match: { isActive: true } },
-          { $group: { _id: null, total: { $sum: 1 } } },
-          { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } },
-        ],
-        stats: baseStats, // Wrap `baseStats` in an array
+        $project: {
+          total: "$total.total",
+          active: "$active.total",
+          stats: "$stats",
+        },
       },
-    },
-    { $unwind: { path: "$total", preserveNullAndEmptyArrays: true } },
-    { $unwind: { path: "$active", preserveNullAndEmptyArrays: true } },
-    { $unwind: { path: "$stats", preserveNullAndEmptyArrays: true } },
-    {
-      $project:{
-        total:"$total.total",
-        active:"$active.total",
-        stats:"$stats"
-      }
-    }
-
-  ]);
-  baseStats=getDashboardstats(req,matchStage,"Candidates")
-  const [candidateStats]= await Candidate.aggregate([
-    {$match:matchStage},
-    {
-      $facet: {
-        total: [
-          { $group: { _id: null, total: { $sum: 1 } } },
-          { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } },
-        ],
-        active: [
-          { $match: { isActive: true } },
-          { $group: { _id: null, total: { $sum: 1 } } },
-          { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } },
-        ],
-        stats: baseStats, // Wrap `baseStats` in an array
+    ]);
+    baseStats = getDashboardstats(req, matchStage, "Employers");
+    const [EmployersStats] = await Employer.aggregate([
+      { $match: matchStage },
+      {
+        $facet: {
+          total: [
+            { $group: { _id: null, total: { $sum: 1 } } },
+            { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } },
+          ],
+          active: [
+            { $match: { isActive: true } },
+            { $group: { _id: null, total: { $sum: 1 } } },
+            { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } },
+          ],
+          stats: baseStats, // Wrap `baseStats` in an array
+        },
       },
-    },
-    { $unwind: { path: "$total", preserveNullAndEmptyArrays: true } },
-    { $unwind: { path: "$active", preserveNullAndEmptyArrays: true } },
-    { $unwind: { path: "$stats", preserveNullAndEmptyArrays: true } },
-    {
-      $project:{
-        total:"$total.total",
-        active:"$active.total",
-        stats:"$stats"
-      }
-    }
+      { $unwind: { path: "$total", preserveNullAndEmptyArrays: true } },
+      { $unwind: { path: "$active", preserveNullAndEmptyArrays: true } },
+      { $unwind: { path: "$stats", preserveNullAndEmptyArrays: true } },
+      {
+        $project: {
+          total: "$total.total",
+          active: "$active.total",
+          stats: "$stats",
+        },
+      },
+    ]);
+    baseStats = getDashboardstats(req, matchStage, "Candidates");
+    const [candidateStats] = await Candidate.aggregate([
+      { $match: matchStage },
+      {
+        $facet: {
+          total: [
+            { $group: { _id: null, total: { $sum: 1 } } },
+            { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } },
+          ],
+          active: [
+            { $match: { isActive: true } },
+            { $group: { _id: null, total: { $sum: 1 } } },
+            { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } },
+          ],
+          stats: baseStats, // Wrap `baseStats` in an array
+        },
+      },
+      { $unwind: { path: "$total", preserveNullAndEmptyArrays: true } },
+      { $unwind: { path: "$active", preserveNullAndEmptyArrays: true } },
+      { $unwind: { path: "$stats", preserveNullAndEmptyArrays: true } },
+      {
+        $project: {
+          total: "$total.total",
+          active: "$active.total",
+          stats: "$stats",
+        },
+      },
+    ]);
 
-  ]);
-
-  baseStats=getDashboardstats(req,matchStage,"Applications")
-  const [applicationStats] = await Application.aggregate([
-    {$match:matchStage},
-    {
-      $facet: {
-        total: [
-          { $group: { _id: null, total: { $sum: 1 } } },
-          { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } },
-        ],
-        pending: [
-          { $match: { status: "pending" } },
-          { $group: { _id: null, total: { $sum: 1 } } },
-          { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } },
-        ],
-        shortlisted: [
-          { $match: { status: "shortlisted" } },
-          { $group: { _id: null, total: { $sum: 1 } } },
-          { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } },
-        ],
-        rejected: [
-          { $match: { status: "rejected" } },
-          { $group: { _id: null, total: { $sum: 1 } } },
-          { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } },
-        ],
-        source: [
-          {
-            $lookup: {
-              from: "candidates",
-              localField: "candidate",
-              foreignField: "_id",
-              as: "candidateInfo",
+    baseStats = getDashboardstats(req, matchStage, "Applications");
+    const [applicationStats] = await Application.aggregate([
+      { $match: matchStage },
+      {
+        $facet: {
+          total: [
+            { $group: { _id: null, total: { $sum: 1 } } },
+            { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } },
+          ],
+          pending: [
+            { $match: { status: "pending" } },
+            { $group: { _id: null, total: { $sum: 1 } } },
+            { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } },
+          ],
+          shortlisted: [
+            { $match: { status: "shortlisted" } },
+            { $group: { _id: null, total: { $sum: 1 } } },
+            { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } },
+          ],
+          rejected: [
+            { $match: { status: "rejected" } },
+            { $group: { _id: null, total: { $sum: 1 } } },
+            { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } },
+          ],
+          source: [
+            {
+              $lookup: {
+                from: "candidates",
+                localField: "candidate",
+                foreignField: "_id",
+                as: "candidateInfo",
+              },
             },
-          },
-          { $unwind: { path: "$candidateInfo", preserveNullAndEmptyArrays: true } },
-          {
-            $project: {
-              hear_about_us: {
-                $cond: {
-                  if: { $isArray: "$candidateInfo.hear_about_us" },
-                  then: "$candidateInfo.hear_about_us",
-                  else: [],
+            {
+              $unwind: {
+                path: "$candidateInfo",
+                preserveNullAndEmptyArrays: true,
+              },
+            },
+            {
+              $project: {
+                hear_about_us: {
+                  $cond: {
+                    if: { $isArray: "$candidateInfo.hear_about_us" },
+                    then: "$candidateInfo.hear_about_us",
+                    else: [],
+                  },
                 },
               },
             },
-          },
-          { $unwind: { path: "$hear_about_us", preserveNullAndEmptyArrays: true } },
-          {
-            $group: {
-              _id: "$hear_about_us",
-              total: { $sum: 1 },
+            {
+              $unwind: {
+                path: "$hear_about_us",
+                preserveNullAndEmptyArrays: true,
+              },
             },
-          },
-          { $match: { _id: { $ne: null } } },
-          {
-            $project: {
-              _id: "$_id",
-              total: 1,
+            {
+              $group: {
+                _id: "$hear_about_us",
+                total: { $sum: 1 },
+              },
             },
-          },
-          { $sort: { total: -1 } },
-        ],
-        jobtypes: [
-          {
-            $lookup: {
-              from: "jobs",
-              localField: "job",
-              foreignField: "_id",
-              as: "jobInfo",
+            { $match: { _id: { $ne: null } } },
+            {
+              $project: {
+                _id: "$_id",
+                total: 1,
+              },
             },
-          },
-          { $unwind: { path: "$jobInfo", preserveNullAndEmptyArrays: true } },
-          {
-            $group: {
-              _id: "$jobInfo.jobtype",
-              total: { $sum: 1 },
+            { $sort: { total: -1 } },
+          ],
+          jobtypes: [
+            {
+              $lookup: {
+                from: "jobs",
+                localField: "job",
+                foreignField: "_id",
+                as: "jobInfo",
+              },
             },
-          },
-          {
-            $project: {
-              total: 1,
-              _id: 1,
+            { $unwind: { path: "$jobInfo", preserveNullAndEmptyArrays: true } },
+            {
+              $group: {
+                _id: "$jobInfo.jobtype",
+                total: { $sum: 1 },
+              },
             },
-          },
-        ],
-        categories: [
-          {
-            $lookup: {
-              from: "jobs",
-              localField: "job",
-              foreignField: "_id",
-              as: "jobInfo",
+            {
+              $project: {
+                total: 1,
+                _id: 1,
+              },
             },
-          },
-          { $unwind: { path: "$jobInfo", preserveNullAndEmptyArrays: true } },
-          { $unwind: { path: "$jobInfo.categories", preserveNullAndEmptyArrays: true } },
-          {
-            $group: {
-              _id: "$jobInfo.categories",
-              total: { $sum: 1 },
+          ],
+          categories: [
+            {
+              $lookup: {
+                from: "jobs",
+                localField: "job",
+                foreignField: "_id",
+                as: "jobInfo",
+              },
             },
-          },
-          {
-            $project: {
-              total: 1,
-              _id: 1,
+            { $unwind: { path: "$jobInfo", preserveNullAndEmptyArrays: true } },
+            {
+              $unwind: {
+                path: "$jobInfo.categories",
+                preserveNullAndEmptyArrays: true,
+              },
             },
-          },
-        ],
-        stats: baseStats, // Wrap `baseStats` in an array
-        shortlistedstats:baseStats,
+            {
+              $group: {
+                _id: "$jobInfo.categories",
+                total: { $sum: 1 },
+              },
+            },
+            {
+              $project: {
+                total: 1,
+                _id: 1,
+              },
+            },
+          ],
+          stats: baseStats, // Wrap `baseStats` in an array
+          shortlistedstats: baseStats,
+        },
       },
-    },
-    // Unwind each facet result, preserving empty or null fields
-    { $unwind: { path: "$total", preserveNullAndEmptyArrays: true } },
-    { $unwind: { path: "$pending", preserveNullAndEmptyArrays: true } },
-    { $unwind: { path: "$shortlisted", preserveNullAndEmptyArrays: true } },
-    { $unwind: { path: "$rejected", preserveNullAndEmptyArrays: true } },
-    { $unwind: { path: "$interviews", preserveNullAndEmptyArrays: true } },
-    { $unwind: { path: "$newApplications", preserveNullAndEmptyArrays: true } },
-    { $unwind: { path: "$categories", preserveNullAndEmptyArrays: true } },
-  
-    // Add percentages for numeric stats
-    ...getNumericPercentageStats(["pending", "shortlisted", "rejected", "interviews", "newApplications"]),
-  
-    // Add percentages for string-based stats
-    ...getStringPercentageStats(["source", "jobtypes"]),
-  
-    // Final projection
-    {
-      $project: {
-        total: "$total.total",
-        pending: "$pending",
-        shortlisted: "$shortlisted",
-        rejected: "$rejected.total",
-        interviews: "$interviews",
-        source: "$source",
-        stats: "$stats",
-        newApplications: "$newApplications",
-        jobtypes: "$jobtypes",
-        categories: "$categories",
+      // Unwind each facet result, preserving empty or null fields
+      { $unwind: { path: "$total", preserveNullAndEmptyArrays: true } },
+      { $unwind: { path: "$pending", preserveNullAndEmptyArrays: true } },
+      { $unwind: { path: "$shortlisted", preserveNullAndEmptyArrays: true } },
+      { $unwind: { path: "$rejected", preserveNullAndEmptyArrays: true } },
+      { $unwind: { path: "$interviews", preserveNullAndEmptyArrays: true } },
+      {
+        $unwind: { path: "$newApplications", preserveNullAndEmptyArrays: true },
       },
-    },
-  ]);
-  
-  baseStats=getDashboardstats(req,matchStage,"SubEmployers")
-  const [suemployersStats] = await SubEmployer.aggregate([
-    {$match:matchStage},
-    {
-      $facet: {
-        total: [
-          { $group: { _id: null, total: { $sum: 1 } } },
-          { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } },
-        ],
-        active: [
-          { $match: { isActive: true } },
-          { $group: { _id: null, total: { $sum: 1 } } },
-          { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } },
-        ],
-        stats: baseStats, // Wrap `baseStats` in an array
+      { $unwind: { path: "$categories", preserveNullAndEmptyArrays: true } },
+
+      // Add percentages for numeric stats
+      ...getNumericPercentageStats([
+        "pending",
+        "shortlisted",
+        "rejected",
+        "interviews",
+        "newApplications",
+      ]),
+
+      // Add percentages for string-based stats
+      ...getStringPercentageStats(["source", "jobtypes"]),
+
+      // Final projection
+      {
+        $project: {
+          total: "$total.total",
+          pending: "$pending",
+          shortlisted: "$shortlisted",
+          rejected: "$rejected.total",
+          interviews: "$interviews",
+          source: "$source",
+          stats: "$stats",
+          newApplications: "$newApplications",
+          jobtypes: "$jobtypes",
+          categories: "$categories",
+        },
       },
-    },
-    { $unwind: { path: "$total", preserveNullAndEmptyArrays: true } },
-    { $unwind: { path: "$active", preserveNullAndEmptyArrays: true } },
-   {
-      $unwind: { path: "$stats", preserveNullAndEmptyArrays: true } 
-    },
-    {
-      $project:{
-        total:"$total.total",
-        active:"$active.total",
-        stats:"$stats"
-      } 
-   }
-  ]);
-     if(jobStats.total && applicationStats.total){
+    ]);
+
+    baseStats = getDashboardstats(req, matchStage, "SubEmployers");
+    const [suemployersStats] = await SubEmployer.aggregate([
+      { $match: matchStage },
+      {
+        $facet: {
+          total: [
+            { $group: { _id: null, total: { $sum: 1 } } },
+            { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } },
+          ],
+          active: [
+            { $match: { isActive: true } },
+            { $group: { _id: null, total: { $sum: 1 } } },
+            { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } },
+          ],
+          stats: baseStats, // Wrap `baseStats` in an array
+        },
+      },
+      { $unwind: { path: "$total", preserveNullAndEmptyArrays: true } },
+      { $unwind: { path: "$active", preserveNullAndEmptyArrays: true } },
+      {
+        $unwind: { path: "$stats", preserveNullAndEmptyArrays: true },
+      },
+      {
+        $project: {
+          total: "$total.total",
+          active: "$active.total",
+          stats: "$stats",
+        },
+      },
+    ]);
+    if (jobStats.total && applicationStats.total) {
       // convert to percentage how many peoples applied from allposted jobs
-      applicationStats.totalAppliedPercentage= ((applicationStats.total/jobStats.total)*100).toFixed(2)
-
-
-     }
+      applicationStats.totalAppliedPercentage = (
+        (applicationStats.total / jobStats.total) *
+        100
+      ).toFixed(2);
+    }
     const data = {
       jobStats,
       applicationStats,
       EmployersStats,
       candidateStats,
-      suemployersStats
+      suemployersStats,
     };
 
-    res.status(200).json({ data, message: "Dashboard data fetched successfully" });
+    res
+      .status(200)
+      .json({ data, message: "Dashboard data fetched successfully" });
   } catch (error) {
     next(error);
   }
 };
-
-

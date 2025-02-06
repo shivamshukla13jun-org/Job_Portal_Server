@@ -84,7 +84,8 @@ const getJobs = async (req: Request, res: Response, next: NextFunction) => {
             skip: (page-1) * limit,
             limit: limit
         };
-      const {matchQueries}= FilterJob(req)
+        
+      const {matchQueries}= FilterJob(req,{deadline:{ $gte: today  }})
         const jobs = await Job.aggregate([
            
             {
@@ -255,31 +256,31 @@ const getJob = async (req: Request, res: Response, next: NextFunction) => {
                     },
                 },
             },
-            {
-                $group: {
-                    _id: "$_id",
-                    employerId: { $first: "$employerId" },
-                    isApplied: { $first: "$isApplied" },
-                    title: { $first: "$title" },
-                    location: { $first: "$location" },
-                    place: { $first: "$place" },
-                    opening: { $first: "$opening" },
-                    candidate_requirement: { $first: "$candidate_requirement" },
-                    timing: { $first: "$timing" },
-                    company: { $first: "$company" },
-                    isActive: { $first: "$isActive" },
-                    createdBy: { $first: "$createdBy" },
-                    createdAt: { $first: "$createdAt" },
-                    updatedAt: { $first: "$updatedAt" },
-                    __v: { $first: "$__v" },
-                  updatedBy: { $first: "$updatedBy" },
-                    age: { $first: "$age" },
-                    personal_info: { $first: "$personal_info" },
-                    categories: { $first: "$categories" },
-                    jobtype:{ $first: "$jobtype" },
+            // {
+            //     $group: {
+            //         _id: "$_id",
+            //         employerId: { $first: "$employerId" },
+            //         isApplied: { $first: "$isApplied" },
+            //         title: { $first: "$title" },
+            //         location: { $first: "$location" },
+            //         place: { $first: "$place" },
+            //         opening: { $first: "$opening" },
+            //         candidate_requirement: { $first: "$candidate_requirement" },
+            //         timing: { $first: "$timing" },
+            //         company: { $first: "$company" },
+            //         isActive: { $first: "$isActive" },
+            //         createdBy: { $first: "$createdBy" },
+            //         createdAt: { $first: "$createdAt" },
+            //         updatedAt: { $first: "$updatedAt" },
+            //         __v: { $first: "$__v" },
+            //       updatedBy: { $first: "$updatedBy" },
+            //         age: { $first: "$age" },
+            //         personal_info: { $first: "$personal_info" },
+            //         categories: { $first: "$categories" },
+            //         jobtype:{ $first: "$jobtype" },
                   
-                }
-            }
+            //     }
+            // }
         ]);
 
         if (!job) {

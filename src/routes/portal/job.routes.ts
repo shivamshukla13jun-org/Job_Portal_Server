@@ -15,8 +15,6 @@ router.get("/employer/name", verifyUserTypeToken(["employer","admin"]), getEmplo
 router.route("/employer/:id")
     .get(verifyUserTypeToken(["employer","admin"]), getEmployerJob);
 
-
-
 router.route("/")
     .get(verifyisCandidateLogin,getJobs)
     .post(
