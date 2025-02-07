@@ -436,7 +436,7 @@ export const Employers = async (
     next(error);
   }
 };
-export const EmployersOptions = async (
+export const Options = async (
   req: Request,
   res: Response,
   next: NextFunction
