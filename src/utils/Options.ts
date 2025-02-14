@@ -82,7 +82,7 @@ export class OptionsQuery {
               $unwind: { path: "$user", preserveNullAndEmptyArrays: true },
             },
             {
-              $match:{"user.isActive":false}
+              $match:{"user.isActive":true}
             },
             { $count: "total" },
             { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } },
@@ -115,29 +115,35 @@ export class OptionsQuery {
           locations: [
             {
               $group: {
-                _id: "$address.city",
+                _id: "$contact.current_address.city",
                 label: {
                   $first: {
-                    $concat: ["$address.city", ", ", "$address.state"],
+                    $concat: ["$contact.current_address.city", ", ", "$contact.current_address.state"],
                   },
                 },
-                value: { $first: "$address.city" },
+                value: { $first: "$contact.current_address.city" },
               },
             },
             { $match: { _id: { $ne: null } } },
           ],
-          skills: [
+          categories: [
             {
               $unwind: {
-                path: "$skills",
+                path: "$employment",
+                preserveNullAndEmptyArrays: true,
+              },
+            },
+            {
+              $unwind: {
+                path: "$employment.categories",
                 preserveNullAndEmptyArrays: true,
               },
             },
             {
               $group: {
-                _id: "$skills.value",
-                label: { $first: "$skills.label" },
-                value: { $first: "$skills.value" },
+                _id: "$employment.categories.value",
+                label: { $first: "$employment.categories.label" },
+                value: { $first: "$employment.categories.value" },
               },
             },
             { $match: { _id: { $ne: null } } },

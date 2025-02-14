@@ -1,3 +1,4 @@
+import { createRegex } from "@/libs";
 import { generateToken } from "@/middlewares/auth";
 import { AppError } from "@/middlewares/error";
 import Admin from "@/models/admin/admin.model";
@@ -24,11 +25,12 @@ interface ListQueryParams {
   search?: string;
   userType?: string;
   sortBy?: string;
-  sortOrder?: "asc" | "desc";
+  sort?: "asc" | "desc";
   fromdate?: Date;
   todate?: Date;
   categories?: string;
   jobtype?: string;
+  status?: string;
 }
 interface PaginatedResult {
   data: {
@@ -40,7 +42,27 @@ interface PaginatedResult {
   totalPages: number;
   success: boolean;
 }
-
+export const Options = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    let result = {};
+    const { type } = req.params;
+    const queryFunction = OptionsQuery[type as keyof typeof OptionsQuery];
+    console.log(queryFunction)
+    if (typeof queryFunction === "function") {
+      result = await queryFunction();
+    } else {
+      throw new AppError("Invalid type", 400);
+    }
+    res.status(200).json({data:result});
+  } catch (error) {
+    console.error("Error in listUsers:", error);
+    next(error);
+  }
+};
 export const getAllLocations = async (
   req: Request,
   res: Response,
@@ -127,7 +149,8 @@ export const listUsers = async (
       limit = 10,
       search = "",
       sortBy = "createdAt",
-      sortOrder = "desc",
+      sort = "desc",
+      categories='',
       fromdate,
       todate,
     } = req.query as ListQueryParams;
@@ -156,9 +179,20 @@ export const listUsers = async (
       matchQueries["createdAt"]["$lte"] = new Date(todate);
     }
 
+    if (categories) {
+      matchQueries["employment"] = {
+        $elemMatch: {
+          categories: {
+            $elemMatch: {
+              value: { $in: categories.split(",") }
+            }
+          }
+        }
+      };
+    }
     const sortStage = {
-      [sortBy]: sortOrder === "asc" ? 1 : -1,
-    };
+      [sortBy]: sort === "asc" ? 1 : -1,
+    }
 
     const aggregationPipeline: any[] = [
       { $match: matchQueries },
@@ -230,7 +264,7 @@ export const  subemployers = async (
       limit = 10,
       search = "",
       sortBy = "createdAt",
-      sortOrder = "desc",
+      sort = "desc",
       fromdate,
       todate,
     } = req.query as ListQueryParams;
@@ -260,7 +294,7 @@ export const  subemployers = async (
     }
 
     const sortStage = {
-      [sortBy]: sortOrder === "asc" ? 1 : -1,
+      [sortBy]: sort === "asc" ? 1 : -1,
     };
 
     const aggregationPipeline: any[] = [
@@ -319,13 +353,10 @@ export const Employers = async (
     const {
       page = 1,
       limit = 10,
-      search = "",
-      sortBy = "createdAt",
-      sortOrder = "desc",
-      categories = "",
-      jobtype = "",
       fromdate,
       todate,
+      sort = "desc",
+      ...queries
     } = req.query as ListQueryParams;
 
     const pageNumber = Math.max(1, Number(page));
@@ -336,34 +367,70 @@ export const Employers = async (
     const matchjobQueries: Record<string, any> = {};
     const searchMatch: Record<string, any> = {};
 
-    if (search) {
-      searchMatch["$or"] = [
-        { name: { $regex: search, $options: "i" } },
-        { email: { $regex: search, $options: "i" } },
-      ];
+    // Date range filter
+    if (fromdate || todate) {
+      matchQueries.createdAt = {};
+      if (fromdate) matchQueries.createdAt.$gte = new Date(fromdate);
+      if (todate) matchQueries.createdAt.$lte = new Date(todate);
+    }
+   
+    // Process other query parameters
+    for (const [key, value] of Object.entries(queries)) {
+      if (typeof value !== 'string' || value === '') continue;
+
+      switch(key) {
+        case 'keyword':
+          searchMatch.$or = [
+            { name: createRegex(value) },
+            { business_name: createRegex(value) },
+            { keywords: createRegex(value) }
+          ];
+          break;
+
+        case 'location':
+          const locations = value.split(',');
+          matchQueries.$or = [
+            { 
+              'contact.current_address.city': { 
+                $regex: new RegExp(locations.join('|'), 'i') 
+              } 
+            }
+          ];
+          break;
+
+        case 'categories':
+          const categoryValues = value.split(',');
+          matchQueries.categories = {
+            $elemMatch: {
+              value: { $in: categoryValues }
+            }
+          };
+          break;
+
+        case 'jobtype':
+          const jobtypes = value.split(',');
+          matchjobQueries['jobsPosted.jobtype'] = { 
+            $regex: new RegExp(jobtypes.join('|'), 'i')
+          };
+          break;
+
+        case 'status':
+          matchQueries.isActive = value === "1";
+          break;
+
+        default:
+          if (!['sort'].includes(key)) {
+            matchQueries[key] = createRegex(value);
+          }
+      }
     }
 
-    if (fromdate || todate) {
-      matchQueries["createdAt"] = {};
-    }
-    if (fromdate) {
-      matchQueries["createdAt"]["$gte"] = new Date(fromdate);
-    }
-    if (todate) {
-      matchQueries["createdAt"]["$lte"] = new Date(todate);
-    }
-    if (categories) {
-      matchQueries["categories"] = {$elemMatch:{value:{ $in: categories.split(",") }}};
-    }
-    if (jobtype) {
-      matchjobQueries["jobsPosted.jobtype"] = { $in: jobtype.split(",") };
-    }
-    const sortStage = {
-      [sortBy]: sortOrder === "asc" ? 1 : -1,
-    };
     const aggregationPipeline: any[] = [
+      // Initial matches
       { $match: matchQueries },
-      { $match: searchMatch },
+      ...(Object.keys(searchMatch).length ? [{ $match: searchMatch }] : []),
+
+      // Lookups
       {
         $lookup: {
           from: "jobs",
@@ -372,9 +439,7 @@ export const Employers = async (
           as: "jobsPosted",
         },
       },
-      {
-        $match:matchjobQueries
-      },
+      ...(Object.keys(matchjobQueries).length ? [{ $match: matchjobQueries }] : []),
       {
         $lookup: {
           from: "applications",
@@ -392,24 +457,30 @@ export const Employers = async (
         },
       },
       { $unwind: { path: "$user", preserveNullAndEmptyArrays: true } },
+
+      // Add computed fields
       {
         $addFields: {
           totalJobsPosted: { $size: "$jobsPosted" },
           totalApplicationsReceived: { $size: "$applicationsReceived" },
         },
       },
+
+      // Remove unnecessary arrays from output
+      {
+        $project: {
+          applicationsReceived: 0,
+          jobsPosted: 0,
+        },
+      },
+
+      // Sort, paginate and get total count
       {
         $facet: {
           data: [
-            { $sort: sortStage },
+            { $sort: { createdAt: sort === "asc" ? 1 : -1 } },
             { $skip: skip },
             { $limit: limitNumber },
-            {
-              $project: {
-                applicationsReceived: 0,
-                jobsPosted: 0,
-              },
-            },
           ],
           totalCount: [{ $count: "total" }],
         },
@@ -431,26 +502,6 @@ export const Employers = async (
         pageSize: limitNumber,
       },
     });
-  } catch (error) {
-    console.error("Error in listUsers:", error);
-    next(error);
-  }
-};
-export const Options = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    let result = {};
-    const { type } = req.params;
-    const queryFunction = OptionsQuery[type as keyof typeof OptionsQuery];
-    if (typeof queryFunction === "function") {
-      result = await queryFunction();
-    } else {
-      throw new AppError("Invalid type", 400);
-    }
-    res.status(200).json({data:result});
   } catch (error) {
     console.error("Error in listUsers:", error);
     next(error);
@@ -664,7 +715,7 @@ export const getJobs = async (
       if (
         typeof value === "string" &&
         value !== "" &&
-        !["keyword", "sort", "location", "categories", "jobtype"].includes(key)
+        !["keyword", "sort", "location","status", "categories", "jobtype"].includes(key)
       ) {
         matchQueries[key] = createRegex(value);
       }
@@ -689,16 +740,19 @@ export const getJobs = async (
       if (typeof value === "string" && value !== "" && key === "location") {
         matchQueries["$or"] = [
           {
-            location: createRegex(value),
+            location: { $in: value.split(",") },
           },
           {
-            place: createRegex(value),
+            place: { $in: value.split(",")},
           },
         ];
       }
 
       if (typeof value === "string" && value !== "" && key === "categories") {
-        matchQueries["categories.label"] = createRegex(value);
+        matchQueries["categories"] = {$elemMatch:{value:{ $in: value.split(",") }}};
+      }
+      if (typeof value === "string" && value !== "" && key === "status") {
+        matchQueries["isActive"] = value=="1"?true:false
       }
       if (typeof value === "string" && value !== "" && key === "jobtype") {
         matchQueries["jobtype"] = { $in: value.split(",") };
