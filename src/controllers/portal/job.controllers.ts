@@ -567,18 +567,21 @@ const deleteJob = async (req: Request, res: Response, next: NextFunction) => {
         const job = await Job.findByIdAndDelete(id).session(session)
         await Application.deleteMany({job:id}).session(session)
         await SavedJobs.updateMany({ jobs: id }, { $pull: { jobs: id } }).session(session);
-
         if (!job) {
             throw new AppError('Failed to find job', 400);
         }
+        await session.commitTransaction()
+        await session.endSession()
+        
 
         res.status(200).json({
             success: true,
-            data: {},
+            data: job,
             message: 'Job deleted'
         });
 
     } catch (error) {
+        console.log(error)
         next(error)
     }
 };

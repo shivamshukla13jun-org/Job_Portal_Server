@@ -30,6 +30,7 @@ interface ListQueryParams {
   todate?: Date;
   categories?: string;
   jobtype?: string;
+  location?: string;
   status?: string;
 }
 interface PaginatedResult {
@@ -151,6 +152,7 @@ export const listUsers = async (
       sortBy = "createdAt",
       sort = "desc",
       categories='',
+      location='',
       fromdate,
       todate,
     } = req.query as ListQueryParams;
@@ -168,7 +170,16 @@ export const listUsers = async (
         { email: { $regex: search, $options: "i" } },
       ];
     }
-
+    if (location) {
+      const locations = location.split(',');
+      matchQueries.$or = [
+        { 
+      'contact.current_address.city': { 
+        $regex: new RegExp(locations.join('|'), 'i') 
+      } 
+        }
+      ];
+    }
     if (fromdate || todate) {
       matchQueries["createdAt"] = {};
     }
@@ -378,50 +389,41 @@ export const Employers = async (
     for (const [key, value] of Object.entries(queries)) {
       if (typeof value !== 'string' || value === '') continue;
 
-      switch(key) {
-        case 'keyword':
-          searchMatch.$or = [
-            { name: createRegex(value) },
-            { business_name: createRegex(value) },
-            { keywords: createRegex(value) }
-          ];
-          break;
-
-        case 'location':
-          const locations = value.split(',');
-          matchQueries.$or = [
-            { 
-              'contact.current_address.city': { 
-                $regex: new RegExp(locations.join('|'), 'i') 
-              } 
-            }
-          ];
-          break;
-
-        case 'categories':
-          const categoryValues = value.split(',');
-          matchQueries.categories = {
-            $elemMatch: {
-              value: { $in: categoryValues }
-            }
-          };
-          break;
-
-        case 'jobtype':
-          const jobtypes = value.split(',');
-          matchjobQueries['jobsPosted.jobtype'] = { 
-            $regex: new RegExp(jobtypes.join('|'), 'i')
-          };
-          break;
-
-        case 'status':
-          matchQueries.isActive = value === "1";
-          break;
-
-        default:
-          if (!['sort'].includes(key)) {
-            matchQueries[key] = createRegex(value);
+      if (key === 'keyword') {
+        searchMatch.$or = [
+          { name: createRegex(value) },
+          { business_name: createRegex(value) },
+          { keywords: createRegex(value) }
+        ];
+      } 
+       if (key === 'location') {
+        const locations = value.split(',');
+        matchQueries.$or = [
+          { 
+        'contact.current_address.city': { 
+          $regex: new RegExp(locations.join('|'), 'i') 
+        } 
           }
+        ];
+      }  if (key === 'categories') {
+        const categoryValues = value.split(',');
+        matchQueries.categories = {
+          $elemMatch: {
+        value: { $in: categoryValues }
+          }
+        };
+      } 
+       if (key === 'jobtype') {
+        const jobtypes = value.split(',');
+        matchjobQueries['jobsPosted.jobtype'] = { 
+          $regex: new RegExp(jobtypes.join('|'), 'i')
+        };
+      } 
+       if (key === 'status') {
+        matchQueries.isActive = value === "1";
+      } 
+       if (!['sort'].includes(key)) {
+        matchQueries[key] = createRegex(value);
       }
     }
 
@@ -845,11 +847,9 @@ export const getAllApplicants = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    let { page, limit, status, job, createdAt, ...queries } = req.query as {
+    let { page, limit, ...queries } = req.query as {
       page?: string;
       limit?: string;
-      status?: string;
-      job?: Types.ObjectId;
       createdAt?: string;
       [key: string]: unknown;
     };
@@ -862,33 +862,33 @@ export const getAllApplicants = async (
     const createRegex = (value: string) =>
       new RegExp(`.*${value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}.*`, "gi");
     // Handle date filter
-    if (createdAt) {
-      let startDate = postedatesCondition(createdAt as string);
-      if (startDate) {
-        matchQueriesupper["createdAt"] = { $gte: startDate };
-      }
-    }
-    if (status) {
-      matchQueriesupper["status"] = status;
-    }
-    if (job) {
-      matchQueriesupper["job"] = new mongoose.Types.ObjectId(job);
-    }
+   const blacklist = ["page", "limit", "job", "createdAt"];
+   const uppermatchValues=["status"]
 
-    for (const [key, value] of Object.entries(queries)) {
-      if (
-        typeof value === "string" &&
-        value !== "" &&
-        !["createdAt", "status", "name"].includes(key)
-      ) {
-        matchQueries[key] = createRegex(value);
+    for (let [key, value] of Object.entries(queries)) {
+      if (blacklist.includes(key)) {
+        continue;
       }
-      if (typeof value === "string" && value !== "") {
-        if (key === "name") {
-          matchQueries["candidate.name"] = createRegex(value);
-        }
+      if (uppermatchValues.includes(key)) {
+        matchQueriesupper[key] = value;
       }
-    }
+      if (  typeof value === "string" && value !== "" && key === "keyword") {
+        matchQueries["$or"] = [{ "job.title":createRegex(value)}];
+      } 
+      if (  typeof value === "string" && value !== "") {
+        if(key==="fromdate" || key==="todate"){
+        matchQueries["createdAt"] = {};
+      } 
+      if (key === "fromdate") {
+        matchQueries["createdAt"]["$gte"] = new Date(value as string);
+      }
+      if (key === "todate") {
+        matchQueries["createdAt"]["$lte"] = new Date(value as string);
+      }
+
+      }
+  }
+  console.log(matchQueriesupper)
     const results = await Application.aggregate([
       {
         $match: matchQueriesupper,
@@ -896,16 +896,18 @@ export const getAllApplicants = async (
       {
         $lookup: {
           from: "jobs",
-          let: { jobId: "$job" },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $eq: ["$_id", "$$jobId"],
-                },
-              },
-            },
-          ],
+          localField: "job",
+          foreignField: "_id",
+          // let: { jobId: "$job" },
+          // pipeline: [
+          //   {
+          //     $match: {
+          //       $expr: {
+          //         $eq: ["$_id", "$$jobId"],
+          //       },
+          //     },
+          //   },
+          // ],
           as: "job",
         },
       },
