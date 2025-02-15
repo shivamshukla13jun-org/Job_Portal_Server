@@ -32,6 +32,7 @@ interface ListQueryParams {
   jobtype?: string;
   location?: string;
   status?: string;
+  department?: string;
 }
 interface PaginatedResult {
   data: {
@@ -274,6 +275,7 @@ export const  subemployers = async (
       page = 1,
       limit = 10,
       search = "",
+      department = "",
       sortBy = "createdAt",
       sort = "desc",
       fromdate,
@@ -303,7 +305,9 @@ export const  subemployers = async (
     if (todate) {
       matchQueries["createdAt"]["$lte"] = new Date(todate);
     }
-
+    if(department){
+      matchQueries["department"] = {$in:department.split(",")}
+    }
     const sortStage = {
       [sortBy]: sort === "asc" ? 1 : -1,
     };
