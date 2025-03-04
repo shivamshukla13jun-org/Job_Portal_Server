@@ -21,10 +21,35 @@ declare global {
     }
 }
 
-const generateToken = (user: IUser| IAdmin,expiresIn?:string) => {
-    const token = jwt.sign({ id: user._id }, JWT_SECRET!, { expiresIn: expiresIn || JWT_EXPIRE });
-    return token;
-};
+const generateToken = (
+    user: IUser | IAdmin,
+    expiresIn?: jwt.SignOptions['expiresIn']
+  ): string => {
+    // Ensure that secret and expiration are available and correctly typed
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      throw new Error('JWT_SECRET is not defined in environment variables');
+    }
+  
+    const envExpire = process.env.JWT_EXPIRE;
+    if (!envExpire && expiresIn === undefined) {
+      throw new Error('JWT_EXPIRE is not defined in environment variables and no expiresIn was provided');
+    }
+  
+    // Use the provided expiresIn or fallback to the env variable (or a default)
+    const expireValue: string | number = expiresIn ?? envExpire ?? '1h';
+  
+    const payload = { id: user._id };
+  
+    // Some type definitions for jsonwebtoken may not allow a plain string for expiresIn.
+    // Casting expireValue as any here tells TypeScript to trust you.
+    const signOptions: jwt.SignOptions = {
+      expiresIn: expireValue as any
+    };
+  
+    return jwt.sign(payload, secret, signOptions);
+  };
+  
 
 const verifyToken = async (req: Request, res: Response, next: NextFunction) => {
     try {

@@ -28,6 +28,7 @@ export interface IUser extends Document {
   oauth: 'email' | 'google';
   user_verified?: boolean;
   isBlocked?: boolean;
+  termsAccepted: boolean;
   matchPassword: (pass: string) =>boolean;
 }
 
@@ -89,6 +90,11 @@ createdBy: {
   },
   isBlocked: {
     type: Boolean,
+    default: false
+  },
+  termsAccepted: {
+    type: Boolean,
+    required: [true, 'You must accept the terms and conditions'],
     default: false
   }
 }, { timestamps: true })

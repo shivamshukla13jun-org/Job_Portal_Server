@@ -11,7 +11,7 @@ export interface ICandidate extends Document {
     experience:number;
     currentsalary?:number;
     expectedsalary:number;
-    gender: 'Male' | 'Female' | 'Other';
+    gender: 'Male' | 'Female' | 'Other' | 'Others';
     dob: Date;
     categories: IJobSelect[];
     scope: string;
@@ -55,7 +55,7 @@ const candidateSchema = new Schema<ICandidate>({
     gender: {
         type: String,
         required: [true, 'Gender is required'],
-        enum: ['Male', 'Female', 'Other']
+        enum: ['Male', 'Female', 'Other','Others']
     },
     experience: {
         type: Number,
