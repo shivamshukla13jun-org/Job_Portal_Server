@@ -33,6 +33,11 @@ interface ListQueryParams {
   location?: string;
   status?: string;
   department?: string;
+  keyword?: string;
+  qualification?:string
+  gender?:string
+  createdAt?:string
+  
 }
 interface PaginatedResult {
   data: {
@@ -371,7 +376,11 @@ export const Employers = async (
       fromdate,
       todate,
       sort = "desc",
-      ...queries
+      jobtype,
+      location,
+      categories,
+      status,
+      keyword,
     } = req.query as ListQueryParams;
 
     const pageNumber = Math.max(1, Number(page));
@@ -388,55 +397,44 @@ export const Employers = async (
       if (fromdate) matchQueries.createdAt.$gte = new Date(fromdate);
       if (todate) matchQueries.createdAt.$lte = new Date(todate);
     }
-   
-    // Process other query parameters
-    for (const [key, value] of Object.entries(queries)) {
-      if (typeof value !== 'string' || value === '') continue;
 
-      if (key === 'keyword') {
-        searchMatch.$or = [
-          { name: createRegex(value) },
-          { business_name: createRegex(value) },
-          { keywords: createRegex(value) }
-        ];
-      } 
-       if (key === 'location') {
-        const locations = value.split(',');
-        matchQueries.$or = [
-          { 
-        'contact.current_address.city': { 
-          $regex: new RegExp(locations.join('|'), 'i') 
-        } 
-          }
-        ];
-      }  if (key === 'categories') {
-        const categoryValues = value.split(',');
-        matchQueries.categories = {
-          $elemMatch: {
-        value: { $in: categoryValues }
-          }
-        };
-      } 
-       if (key === 'jobtype') {
-        const jobtypes = value.split(',');
-        matchjobQueries['jobsPosted.jobtype'] = { 
-          $regex: new RegExp(jobtypes.join('|'), 'i')
-        };
-      } 
-       if (key === 'status') {
-        matchQueries.isActive = value === "1";
-      } 
-       if (!['sort'].includes(key)) {
-        matchQueries[key] = createRegex(value);
-      }
+    // Location filter (city, state, country)
+    if (location) {
+      const locations = location.split(',').map(loc => loc.trim());
+      matchQueries.$or = [
+        { 'address.city': { $in: locations } },
+        { 'address.state': { $in: locations } },
+        { 'address.country': { $in: locations } },
+      ];
     }
 
+    // Keyword search (name or email)
+    if (keyword) {
+      searchMatch.$or = [
+        { name: { $regex: keyword, $options: "i" } },
+        { email: { $regex: keyword, $options: "i" } },
+      ];
+    }
+
+    // Employer categories filter
+    if (categories) {
+      const categoriesList = categories.split(',');
+      matchQueries["categories.value"] = { $in: categoriesList };
+    }
+
+    // Jobtype filter (jobs' categories)
+    if (jobtype) {
+      const jobtypeList = jobtype.split(',');
+      matchjobQueries["jobsPosted.categories.value"] = { $in: jobtypeList };
+    }
+
+    console.log("matchQueries", matchQueries);
+    console.log("searchMatch", searchMatch);
+    console.log("matchjobQueries", matchjobQueries);
+
     const aggregationPipeline: any[] = [
-      // Initial matches
       { $match: matchQueries },
       ...(Object.keys(searchMatch).length ? [{ $match: searchMatch }] : []),
-
-      // Lookups
       {
         $lookup: {
           from: "jobs",
@@ -463,24 +461,18 @@ export const Employers = async (
         },
       },
       { $unwind: { path: "$user", preserveNullAndEmptyArrays: true } },
-
-      // Add computed fields
       {
         $addFields: {
           totalJobsPosted: { $size: "$jobsPosted" },
           totalApplicationsReceived: { $size: "$applicationsReceived" },
         },
       },
-
-      // Remove unnecessary arrays from output
       {
         $project: {
           applicationsReceived: 0,
           jobsPosted: 0,
         },
       },
-
-      // Sort, paginate and get total count
       {
         $facet: {
           data: [
@@ -1463,3 +1455,4 @@ export const Dashboard = async (
     next(error);
   }
 };
+
