@@ -1,7 +1,7 @@
 import { createRegex } from "@/libs";
 import { generateToken } from "@/middlewares/auth";
 import { AppError } from "@/middlewares/error";
-import Admin from "@/models/admin/admin.model";
+import Admin, { IAdmin } from "@/models/admin/admin.model";
 import User from "@/models/admin/user.model";
 import { Application } from "@/models/candidate/application.model";
 import Candidate from "@/models/portal/candidate.model";
@@ -120,12 +120,10 @@ export const loginUser = async (
   try {
     const { email, password } = req.body;
 
-    const user: any = await User.findOne({ email }).populate("userType");
+    const user: IAdmin |null= await Admin.findOne({ email }).populate("userType");
 
     if (user) {
-      if (!user?.userType?.forAdmin) {
-        throw new AppError("Loagin as A admin Email", 400);
-      }
+      
       const isMatch = await user.matchPassword(password as string);
       if (!isMatch) {
         throw new AppError("Invalid credentials", 400);
