@@ -7,7 +7,7 @@ export const createDefaultAdmin = async () => {
 
   const adminExists = await Admin.findOne({ email: defaultEmail });
  if (!adminExists) {
-    const defaultAdmin = new User({
+    const defaultAdmin = new Admin({
       name: 'Admin',
       email: defaultEmail,
       password: '123456', // Use strong passwords in production

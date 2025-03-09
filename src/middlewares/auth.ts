@@ -2,7 +2,7 @@
 import { Request, Response, NextFunction } from "express"
 import jwt from "jsonwebtoken"
 import { Types } from "mongoose";
-import {IAdmin} from '@/models/admin/admin.model';
+import Admin, {IAdmin} from '@/models/admin/admin.model';
 
 import { AppError } from "./error"
 import User, { IUser } from "@/models/admin/user.model";
@@ -70,7 +70,7 @@ const verifyToken = async (req: Request, res: Response, next: NextFunction) => {
             return next(new AppError("Unauthorized user", 403));
         }
 
-        const user = await User.findById((decoded as jwt.JwtPayload).id);
+        const user = await User.findById((decoded as jwt.JwtPayload).id) 
         if (!user) {
             return next(new AppError('Unauthorized user', 403));
         }
@@ -158,9 +158,36 @@ const verifyUserTypeToken = (userType: string[]) => {
         }
     };
 };
+const verifyAdminToken = async (req: Request, res: Response, next: NextFunction) => {
+    const bearer = req.headers["authorization"];
+
+    if (!bearer) {
+        return next(new AppError("No token found", 401));
+    }
+    const token = bearer?.split(" ")[1];
+
+    let decoded;
+    try {
+        decoded = jwt.verify(token, JWT_SECRET as string);
+    } catch (jwtError) {
+        return next(new AppError("Invalid or expired token", 401));
+    }
+
+    if (!decoded) {
+        return next(new AppError("Unauthorized user", 403));
+    }
+
+    const user = await Admin.findById((decoded as jwt.JwtPayload).id);
+    if (!user) {
+        return next(new AppError('Unauthorized user', 403));
+    }
+
+    res.locals.userId = user._id as Types.ObjectId;
+    next();
+};
 
 export {
     generateToken,
     verifyUserTypeToken,
-    verifyToken,verifyisCandidateLogin
+    verifyToken,verifyisCandidateLogin,verifyAdminToken
 }

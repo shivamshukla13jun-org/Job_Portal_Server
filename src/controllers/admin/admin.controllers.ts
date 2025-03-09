@@ -120,8 +120,11 @@ export const loginUser = async (
   try {
     const { email, password } = req.body;
 
-    const user: IAdmin |null= await Admin.findOne({ email }).populate("userType");
-
+    const user: IAdmin |null= await Admin.findOne({ email })
+    console.log(user)
+    if (!user) {
+      throw new AppError("Invalid Credentials", 401);
+    }
     if (user) {
       
       const isMatch = await user.matchPassword(password as string);
@@ -1078,7 +1081,8 @@ export const getAdmins = async (
   next: NextFunction
 ) => {
   try {
-    const admins = await Admin.find({});
+    const id=res.locals.userId
+    const admins = await Admin.find({_id:{$ne:id}});
     res.json(admins);
   } catch (error) {
     next(error);
