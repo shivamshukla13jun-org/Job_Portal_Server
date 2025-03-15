@@ -7,6 +7,10 @@ export interface INewsArticle extends Document {
   longDescription: string;
   publishDate: Date;
   banner: IFile;
+  comments?: Array<{
+    message: string;
+    createdBy: Schema.Types.ObjectId;
+  }>;
   createdBy: Schema.Types.ObjectId;
   updatedBy?: Schema.Types.ObjectId;
   isActive: boolean;
@@ -30,6 +34,15 @@ const newsArticleSchema = new Schema<INewsArticle>(
       type: Date, 
       required: [true, 'Publish date is required'] 
     },
+    comments:[
+      {
+        message: { type: String, },
+        createdBy: { 
+          type: Schema.Types.ObjectId, 
+          ref:"User"
+        }
+      }
+    ],
     
     banner: { 
       type: Object, 

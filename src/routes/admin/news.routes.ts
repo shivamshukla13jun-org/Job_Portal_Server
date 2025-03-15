@@ -18,7 +18,7 @@ const router = Router();
  */
 router.route('/')
   .post(verifyAdminToken, upload.single('banner'), createNewsArticle)
-  .get(verifyAdminToken, getNewsArticles);
+  .get( getNewsArticles);
 
 /**
  * @desc Get, update or delete a news article
@@ -26,7 +26,7 @@ router.route('/')
  * @param {string} id - the ID of the news article
  */
 router.route('/:id')
-  .get(verifyAdminToken, getNewsArticle)
+  .get( getNewsArticle)
   .put(verifyAdminToken, upload.single('banner'), updateNewsArticle)
   .delete(verifyAdminToken, deleteNewsArticle);
 
