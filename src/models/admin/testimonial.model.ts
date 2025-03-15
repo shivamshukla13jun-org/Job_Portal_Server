@@ -4,13 +4,13 @@ import { Schema, Document, model, Types } from "mongoose"
 export interface ITestimonial extends Document {
     name: string;
     email: string;
-    phone_area: string;
-    phone: number;
+    phone: string;
     testimonial: string;
     isPublic: boolean;
     rating: number;
-    asset?: IFile;
+    asset: IFile;
     createdBy: Types.ObjectId;
+    updatedBy?: Types.ObjectId;
     isActive: boolean;
 }
 
@@ -23,14 +23,14 @@ const testimonialSchema = new Schema<ITestimonial>({
         type: String,
         required: [true, 'Email is required']
     },
-    phone_area: {
-        type: String,
-        required: [true, 'Phone area is required']
-    },
+    // phone_area: {
+    //     type: String,
+    //     required: [true, 'Phone area is required']
+    // },
     phone: {
-        type: Number,
+        type: String,
         required: [true, 'Phone is required'],
-        max: 10, min: 10
+        max: 15, min: 10
     },
     testimonial: {
         type: String,
@@ -38,17 +38,23 @@ const testimonialSchema = new Schema<ITestimonial>({
     },
     isPublic: {
         type: Boolean,
-        required: [true, 'Public is required']
+        default: true
     },
     rating: {
         type: Number,
-        required: [true, 'Rating is required']
+        default: 5
     },
     asset: {
-        type: Object
+        type: Object,
+        required: [true, 'image is required']
     },
     createdBy: {
-        type: Schema.Types.ObjectId, ref: 'User'
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    },
+    updatedBy: {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
     },
     isActive: {
         type: Boolean,

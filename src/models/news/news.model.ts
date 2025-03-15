@@ -1,3 +1,4 @@
+import { IFile } from '@/types/file';
 import mongoose, { Document, Schema } from 'mongoose';
 
 export interface INewsArticle extends Document {
@@ -5,11 +6,9 @@ export interface INewsArticle extends Document {
   shortDescription: string;
   longDescription: string;
   publishDate: Date;
-  newsUrl: string;
-  image: string;
-  video?: string;
-  createdBy: mongoose.Types.ObjectId;
-  updatedBy?: mongoose.Types.ObjectId;
+  banner: IFile;
+  createdBy: Schema.Types.ObjectId;
+  updatedBy?: Schema.Types.ObjectId;
   isActive: boolean;
 }
 
@@ -31,17 +30,12 @@ const newsArticleSchema = new Schema<INewsArticle>(
       type: Date, 
       required: [true, 'Publish date is required'] 
     },
-    newsUrl: { 
-      type: String, 
-      required: [true, 'News URL is required'] 
+    
+    banner: { 
+      type: Object, 
+      required: [true, 'Banner  is required'] 
     },
-    image: { 
-      type: String, 
-      required: [true, 'Image URL is required'] 
-    },
-    video: { 
-      type: String 
-    },
+   
     createdBy: { 
       type: Schema.Types.ObjectId, 
       ref: 'Admin', 
@@ -57,9 +51,18 @@ const newsArticleSchema = new Schema<INewsArticle>(
     }
   },
   { 
-    timestamps: true 
+    timestamps: true ,
+    toJSON:{
+      virtuals:true
+    },
+    toObject:{
+      virtuals:true
+    },
+    versionKey:false,
+
   }
 );
+// befor send to client add new bannerUrl
 
 const NewsArticle = mongoose.model<INewsArticle>('NewsArticle', newsArticleSchema);
 export default NewsArticle;

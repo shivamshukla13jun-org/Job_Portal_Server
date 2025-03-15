@@ -1102,12 +1102,10 @@ export const updateAdmin = async (
     if (!admin) {
       throw new AppError("Admin not found", 404);
     }
-
-    admin.name = req.body.name || admin.name;
-    admin.email = req.body.email || admin.email;
-
-    if (req.body.password) {
-      admin.password = req.body.password;
+    for (const key in req.body) {
+      if (req.body.hasOwnProperty(key) && req.body[key]) {
+        (admin as any)[key] = (req.body as any)[key];
+      }
     }
 
     const updatedAdmin = await admin.save();

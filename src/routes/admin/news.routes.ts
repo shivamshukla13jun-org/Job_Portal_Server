@@ -7,6 +7,7 @@ import {
   deleteNewsArticle
 } from '@/controllers/admin/news.controllers';
 import { verifyAdminToken, verifyToken } from '@/middlewares/auth';
+import { upload } from '@/utils/multer';
 
 const router = Router();
 
@@ -16,7 +17,7 @@ const router = Router();
  * @route POST/GET /api/v1/admin/news
  */
 router.route('/')
-  .post(verifyAdminToken, createNewsArticle)
+  .post(verifyAdminToken, upload.single('banner'), createNewsArticle)
   .get(verifyAdminToken, getNewsArticles);
 
 /**
@@ -26,7 +27,7 @@ router.route('/')
  */
 router.route('/:id')
   .get(verifyAdminToken, getNewsArticle)
-  .put(verifyAdminToken, updateNewsArticle)
+  .put(verifyAdminToken, upload.single('banner'), updateNewsArticle)
   .delete(verifyAdminToken, deleteNewsArticle);
 
 export default router;

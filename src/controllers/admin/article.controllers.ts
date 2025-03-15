@@ -1,8 +1,8 @@
 import { Types } from "mongoose";
 import { Request, Response, NextFunction } from "express";
-
 import Article, { IArticle } from "@/models/admin/article.model";
 import { AppError } from "@/middlewares/error";
+import { IFile } from "@/types/file";
 
 /** 
  @desc    Create an article
@@ -14,7 +14,23 @@ const createArticle = async (req: Request, res: Response, next: NextFunction) =>
         const payload: IArticle = req.body;
         const id = res.locals.userId;
 
-        payload["createdBy"] = new Types.ObjectId(id);
+        if (!req.file) {
+            throw new AppError("Banner image is required", 400);
+        }
+
+        const banner: IFile = {
+            fieldname: req.file.fieldname,
+            originalname: req.file.originalname,
+            encoding: req.file.encoding,
+            mimetype: req.file.mimetype,
+            destination: req.file.destination,
+            filename: req.file.filename,
+            path: req.file.path,
+            size: req.file.size
+        };
+
+        payload.banner = banner;
+        payload.createdBy = new Types.ObjectId(id);
 
         const createArticle = await Article.create(payload);
         if (!createArticle) {
@@ -37,11 +53,10 @@ const getArticles = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const articles = await Article.find()
         if (!articles) {
-            throw new AppError("Failed to fetch testimonial", 400);
+            throw new AppError("Failed to fetch articles", 400);
         }
 
         res.status(200).json({ success: true, data: articles, message: "Articles fetched!" })
-
 
     } catch (error) {
         next(error)
@@ -79,15 +94,29 @@ const updateArticle = async (req: Request, res: Response, next: NextFunction) =>
         const payload: IArticle = req.body;
         const id = res.locals.userId;
 
-        payload["updatedBy"] = new Types.ObjectId(id);
-
         const checkArticle = await Article.findById(req.params.id);
         if (!checkArticle) {
             throw new AppError("Failed to fetch article for updating!", 400);
         }
 
+        if (req.file) {
+            const banner: IFile = {
+                fieldname: req.file.fieldname,
+                originalname: req.file.originalname,
+                encoding: req.file.encoding,
+                mimetype: req.file.mimetype,
+                destination: req.file.destination,
+                filename: req.file.filename,
+                path: req.file.path,
+                size: req.file.size
+            };
+            payload.banner = banner;
+        }
+
+        payload.updatedBy = new Types.ObjectId(id);
+
         const updateArticle = await Article.findByIdAndUpdate(req.params.id, payload, { new: true, runValidators: true });
-        if (!createArticle) {
+        if (!updateArticle) {
             throw new AppError("Failed to update an article", 400)
         }
 

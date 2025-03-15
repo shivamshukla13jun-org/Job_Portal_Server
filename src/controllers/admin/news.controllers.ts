@@ -2,6 +2,8 @@ import { Request, Response, NextFunction } from "express";
 import { Types } from "mongoose";
 import { AppError } from "@/middlewares/error";
 import NewsArticle from '@/models/news/news.model';
+import path from "path";
+import fs from "fs";
 
 /**
  @desc    Create a new news article
@@ -12,6 +14,11 @@ const createNewsArticle = async (req: Request, res: Response, next: NextFunction
   try {
     const payload = req.body;
     const id = res.locals.userId;
+
+    if (!req.file) {
+      throw new AppError("Banner is required", 400);
+    }
+    payload["banner"] = req.file;
 
     payload["createdBy"] = new Types.ObjectId(id);
     const newsArticle = await NewsArticle.create(payload);
@@ -89,6 +96,7 @@ const getNewsArticle = async (req: Request, res: Response, next: NextFunction) =
 **/
 const updateNewsArticle = async (req: Request, res: Response, next: NextFunction) => {
   try {
+
     const payload = req.body;
     const id = res.locals.userId;
 
@@ -97,6 +105,11 @@ const updateNewsArticle = async (req: Request, res: Response, next: NextFunction
       throw new AppError("News article not found", 404);
     }
 
+    if (req.file) {
+      // remove old image
+      checkNewsArticle?.banner?.filename && fs.unlinkSync(path.join(process.cwd(), 'uploads', checkNewsArticle.banner.filename));
+      payload.banner = req.file;
+    }
     const newsArticle = await NewsArticle.findByIdAndUpdate(
       req.params.id,
       { ...payload, updatedBy: new Types.ObjectId(id) },
