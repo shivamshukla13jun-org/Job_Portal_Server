@@ -21,7 +21,7 @@ import menuRoutes from "@/routes/admin/menu.routes";
 import planRoutes from "@/routes/admin/plan.routes";
 import adminRoutes from "@/routes/admin/admin.routes";
 import paymentRoutes from "@/routes/admin/payment.routes";
-
+import mastersRoutes from "@/routes/admin/masters";
 const router = Router();
 
 router.use("/user", userRoutes);
@@ -46,7 +46,7 @@ router.use("/menu", menuRoutes)
 router.use("/plan", planRoutes)
 router.use("/admin", adminRoutes)
 router.use("/payment", paymentRoutes)
-
+router.use("/masters", mastersRoutes);
 
 
 
