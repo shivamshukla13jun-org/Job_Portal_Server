@@ -1,5 +1,5 @@
 import { IFile } from '@/types/file';
-import mongoose, { Document, Schema } from 'mongoose';
+import mongoose, { Document, Schema, Types } from 'mongoose';
 
 export interface INewsArticle extends Document {
   title: string;
@@ -7,6 +7,7 @@ export interface INewsArticle extends Document {
   longDescription: string;
   publishDate: Date;
   banner: IFile;
+  category?:Schema.Types.ObjectId;
   comments: {
     message: string;
     createdBy: mongoose.Types.ObjectId; // Change from Schema.Types.ObjectId
@@ -25,6 +26,10 @@ const newsArticleSchema = new Schema<INewsArticle>(
     shortDescription: { 
       type: String, 
       required: [true, 'Short description is required'] 
+    },
+    category: { 
+      type: Schema.Types.ObjectId, 
+      ref: 'Category', 
     },
     longDescription: { 
       type: String, 
