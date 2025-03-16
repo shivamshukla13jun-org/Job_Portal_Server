@@ -7,12 +7,12 @@ export interface INewsArticle extends Document {
   longDescription: string;
   publishDate: Date;
   banner: IFile;
-  comments?: Array<{
+  comments: {
     message: string;
-    createdBy: Schema.Types.ObjectId;
-  }>;
-  createdBy: Schema.Types.ObjectId;
-  updatedBy?: Schema.Types.ObjectId;
+    createdBy: mongoose.Types.ObjectId; // Change from Schema.Types.ObjectId
+  }[];
+  createdBy: mongoose.Types.ObjectId; // Change here as well
+  updatedBy?: mongoose.Types.ObjectId;
   isActive: boolean;
 }
 
@@ -34,15 +34,13 @@ const newsArticleSchema = new Schema<INewsArticle>(
       type: Date, 
       required: [true, 'Publish date is required'] 
     },
-    comments:[
-      {
-        message: { type: String, },
-        createdBy: { 
-          type: Schema.Types.ObjectId, 
-          ref:"User"
-        }
+    comments: [{
+      message: { type: String, },
+      createdBy: { 
+        type: Schema.Types.ObjectId, 
+        ref: "User"
       }
-    ],
+    }],
     
     banner: { 
       type: Object, 

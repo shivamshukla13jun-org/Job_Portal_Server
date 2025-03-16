@@ -4,7 +4,10 @@ import {
   getNewsArticles,
   getNewsArticle,
   updateNewsArticle,
-  deleteNewsArticle
+  deleteNewsArticle,
+  updateNewsArticleComment,
+  commentsList,
+  deleteComment
 } from '@/controllers/admin/news.controllers';
 import { verifyAdminToken, verifyToken } from '@/middlewares/auth';
 import { upload } from '@/utils/multer';
@@ -20,6 +23,21 @@ router.route('/')
   .post(verifyAdminToken, upload.single('banner'), createNewsArticle)
   .get( getNewsArticles);
 
+/**
+  * @desc Get all comments for a news article
+ * @route GET /api/v1/admin/news/comments/:id
+ * @param {string} id - the ID of the news article
+ */
+router.route('/comments/:id')
+  .get( commentsList);
+
+/**
+ * @desc create or update a news article comment
+  * @route PUT /api/v1/admin/news/comment/:id
+ * @param {string} id - the ID of the user
+*/
+router.route('/comment/:id')
+  .put(verifyToken, updateNewsArticleComment);
 /**
  * @desc Get, update or delete a news article
  * @route GET/PUT/DELETE /api/v1/admin/news/:id
