@@ -17,20 +17,20 @@ const router = Router();
  */
 router.route('/')
   .post(verifyAdminToken, createCity)
-  .get(verifyAdminToken, getCities);
+  .get( getCities);
 
 /**
  * @desc Get cities by state
  * @route GET /api/v1/admin/masters/cities/state/:stateId
  */
-router.get('/state/:stateId', verifyAdminToken, getCitiesByState);
+router.get('/state/:stateId', getCitiesByState);
 
 /**
  * @desc Get, update or delete a city
  * @route GET/PUT/DELETE /api/v1/admin/masters/cities/:id
  */
 router.route('/:id')
-  .get(verifyAdminToken, getCity)
+  .get( getCity)
   .put(verifyAdminToken, updateCity)
   .delete(verifyAdminToken, deleteCity);
 

@@ -16,7 +16,7 @@ const router = Router();
  */
 router.route('/')
   .post(verifyAdminToken, createIndustry)
-  .get(verifyAdminToken, getIndustries);
+  .get(getIndustries);
 
 /**
  * @desc Get, update or delete an industry
@@ -24,7 +24,7 @@ router.route('/')
  * @param {string} id - the ID of the industry
  */
 router.route('/:id')
-  .get(verifyAdminToken, getIndustry)
+  .get( getIndustry)
   .put(verifyAdminToken, updateIndustry)
   .delete(verifyAdminToken, deleteIndustry);
 

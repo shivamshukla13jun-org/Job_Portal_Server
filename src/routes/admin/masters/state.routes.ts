@@ -17,20 +17,20 @@ const router = Router();
  */
 router.route('/')
   .post(verifyAdminToken, createState)
-  .get(verifyAdminToken, getStates);
+  .get( getStates);
 
 /**
  * @desc Get states by country
  * @route GET /api/v1/admin/masters/states/country/:countryId
  */
-router.get('/country/:countryId', verifyAdminToken, getStatesByCountry);
+router.get('/country/:countryId', getStatesByCountry);
 
 /**
  * @desc Get, update or delete a state
  * @route GET/PUT/DELETE /api/v1/admin/masters/states/:id
  */
 router.route('/:id')
-  .get(verifyAdminToken, getState)
+  .get( getState)
   .put(verifyAdminToken, updateState)
   .delete(verifyAdminToken, deleteState);
 

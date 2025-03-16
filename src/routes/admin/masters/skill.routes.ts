@@ -16,7 +16,7 @@ const router = Router();
  */
 router.route('/')
   .post(verifyAdminToken, createSkill)
-  .get(verifyAdminToken, getSkills);
+  .get( getSkills);
 
 /**
  * @desc Get, update or delete a skill
@@ -24,7 +24,7 @@ router.route('/')
  * @param {string} id - the ID of the skill
  */
 router.route('/:id')
-  .get(verifyAdminToken, getSkill)
+  .get( getSkill)
   .put(verifyAdminToken, updateSkill)
   .delete(verifyAdminToken, deleteSkill);
 

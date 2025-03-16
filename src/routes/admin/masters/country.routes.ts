@@ -16,14 +16,14 @@ const router = Router();
  */
 router.route('/')
   .post(verifyAdminToken, createCountry)
-  .get(verifyAdminToken, getCountries);
+  .get( getCountries);
 
 /**
  * @desc Get, update or delete a country
  * @route GET/PUT/DELETE /api/v1/admin/masters/countries/:id
  */
 router.route('/:id')
-  .get(verifyAdminToken, getCountry)
+  .get( getCountry)
   .put(verifyAdminToken, updateCountry)
   .delete(verifyAdminToken, deleteCountry);
 

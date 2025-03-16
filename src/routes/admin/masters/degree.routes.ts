@@ -16,7 +16,7 @@ const router = Router();
  */
 router.route('/')
   .post(verifyAdminToken, createDegree)
-  .get(verifyAdminToken, getDegrees);
+  .get( getDegrees);
 
 /**
  * @desc Get, update or delete a degree
@@ -24,7 +24,7 @@ router.route('/')
  * @param {string} id - the ID of the degree
  */
 router.route('/:id')
-  .get(verifyAdminToken, getDegree)
+  .get( getDegree)
   .put(verifyAdminToken, updateDegree)
   .delete(verifyAdminToken, deleteDegree);
 
