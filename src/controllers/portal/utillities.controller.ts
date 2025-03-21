@@ -107,7 +107,7 @@ const Options = async (req: Request, res: Response, next: NextFunction) => {
           $unwind: { path: "$category", preserveNullAndEmptyArrays: true },
         },
         {
-          $project: { value: "$category.value",label:"$category.label", total: 1 },
+          $project: { value: "$category.value",label:"$category.label",_id:0, total: 1 },
         },
         { $sort: { label: 1 } },
       );
@@ -239,13 +239,13 @@ const ApplicationOptions = async (
             as: "category",
           },
         },
-        {
-          $unwind: { path: "$category", preserveNullAndEmptyArrays: true },
-        },
-        {
-          $project: { value: "$category.value",label:"$category.label", total: 1 },
-        },
-        { $sort: { label: 1 } },
+        // {
+        //   $unwind: { path: "$category", preserveNullAndEmptyArrays: true },
+        // },
+        // {
+        //   $project: { value: "$category.value",label:"$category.label",_id:0, total: 1 },
+        // },
+        // { $sort: { label: 1 } },
       );
     } else if (type === "salary_experience") {
       // Add grouping stages for max and min salary and experience

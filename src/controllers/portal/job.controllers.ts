@@ -383,73 +383,8 @@ const getEmployerJobs = async (req: Request, res: Response, next: NextFunction) 
             skip: (page-1) * limit,
             limit: limit
         };
-        const matchQueries: Record<string, any> = {};
-        const createRegex = (value: string) => new RegExp(`.*${value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}.*`, "gi");
-         // Handle date filter
-         if (createdAt) {
-            let startDate=postedatesCondition(createdAt  as string )
-            if (startDate) {
-                matchQueries['createdAt'] = { $gte: startDate };
-            }
-            
-        }
-        for (let [key, value] of Object.entries(queries)) {
-            if (typeof value === 'string' && value !== '' && !['keyword', 'sort', 'location', 'categories','jobtype'].includes(key)) {
-                matchQueries[key] = createRegex(value)
-            };
-            if (typeof value === 'string' && value !== '' && key === 'keyword') {
-                matchQueries["$and"] = [
-                  {"$or":[
-                    {
-                        "title": createRegex(value)
-                    },
-                    {
-                        "employerId.business_name": createRegex(value)
-                    },
-                    {
-                        "employerId.keywords": createRegex(value)
-                    },
-                  ]}
-                ]
-            };
-
-            if (typeof value === 'string' && value !== '' && key === 'location') {
-                matchQueries["$or"] = [
-                    {
-                        location: createRegex(value)
-                    },
-                  
-                    {
-                        place: createRegex(value)
-                    },
-                    {
-                        "address.pin_code": createRegex(value)
-                    },
-                ]
-            };
-
-            if (typeof value === 'string' && value !== '' && key === 'categories') {
-                matchQueries["categories.label"] = {$in:value.split(",")}
-            }
-            if (typeof value === 'string' && value !== '' && key === 'jobtype') {
-                matchQueries["jobtype"] = {$in:value.split(",")}
-            }
-           // Salary range filter
-           if (key === 'candidate_requirement.salary_from' && value) {
-            console.log("f=salary from",value)
-            matchQueries['candidate_requirement.salary_from']= {$gte: parseInt(value as string)} 
-        }
-        if (key === 'candidate_requirement.salary_to' && value) {
-            matchQueries['candidate_requirement.salary_to']= {$lte: parseInt(value as string) }
-        }
-        if (key === 'candidate_requirement.experience' && value) {
-            matchQueries['candidate_requirement.experience']= {$lte: parseInt(value as string) }
-        }
-    }
-    
-    if (experience_to && experience_from) {
-        matchQueries['candidate_requirement.experience']= {$gte: parseInt(experience_from as string),$lte: parseInt(experience_to as string) }
-    }
+        const {matchQueries}= FilterJob(req)
+        console.log(matchQueries)
     const userId = new Types.ObjectId(res.locals.userId);
         const checkEmployer = await Employer.findOne({ userId });
         if (!checkEmployer) {
@@ -460,7 +395,6 @@ const getEmployerJobs = async (req: Request, res: Response, next: NextFunction) 
             {
                 $match: {
                     employerId: checkEmployer._id,
-                    ...matchQueries
                 }
             },
             {
@@ -477,6 +411,19 @@ const getEmployerJobs = async (req: Request, res: Response, next: NextFunction) 
                     preserveNullAndEmptyArrays: true
                 }
             },
+            // caogories lookup
+            {
+                $lookup: {
+                    from: "jobcategories",
+                    localField: "categories",
+                    foreignField: "_id",
+                    as: "categories"
+                }
+            },
+            {
+                $match: matchQueries
+            },
+            
             {
                 $sort: { createdAt: -1 }, // Sort by `createdAt` in descending order
               },
