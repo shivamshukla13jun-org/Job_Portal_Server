@@ -9,6 +9,8 @@ import Industry from '@/models/master/industry.model';
 **/
 const createIndustry = async (req: Request, res: Response, next: NextFunction) => {
   try {
+     req.body.createdBy = res.locals.userId;
+     req.body.updatedBy = res.locals.userId;
     const industry = await Industry.create(req.body);
 
     if (!industry) {
@@ -74,6 +76,7 @@ const getIndustry = async (req: Request, res: Response, next: NextFunction) => {
 **/
 const updateIndustry = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    req.body.updatedBy = res.locals.userId;
     const industry = await Industry.findByIdAndUpdate(
       req.params.id,
       req.body,

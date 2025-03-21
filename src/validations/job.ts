@@ -8,12 +8,7 @@ const jobSchema = Yup.object().shape({
     title: Yup.string().required('Title is required'),
     location: Yup.string().required('Location is required'),
     place: Yup.string().required('Place is required'),
-    categories: Yup.array().of(
-        Yup.object().shape({
-            value: Yup.string().required('Job Sector value is required'),
-            label: Yup.string().required('Job Sector label is required'),
-        })
-    ).min(1, 'At least One Job Sector is required'),
+    categories: Yup.array().min(1, 'At least One Job Sector is required'),
     opening: Yup.number().required('Opening is required').min(1, 'Opening must be at least 1'),
     // age: Yup.number().required('Age is required'),
     candidate_requirement: Yup.object().shape({
@@ -22,24 +17,11 @@ const jobSchema = Yup.object().shape({
         salary_to: Yup.number().min(Yup.ref('salary_from'), 'Salary to must be greater than or equal to Salary from').label("Salary To"),
         bonus: Yup.boolean().required('Bonus is required'),
         job_info: Yup.string().required('Job info is required'),
-        skills: Yup.array().of(
-            Yup.object().shape({
-                value: Yup.string().required('Skill value is required'),
-                label: Yup.string().required('Skill label is required'),
-            })
-        ).min(1, 'At least one skill is required'),
+        skills: Yup.array().min(1, 'At least one skill is required'),
     }),
-    personal_info: Yup.array().of(
-        Yup.object().shape({
-            info: Yup.string().required('Info is required'),
-            assets: Yup.array().of(
-                Yup.object().shape({
-                    value: Yup.string().required('Skill value is required'),
-                    label: Yup.string().required('Skill label is required'),
-                })
-            ).min(1, 'At least one skill is required'),
-        })
-    ).required('Personal info is required').min(1, 'At least one personal info is required'),
+    degrees: Yup.array().min(1, 'At least one degree is required'),
+    industries: Yup.array().min(1, 'At least one industry is required'),
+
     // timing: Yup.object().shape({
     //     job: Yup.string().required('Job timing is required'),
     //     interview: Yup.string().required('Interview timing is required'),

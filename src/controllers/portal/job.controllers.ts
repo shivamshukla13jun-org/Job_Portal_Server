@@ -97,6 +97,39 @@ const getJobs = async (req: Request, res: Response, next: NextFunction) => {
                 }
             },
             {
+                $lookup: {
+                    from: "degrees",
+                    localField: "degrees",
+                    foreignField: "_id",
+                    as: "degrees"
+                }
+            },
+            {
+                $lookup: {
+                    from: "industries",
+                    localField: "industries",
+                    foreignField: "_id",
+                    as: "industries"
+                }
+            },
+            {
+                $lookup: {
+                    from: "jobcategories",
+                    localField: "categories",
+                    foreignField: "_id",
+                    as: "categories"
+                }
+            },
+            {
+                $lookup: {
+                    from: "skills",
+                    localField: "candidate_requirement.skills",
+                    foreignField: "_id",
+                    as: "candidate_requirement.skills"
+                }
+            },
+            
+            {
                 '$lookup': {
                     'from': 'applications',
                     'localField': 'applications',
@@ -210,6 +243,38 @@ const getJob = async (req: Request, res: Response, next: NextFunction) => {
             {
                 $match: {
                     _id: new Types.ObjectId(id)
+                }
+            },
+            {
+                $lookup: {
+                    from: "degrees",
+                    localField: "degrees",
+                    foreignField: "_id",
+                    as: "degrees"
+                }
+            },
+            {
+                $lookup: {
+                    from: "industries",
+                    localField: "industries",
+                    foreignField: "_id",
+                    as: "industries"
+                }
+            },
+            {
+                $lookup: {
+                    from: "jobcategories",
+                    localField: "categories",
+                    foreignField: "_id",
+                    as: "categories"
+                }
+            },
+            {
+                $lookup: {
+                    from: "skills",
+                    localField: "candidate_requirement.skills",
+                    foreignField: "_id",
+                    as: "candidate_requirement.skills"
                 }
             },
             {

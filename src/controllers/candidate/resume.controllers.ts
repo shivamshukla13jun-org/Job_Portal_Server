@@ -109,7 +109,17 @@ const getResume = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const id = req.params.id;
 
-        const resume = await Application.findById(id).populate('candidate').lean();
+        const resume = await Application.findById(id).populate({
+            path: 'candidate',
+            populate: {
+                path: 'employment',
+                model: 'Employment',
+                populate: {
+                    path: 'categories',
+                    model: 'JobCategory'
+                }
+            }
+        }).lean();
         if (!resume) {
             throw new AppError('Failed to find data', 400);
         }

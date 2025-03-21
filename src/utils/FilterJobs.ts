@@ -1,6 +1,7 @@
 import { Request } from "express";
 import { postedatesCondition } from "./postedadate";
 import { fromStringToJSON } from "@/libs";
+import { Types } from "mongoose";
 
 const FilterJob=(req:Request,matchQueries: Record<string, any> = {})=>{
     const { page: reqPage, limit: reqLimit,createdAt,experience_from,experience_to, ...queries } = req.query;
@@ -50,7 +51,8 @@ const FilterJob=(req:Request,matchQueries: Record<string, any> = {})=>{
         };
 
         if (typeof value === 'string' && value !== '' && key === 'categories') {
-            matchQueries["categories.label"] = {$in:value.split(",")}
+            const categories = value.split(",").map(id => new Types.ObjectId(id));
+            matchQueries["categories._id"] = {$in:categories}
         }
         if (typeof value === 'string' && value !== '' && key === 'jobtype') {
             matchQueries["jobtype"] = {$in:value.split(",")}

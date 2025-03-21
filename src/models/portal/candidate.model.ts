@@ -193,14 +193,8 @@ const candidateSchema = new Schema<ICandidate>({
           
             categories: [
                 {
-                    value: {
-                        type: String,
-                        required: [true, "Job Sector value is required in candidate requirement."]
-                    },
-                    label: {
-                        type: String,
-                        required: [true, "Job Sector label is required in candidate requirement."]
-                    }
+                    type: Schema.Types.ObjectId,
+                    ref: 'JobCategory'
                 }
             ],
             scope: {

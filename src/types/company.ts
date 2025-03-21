@@ -1,4 +1,5 @@
 import { UUID } from "crypto";
+import { Types } from "mongoose";
 
 export type IJobCandidate = {
     experience: string;
@@ -6,7 +7,7 @@ export type IJobCandidate = {
     salary_to: number | null;
     bonus: boolean;
     job_info: string;
-    skills: IJobSelect[];
+    skills: Types.ObjectId[];
 };
 
 export type IJobSelect = {

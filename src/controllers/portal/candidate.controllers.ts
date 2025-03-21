@@ -99,7 +99,7 @@ const getCandidate = async (req: Request, res: Response, next: NextFunction) => 
     try {
         const id = req.params.id;
 
-        const candidate = await Candidate.findOne({ userId: id });
+        const candidate = await Candidate.findOne({ userId: id }).populate("employment.categories")
         if (!candidate) {
             throw new AppError('Failed to find candidate', 400);
         };

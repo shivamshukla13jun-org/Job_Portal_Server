@@ -42,12 +42,7 @@ const candidateSchema = Yup.object().shape({
             position: Yup.string().required('Position is required'),
             department: Yup.string().required('Department is required'),
             from: Yup.date().required('Start date is required'),
-            categories: Yup.array().of(
-                Yup.object().shape({
-                    value: Yup.string().required('Job Sector value is required'),
-                    label: Yup.string().required('Job Sector label is required'),
-                })
-            ).min(1, 'At least Job Sector is required'),
+            categories: Yup.array().min(1, 'At least Job Sector is required'),
             scope: Yup.string().required('Scope to Work is required'),
             to: Yup.date().required('End date is required'),
         })

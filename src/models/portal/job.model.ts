@@ -23,7 +23,7 @@ export interface IJob extends Document {
     opening: number;
     jobtype: string;
     candidate_requirement: IJobCandidate;
-    categories: IJobSelect[];
+    categories: Types.ObjectId[];
     personal_info: IJobPersonal[];
     timing: {
         job: string;
@@ -36,6 +36,9 @@ export interface IJob extends Document {
     updatedBy?: Types.ObjectId;
     isFeatured: boolean;
     deadline: Date;
+    preferredLanguage: IJobSelect[];
+    degrees?: Types.ObjectId[];  // Reference to Degree model
+    industries?: Types.ObjectId[];  // Reference to Industry model
 }
 
 const jobSchema = new Schema<IJob>({
@@ -53,14 +56,8 @@ const jobSchema = new Schema<IJob>({
     },
     categories: [
         {
-            value: {
-                type: String,
-                required: [true, "Job Sector value is required in candidate requirement."]
-            },
-            label: {
-                type: String,
-                required: [true, "Job Sector label is required in candidate requirement."]
-            }
+            type: Schema.Types.ObjectId,
+            ref: 'JobCategory'
         }
     ],
     place: {
@@ -99,32 +96,26 @@ const jobSchema = new Schema<IJob>({
         },
         skills: [
             {
-                value: {
-                    type: String,
-                    required: [true, "Value is required in candidate requirement."]
-                },
-                label: {
-                    type: String,
-                    required: [true, "Label is required in candidate requirement."]
-                }
-            }
+                type: Schema.Types.ObjectId,
+                ref: 'Skill'
+            }       
         ],
     },
     personal_info: [
         {
             info: {
                 type: String,
-                required: [true, "Info is required"]
+                // required: [true, "Info is required"]
             },
             assets: [
                 {
                     value: {
                         type: String,
-                        required: [true, "Value is required in personal information."]
+                        // required: [true, "Value is required in personal information."]
                     },
                     label: {
                         type: String,
-                        required: [true, "Label is required in personal information."]
+                        // required: [true, "Label is required in personal information."]
                     }
                 }
             ]
@@ -161,7 +152,27 @@ const jobSchema = new Schema<IJob>({
     deadline: {
         type: Date,
         default: () => new Date(new Date().setMonth(new Date().getMonth() + 2))
-    }
+    },
+    preferredLanguage: [
+        {
+            value: {
+                type: String,
+                required: [true, "Value is required in personal information."]
+            },
+            label: {
+                type: String,
+                required: [true, "Label is required in personal information."]
+            }
+        }
+    ],
+    degrees: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Degree'
+    }],
+    industries: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Industry'
+    }]
 }, { timestamps: true });
 
 const Job = model<IJob>("Job", jobSchema);

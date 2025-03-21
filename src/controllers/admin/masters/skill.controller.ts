@@ -9,6 +9,8 @@ import Skill from '@/models/master/skill.model';
 **/
 const createSkill = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    req.body.createdBy = res.locals.userId;
+    req.body.updatedBy = res.locals.userId;
     const skill = await Skill.create(req.body);
 
     if (!skill) {
@@ -74,6 +76,7 @@ const getSkill = async (req: Request, res: Response, next: NextFunction) => {
 **/
 const updateSkill = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    req.body.updatedBy = res.locals.userId;
     const skill = await Skill.findByIdAndUpdate(
       req.params.id,
       req.body,

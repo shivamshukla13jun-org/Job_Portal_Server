@@ -6,12 +6,7 @@ import * as Yup from "yup"
 const employerSchema = Yup.object().shape({
     business_name: Yup.string().required('Business name is required'),
     business_gst: Yup.string().required('GST is required'),
-    categories: Yup.array().of(
-        Yup.object().shape({
-            value: Yup.string().required('Job Sector value is required'),
-            label: Yup.string().required('Job Sector label is required'),
-        })
-    ).min(1, 'At least One Job Sector is required'),
+    categories: Yup.array().min(1, 'At least One Job Sector is required'),
     name: Yup.string().required('Full name is required'),
     email: Yup.string().required('Email is required'),
     phone_area: Yup.string().required('Phone area is required'),

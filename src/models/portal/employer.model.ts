@@ -9,7 +9,7 @@ export interface IEmployer extends Document {
     name: string;
     email: string;
     business_gst: string;
-    categories: IJobSelect[];
+    categories: Types.ObjectId[];
     phone_area: string;
     phone: string;
     address: IUserContactAddress;
@@ -55,14 +55,8 @@ const employerSchema = new Schema<IEmployer>({
     },
     categories: [
         {
-            value: {
-                type: String,
-                required: [true, "Job Sector value is required in candidate requirement."]
-            },
-            label: {
-                type: String,
-                required: [true, "Job Sector label is required in candidate requirement."]
-            }
+            type: Schema.Types.ObjectId,
+            ref: 'JobCategory'
         }
     ],
     

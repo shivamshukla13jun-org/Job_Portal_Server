@@ -319,7 +319,7 @@ const getEmployer = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const id = req.params.id;
 
-    const employer = await Employer.findOne({ userId: id });
+    const employer = await Employer.findOne({ userId: id }).populate("categories");
     if (!employer) {
       throw new AppError("Failed to find employer", 400);
     }

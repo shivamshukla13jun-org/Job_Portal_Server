@@ -1,6 +1,6 @@
 import mongoose, { Document, Schema, Types } from 'mongoose';
 
-export interface IIndustry extends Document {
+export interface IJobCategory extends Document {
   label: string;
   description?: string;
   value?: Types.ObjectId;
@@ -9,7 +9,7 @@ export interface IIndustry extends Document {
   updatedBy?: Types.ObjectId;
 }
 
-const industrySchema = new Schema<IIndustry>(
+const industrySchema = new Schema<IJobCategory>(
   {
     label: { 
       type: String,
@@ -54,13 +54,13 @@ const industrySchema = new Schema<IIndustry>(
 );
 
 // Ensure value is set before saving
-industrySchema.pre('save', function(this: IIndustry & { _id: Types.ObjectId }, next) {
+industrySchema.pre('save', function(this: IJobCategory & { _id: Types.ObjectId }, next) {
   if (!this.value) {
     this.value = this._id;
   }
   next();
 });
 
-const Industry = mongoose.model<IIndustry>('Industry', industrySchema);
+const JobCategory = mongoose.model<IJobCategory>('JobCategory', industrySchema);
 
-export default Industry;
+export default JobCategory;

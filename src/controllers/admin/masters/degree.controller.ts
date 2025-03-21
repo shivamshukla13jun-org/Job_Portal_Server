@@ -9,6 +9,8 @@ import Degree from '@/models/master/degree.model';
 **/
 const createDegree = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    req.body.createdBy = res.locals.userId;
+    req.body.updatedBy = res.locals.userId;
     const degree = await Degree.create(req.body);
 
     if (!degree) {
@@ -74,6 +76,7 @@ const getDegree = async (req: Request, res: Response, next: NextFunction) => {
 **/
 const updateDegree = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    req.body.updatedBy = res.locals.userId;
     const degree = await Degree.findByIdAndUpdate(
       req.params.id,
       req.body,

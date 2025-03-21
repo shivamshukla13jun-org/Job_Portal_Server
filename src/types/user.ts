@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 import { IFile } from "./file";
 
 export type IUserContactAddress = {
@@ -28,6 +29,8 @@ export type IUserEmployment = {
     position: string;
     department: string;
     from: Date;
+    categories: Types.ObjectId[];
+    scope: string;
     to: Date;
     certificate?: IFile;
 };

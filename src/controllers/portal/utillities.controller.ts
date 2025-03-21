@@ -89,15 +89,27 @@ const Options = async (req: Request, res: Response, next: NextFunction) => {
     } else if (type === "categories.label") {
       // type="categories.label"
       pipeline.push(
-        { $unwind: "$categories" },
         {
           $group: {
-            _id: `$${type}`,
+            _id: "$categories",
             total: { $sum: 1 },
           },
         },
-        { $project: { _id: 0, value: "$_id", total: 1 } },
-        { $sort: { value: 1 } }
+        {
+          $lookup: {
+            from: "jobcategories",
+            localField: "_id",
+            foreignField: "_id",
+            as: "category",
+          },
+        },
+        {
+          $unwind: { path: "$category", preserveNullAndEmptyArrays: true },
+        },
+        {
+          $project: { value: "$category.value",label:"$category.label", total: 1 },
+        },
+        { $sort: { label: 1 } },
       );
     } else if (type === "salary_experience") {
       // Add grouping stages for max and min salary and experience
@@ -215,12 +227,25 @@ const ApplicationOptions = async (
         { $unwind: "$candidate.employment.categories" },
         {
           $group: {
-            _id: `$candidate.employment.categories.label`,
+            _id: `$candidate.employment.categories`,
             total: { $sum: 1 },
           },
         },
-        { $project: { _id: 0, value: "$_id", total: 1 } },
-        { $sort: { value: 1 } }
+        {
+          $lookup: {
+            from: "jobcategories",
+            localField: "_id",
+            foreignField: "_id",
+            as: "category",
+          },
+        },
+        {
+          $unwind: { path: "$category", preserveNullAndEmptyArrays: true },
+        },
+        {
+          $project: { value: "$category.value",label:"$category.label", total: 1 },
+        },
+        { $sort: { label: 1 } },
       );
     } else if (type === "salary_experience") {
       // Add grouping stages for max and min salary and experience
