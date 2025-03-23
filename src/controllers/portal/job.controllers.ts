@@ -291,6 +291,38 @@ const getJob = async (req: Request, res: Response, next: NextFunction) => {
                     preserveNullAndEmptyArrays: true
                 }
             },
+            // location lookup
+            {
+                $lookup: {
+                    from: "states",
+                    localField: "location",
+                    foreignField: "_id",
+                    as: "location"
+                }
+            },
+            // location unwind
+            {
+                $unwind: {
+                    path: "$location",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            // place lookup
+            {
+                $lookup: {
+                    from: "cities",
+                    localField: "place",
+                    foreignField: "_id",
+                    as: "place"
+                }
+            },
+            // place unwind
+            {
+                $unwind: {
+                    path: "$place",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
             {
                 '$lookup': {
                     'from': 'applications',
@@ -418,6 +450,34 @@ const getEmployerJobs = async (req: Request, res: Response, next: NextFunction) 
                     localField: "categories",
                     foreignField: "_id",
                     as: "categories"
+                }
+            },
+            {
+                $lookup: {
+                    from: "states",
+                    localField: "location",
+                    foreignField: "_id",
+                    as: "location"
+                }
+            },
+            {
+                $lookup: {
+                    from: "cities",
+                    localField: "place",
+                    foreignField: "_id",
+                    as: "place"
+                }
+            },
+            {
+                $unwind: {
+                    path: "$place",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $unwind: {
+                    path: "$location",
+                    preserveNullAndEmptyArrays: true
                 }
             },
             {

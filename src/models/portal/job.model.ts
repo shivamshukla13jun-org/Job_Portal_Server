@@ -18,8 +18,8 @@ export interface IJob extends Document {
     employerId: Types.ObjectId;
     subscription: Types.ObjectId;
     title: string;
-    location: string;
-    place: string;
+    location: Types.ObjectId;
+    place: Types.ObjectId;
     opening: number;
     jobtype: string;
     candidate_requirement: IJobCandidate;
@@ -51,8 +51,14 @@ const jobSchema = new Schema<IJob>({
         required: [true, "Title is required"]
     },
     location: {
-        type: String,
-        required: [true, "Location is required"]
+        type: Schema.Types.ObjectId,
+        ref: 'State',
+        required: [true, "State is required"]
+    },
+    place: {
+        type: Schema.Types.ObjectId,
+        ref: 'City',
+        required: [true, "City is required"]
     },
     categories: [
         {
@@ -60,10 +66,6 @@ const jobSchema = new Schema<IJob>({
             ref: 'JobCategory'
         }
     ],
-    place: {
-        type: String,
-        required: [true, "Place is required"]
-    },
     opening: {
         type: Number,
         required: [true, "Opening is required"]

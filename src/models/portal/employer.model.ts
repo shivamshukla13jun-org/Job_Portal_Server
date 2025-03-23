@@ -78,11 +78,13 @@ const employerSchema = new Schema<IEmployer>({
             required: [true, 'Address Lane 2 is required']
         },
         city: {
-            type: String,
+            type: Schema.Types.ObjectId,
+            ref: 'City',
             required: [true, 'Address City is required']
         },
         state: {
-            type: String,
+            type: Schema.Types.ObjectId,
+            ref: 'State',
             required: [true, 'Address State is required']
         },
         pin_code: {
@@ -90,7 +92,8 @@ const employerSchema = new Schema<IEmployer>({
             required: [true, 'Address Pin code is required']
         },
         country: {
-            type: String,
+            type: Schema.Types.ObjectId,
+            ref: 'Country',
             required: [true, 'Country is required']
         },
     },
