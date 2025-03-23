@@ -86,7 +86,9 @@ const FilterApplications=(req:Request)=>{
     matchQueries["job.title"] = createRegex(keyword)
   }
   if (category) {
-    matchQueries["candidate.employment"] = { $elemMatch: { categories: { $elemMatch: { value: category } } } };
+    matchQueries["candidate.employment"] = {
+      $elemMatch: { categories: { $in: [new Types.ObjectId(category)] } }
+    };
   }
   if (experience_from || experience_to) {
     let experience:number[]=[]

@@ -575,31 +575,28 @@ const CandidatesForEmployer = async (
       };
     }
     if (keyword) {
-      matchConditions["jobDetails.title"] = {
-        $regex: keyword.trim(),
-        $options: "i",
-      };
+      matchConditions["$or"] = [
+        { "jobDetails.title": { $regex: keyword.trim(), $options: "i" } },
+        { "candidate.name": { $regex: keyword.trim(), $options: "i" } },
+        { "candidate.designation": { $regex: keyword.trim(), $options: "i" } }
+      ];
     }
     if (category) {
       matchConditions["candidate.employment"] = {
-        $elemMatch: {
-          categories: { $in: [category] },
-        },
+        $elemMatch: { categories: { $in: [new Types.ObjectId(category)] } }
       };
     }
+    
+    
 
     if (experience_from || experience_to) {
-      let experience: number[] = [];
-
+      matchConditions["candidate.experience"] = {};
       if (experience_from) {
-        experience.push(+experience_from);
+        matchConditions["candidate.experience"]["$gte"] = +experience_from;
       }
       if (experience_to) {
-        experience.push(+experience_to);
+        matchConditions["candidate.experience"]["$lte"] = +experience_to;
       }
-      matchConditions["candidate.experience"] = {
-        $in: experience,
-      };
     }
 
     const [results] = await Application.aggregate([
@@ -630,7 +627,6 @@ const CandidatesForEmployer = async (
       {
         $unwind: "$candidate",
       },
-
       {
         $match: matchConditions,
       },
@@ -836,8 +832,13 @@ const AllCandidates = async (
     if (keyword) {
       let trimword=keyword.trim()
 
-      matchConditions["candidate.designation"] = createRegex(trimword)
+      matchConditions["$or"] = [
+        { "jobDetails.title": { $regex: trimword, $options: "i" } },
+        { "candidate.name": { $regex: trimword, $options: "i" } },
+        { "candidate.designation": { $regex: trimword, $options: "i" } }
+      ];
     }
+
     if (gender) {
       matchConditions["candidate.gender"] = gender
     }
@@ -849,22 +850,31 @@ const AllCandidates = async (
       ]
     }
     if (category) {
-      matchConditions["candidate.employment"] = {
-        $elemMatch: {
-          categories: { $elemMatch: { label:createRegex(category) } },
+      matchConditions["$or"] = [
+        {
+          "candidate.employment": {
+            $elemMatch: {
+              categories: { $elemMatch: { label:createRegex(category) } },
+            },
+          },
         },
-      };
+        {
+          "candidate.categories": {
+            $elemMatch: {
+              value: category
+            }
+          }
+        }
+      ];
     }
 
     if (experience_from || experience_to) {
       matchConditions["candidate.experience"]={}
       if (experience_from) {
-        matchConditions["candidate.experience"] = { $gte: +experience_from };
+        matchConditions["candidate.experience"]["$gte"] = +experience_from;
       }
       if (experience_to) {
-        matchConditions["candidate.experience"] = {
-          $lte: +experience_to,
-        };
+        matchConditions["candidate.experience"]["$lte"] = +experience_to;
       }
     }
 

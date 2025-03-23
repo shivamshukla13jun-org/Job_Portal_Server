@@ -13,7 +13,6 @@ export interface ICandidate extends Document {
     expectedsalary:number;
     gender: 'Male' | 'Female' | 'Other' | 'Others';
     dob: Date;
-    categories: IJobSelect[];
     scope: string;
     marital_status: 'Married' | 'Unmarried';
     profile: IFile;

@@ -208,7 +208,7 @@ const ApplicationOptions = async (
       },
     ];
     // Handle specific types
-    if (type === "personal_info.info.degree") {
+    if (type === "degrees") {
       pipeline.push(
         { $unwind: "$candidate.education" },
         {
@@ -355,21 +355,34 @@ const allcandidatesOptions = async (
         { $project: { _id: 0, value: "$_id", total: 1 } },
         { $sort: { value: 1 } }
       );
-    } else if (type === "categories.label") {
+    }  else if (type === "categories.label") {
       // type="categories.label"
       pipeline.push(
         { $unwind: "$candidate.employment" },
         { $unwind: "$candidate.employment.categories" },
         {
           $group: {
-            _id: `$candidate.employment.categories.label`,
+            _id: `$candidate.employment.categories`,
             total: { $sum: 1 },
           },
         },
-        { $project: { _id: 0, value: "$_id", total: 1 } },
-        { $sort: { value: 1 } }
+        {
+          $lookup: {
+            from: "jobcategories",
+            localField: "_id",
+            foreignField: "_id",
+            as: "category",
+          },
+        },
+        {
+          $unwind: { path: "$category", preserveNullAndEmptyArrays: true },
+        },
+        {
+          $project: { value: "$category.value",label:"$category.label",_id:0, total: 1 },
+        },
+        { $sort: { total: 1 } },
       );
-    } else if (type === "salary_experience") {
+    }  else if (type === "salary_experience") {
       // Add grouping stages for max and min salary and experience
       pipeline.push(
         {
