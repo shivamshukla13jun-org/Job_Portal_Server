@@ -4,10 +4,10 @@ import { IFile } from "./file";
 export type IUserContactAddress = {
     lane1: string;
     lane2: string;
-    city: string;
-    state: string;
+    city: Types.ObjectId;
+    state: Types.ObjectId;
     pin_code: number;
-    country: string;
+    country: Types.ObjectId;
 };
 
 export type IUserContact = {

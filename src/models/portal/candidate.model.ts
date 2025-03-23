@@ -110,11 +110,13 @@ const candidateSchema = new Schema<ICandidate>({
                 required: [true, 'Lane 2 is required']
             },
             city: {
-                type: String,
+                type: Types.ObjectId,
+                ref:'City',
                 required: [true, 'City is required']
             },
             state: {
-                type: String,
+                type: Types.ObjectId,
+                ref:'State',
                 required: [true, 'State is required']
             },
             pin_code: {
@@ -123,6 +125,7 @@ const candidateSchema = new Schema<ICandidate>({
             },
             country: {
                 type: String,
+                ref:'Country',
                 required: [true, 'Country is required']
             },
         },
@@ -136,11 +139,13 @@ const candidateSchema = new Schema<ICandidate>({
                 default: null,
             },
             city: {
-                type: String,
+                type: Types.ObjectId,
+                ref:'City',
                 default: null,
             },
             state: {
-                type: String,
+                type: Types.ObjectId,
+                ref:'State',
                 default: null,
             },
             pin_code: {
@@ -148,8 +153,9 @@ const candidateSchema = new Schema<ICandidate>({
                 default: null,
             },
             country: {
-                type: String,
+                type: Types.ObjectId,
                 default: null,
+                ref:'Country'
             },
         },
     },
