@@ -38,11 +38,11 @@ const FilterJob=(req:Request,matchQueries: Record<string, any> = {})=>{
         if (typeof value === 'string' && value !== '' && key === 'location') {
             matchQueries["$or"] = [
                 {
-                    location: createRegex(value)
+                    "location.name": createRegex(value)
                 },
               
                 {
-                    place: createRegex(value)
+                    "place.name": createRegex(value)
                 },
                 {
                     "address.pin_code": createRegex(value)

@@ -122,6 +122,34 @@ const getJobs = async (req: Request, res: Response, next: NextFunction) => {
             },
             {
                 $lookup: {
+                    from: "states",
+                    localField: "location",
+                    foreignField: "_id",
+                    as: "location"
+                }
+            },
+            {
+                $lookup: {
+                    from: "cities",
+                    localField: "place",
+                    foreignField: "_id",
+                    as: "place"
+                }
+            },
+            {
+                $unwind: {
+                    path: "$place",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $unwind: {
+                    path: "$location",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $lookup: {
                     from: "skills",
                     localField: "candidate_requirement.skills",
                     foreignField: "_id",
