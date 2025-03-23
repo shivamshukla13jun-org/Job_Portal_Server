@@ -583,7 +583,7 @@ const CandidatesForEmployer = async (
     if (category) {
       matchConditions["candidate.employment"] = {
         $elemMatch: {
-          categories: { $elemMatch: { value: category } },
+          categories: { $in: [category] },
         },
       };
     }

@@ -239,13 +239,13 @@ const ApplicationOptions = async (
             as: "category",
           },
         },
-        // {
-        //   $unwind: { path: "$category", preserveNullAndEmptyArrays: true },
-        // },
-        // {
-        //   $project: { value: "$category.value",label:"$category.label",_id:0, total: 1 },
-        // },
-        // { $sort: { label: 1 } },
+        {
+          $unwind: { path: "$category", preserveNullAndEmptyArrays: true },
+        },
+        {
+          $project: { value: "$category.value",label:"$category.label",_id:0, total: 1 },
+        },
+        { $sort: { total: 1 } },
       );
     } else if (type === "salary_experience") {
       // Add grouping stages for max and min salary and experience
