@@ -3,21 +3,44 @@ import Candidate from "@/models/portal/candidate.model";
 import Employer from "@/models/portal/employer.model";
 import Job from "@/models/portal/job.model";
 import SubEmployer from "@/models/portal/SubEmployer.model";
+import { Types } from "mongoose";
 
 export class OptionsQuery {
   static async employer() {
     const today = new Date();
-    const summary:Record<string,any>={}
+    const summary: Record<string, any> = {};
     const [options] = await Employer.aggregate([
       {
         $facet: {
           locations: [
             {
+              $lookup: {
+                from: "cities",
+                localField: "address.city",
+                foreignField: "_id",
+                as: "cityInfo",
+              },
+            },
+            {
+              $lookup: {
+                from: "states",
+                localField: "address.state",
+                foreignField: "_id",
+                as: "stateInfo",
+              },
+            },
+            {
+              $unwind: "$cityInfo",
+            },
+            {
+              $unwind: "$stateInfo",
+            },
+            {
               $group: {
                 _id: "$address.city",
                 label: {
                   $first: {
-                    $concat: ["$address.city", ", ", "$address.state"],
+                    $concat: ["$cityInfo.name", ", ", "$stateInfo.name"],
                   },
                 },
                 value: { $first: "$address.city" },
@@ -33,16 +56,27 @@ export class OptionsQuery {
               },
             },
             {
+              $lookup: {
+                from: "jobcategories",
+                localField: "categories",
+                foreignField: "_id",
+                as: "categoryInfo",
+              },
+            },
+            {
+              $unwind: "$categoryInfo",
+            },
+            {
               $group: {
                 _id: "$categories.value",
-                label: { $first: "$categories.label" },
+                label: { $first: "$categoryInfo.label" },
                 value: { $first: "$categories.value" },
               },
             },
             { $match: { _id: { $ne: null } } },
           ],
-        }
-      }
+        },
+      },
     ]);
     const [summarydata] = await Employer.aggregate([
       {
@@ -53,36 +87,36 @@ export class OptionsQuery {
           ],
           inactive: [
             {
-              $lookup:{
-                from:"users",
-                localField:"userId",
-                foreignField:"_id",
-                as:"user"
-              }
+              $lookup: {
+                from: "users",
+                localField: "userId",
+                foreignField: "_id",
+                as: "user",
+              },
             },
             {
               $unwind: { path: "$user", preserveNullAndEmptyArrays: true },
             },
             {
-              $match:{"user.isActive":false}
+              $match: { "user.isActive": false },
             },
             { $count: "total" },
             { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } },
           ],
           active: [
             {
-              $lookup:{
-                from:"users",
-                localField:"userId",
-                foreignField:"_id",
-                as:"user"
-              }
+              $lookup: {
+                from: "users",
+                localField: "userId",
+                foreignField: "_id",
+                as: "user",
+              },
             },
             {
               $unwind: { path: "$user", preserveNullAndEmptyArrays: true },
             },
             {
-              $match:{"user.isActive":true}
+              $match: { "user.isActive": true },
             },
             { $count: "total" },
             { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } },
@@ -104,7 +138,7 @@ export class OptionsQuery {
         summary[job] = summarydata[job] ? summarydata[job]["total"] : 0;
       }
     }
-    return {options:options,summary:summary};
+    return { options: options, summary: summary };
   }
 
   static async candidate() {
@@ -114,11 +148,33 @@ export class OptionsQuery {
         $facet: {
           locations: [
             {
+              $lookup: {
+                from: "cities",
+                localField: "contact.current_address.city",
+                foreignField: "_id",
+                as: "cityInfo",
+              },
+            },
+            {
+              $lookup: {
+                from: "states",
+                localField: "contact.current_address.state",
+                foreignField: "_id",
+                as: "stateInfo",
+              },
+            },
+            {
+              $unwind: "$cityInfo",
+            },
+            {
+              $unwind: "$stateInfo",
+            },
+            {
               $group: {
                 _id: "$contact.current_address.city",
                 label: {
                   $first: {
-                    $concat: ["$contact.current_address.city", ", ", "$contact.current_address.state"],
+                    $concat: ["$cityInfo.name", ", ", "$stateInfo.name"],
                   },
                 },
                 value: { $first: "$contact.current_address.city" },
@@ -140,16 +196,27 @@ export class OptionsQuery {
               },
             },
             {
+              $lookup: {
+                from: "jobcategories",
+                localField: "employment.categories.value",
+                foreignField: "_id",
+                as: "categoryInfo",
+              },
+            },
+            {
+              $unwind: "$categoryInfo",
+            },
+            {
               $group: {
                 _id: "$employment.categories.value",
-                label: { $first: "$employment.categories.label" },
+                label: { $first: "$categoryInfo.label" },
                 value: { $first: "$employment.categories.value" },
               },
             },
             { $match: { _id: { $ne: null } } },
           ],
-        }
-      }
+        },
+      },
     ]);
     const [summarydata] = await Candidate.aggregate([
       {
@@ -160,36 +227,36 @@ export class OptionsQuery {
           ],
           inactive: [
             {
-              $lookup:{
-                from:"users",
-                localField:"userId",
-                foreignField:"_id",
-                as:"user"
-              }
+              $lookup: {
+                from: "users",
+                localField: "userId",
+                foreignField: "_id",
+                as: "user",
+              },
             },
             {
               $unwind: { path: "$user", preserveNullAndEmptyArrays: true },
             },
             {
-              $match:{"user.isActive":false}
+              $match: { "user.isActive": false },
             },
             { $count: "total" },
             { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } },
           ],
           active: [
             {
-              $lookup:{
-                from:"users",
-                localField:"userId",
-                foreignField:"_id",
-                as:"user"
-              }
+              $lookup: {
+                from: "users",
+                localField: "userId",
+                foreignField: "_id",
+                as: "user",
+              },
             },
             {
               $unwind: { path: "$user", preserveNullAndEmptyArrays: true },
             },
             {
-              $match:{"user.isActive":true}
+              $match: { "user.isActive": true },
             },
             { $count: "total" },
             { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } },
@@ -211,7 +278,7 @@ export class OptionsQuery {
         summary[candidate] = summarydata[candidate] ? summarydata[candidate]["total"] : 0;
       }
     }
-    return {options:options,summary:summary};
+    return { options: options, summary: summary };
   }
 
   static async application() {
@@ -229,8 +296,8 @@ export class OptionsQuery {
             },
             { $match: { _id: { $ne: null } } },
           ],
-        }
-      }
+        },
+      },
     ]);
     const [summarydata] = await Application.aggregate([
       {
@@ -241,21 +308,21 @@ export class OptionsQuery {
           ],
           pending: [
             {
-              $match: { status: "pending" }
+              $match: { status: "pending" },
             },
             { $count: "total" },
             { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } },
           ],
           shortlisted: [
             {
-              $match: { status: "shortlisted" }
+              $match: { status: "shortlisted" },
             },
             { $count: "total" },
             { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } },
           ],
           rejected: [
             {
-              $match: { status: "rejected" }
+              $match: { status: "rejected" },
             },
             { $count: "total" },
             { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } },
@@ -280,7 +347,7 @@ export class OptionsQuery {
         summary[application] = summarydata[application] ? summarydata[application]["total"] : 0;
       }
     }
-    return {options:options,summary:summary};
+    return { options: options, summary: summary };
   }
 
   static async subEmployer() {
@@ -293,15 +360,15 @@ export class OptionsQuery {
               $group: {
                 _id: "$department",
                 label: {
-                  $first: "$department"
+                  $first: "$department",
                 },
                 value: { $first: "$department" },
               },
             },
             { $match: { _id: { $ne: null } } },
           ],
-        }
-      }
+        },
+      },
     ]);
     const [summarydata] = await SubEmployer.aggregate([
       {
@@ -312,36 +379,36 @@ export class OptionsQuery {
           ],
           inactive: [
             {
-              $lookup:{
-                from:"users",
-                localField:"userId",
-                foreignField:"_id",
-                as:"user"
-              }
+              $lookup: {
+                from: "users",
+                localField: "userId",
+                foreignField: "_id",
+                as: "user",
+              },
             },
             {
               $unwind: { path: "$user", preserveNullAndEmptyArrays: true },
             },
             {
-              $match:{"user.isActive":false}
+              $match: { "user.isActive": false },
             },
             { $count: "total" },
             { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } },
           ],
           active: [
             {
-              $lookup:{
-                from:"users",
-                localField:"userId",
-                foreignField:"_id",
-                as:"user"
-              }
+              $lookup: {
+                from: "users",
+                localField: "userId",
+                foreignField: "_id",
+                as: "user",
+              },
             },
             {
               $unwind: { path: "$user", preserveNullAndEmptyArrays: true },
             },
             {
-              $match:{"user.isActive":true}
+              $match: { "user.isActive": true },
             },
             { $count: "total" },
             { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } },
@@ -363,7 +430,7 @@ export class OptionsQuery {
         summary[subEmployer] = summarydata[subEmployer] ? summarydata[subEmployer]["total"] : 0;
       }
     }
-    return {options:options,summary:summary};
+    return { options: options, summary: summary };
   }
 
   static async job() {
@@ -373,11 +440,33 @@ export class OptionsQuery {
         $facet: {
           locations: [
             {
+              $lookup: {
+                from: "cities",
+                localField: "place",
+                foreignField: "_id",
+                as: "cityInfo",
+              },
+            },
+            {
+              $lookup: {
+                from: "states",
+                localField: "location",
+                foreignField: "_id",
+                as: "stateInfo",
+              },
+            },
+            {
+              $unwind: "$cityInfo",
+            },
+            {
+              $unwind: "$stateInfo",
+            },
+            {
               $group: {
                 _id: "$place",
                 label: {
                   $first: {
-                    $concat: ["$place", ", ", "$location"],
+                    $concat: ["$cityInfo.name", ", ", "$stateInfo.name"],
                   },
                 },
                 value: { $first: "$place" },
@@ -393,16 +482,27 @@ export class OptionsQuery {
               },
             },
             {
+              $lookup: {
+                from: "jobcategories",
+                localField: "categories",
+                foreignField: "_id",
+                as: "categoryInfo",
+              },
+            },
+            {
+              $unwind: "$categoryInfo",
+            },
+            {
               $group: {
                 _id: "$categories.value",
-                label: { $first: "$categories.label" },
+                label: { $first: "$categoryInfo.label" },
                 value: { $first: "$categories.value" },
               },
             },
             { $match: { _id: { $ne: null } } },
           ],
-        }
-      }
+        },
+      },
     ]);
     const [summarydata] = await Job.aggregate([
       {
@@ -413,14 +513,14 @@ export class OptionsQuery {
           ],
           inactive: [
             {
-              $match: { isActive: false }
+              $match: { isActive: false },
             },
             { $count: "total" },
             { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } },
           ],
           active: [
             {
-              $match: { isActive: true }
+              $match: { isActive: true },
             },
             { $count: "total" },
             { $project: { _id: 0, total: { $ifNull: ["$total", 0] } } },
@@ -466,6 +566,6 @@ export class OptionsQuery {
         summary[job] = summarydata[job] ? summarydata[job]["total"] : 0;
       }
     }
-    return {options:options,summary:summary};
+    return { options: options, summary: summary };
   }
 }
