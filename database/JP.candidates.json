@@ -1,0 +1,2443 @@
+[{
+  "_id": {
+    "$oid": "67061c969c6a7a8808f29ca5"
+  },
+  "userId": {
+    "$oid": "66eaa249a1776b44ea3f1dbb"
+  },
+  "name": "Mrs. Pradnya Ashok Jagdale",
+  "email": "support@technofra.com",
+  "gender": "Female",
+  "dob": {
+    "$date": "2000-01-26T06:30:00.000Z"
+  },
+  "marital_status": "Unmarried",
+  "cv": {
+    "fieldname": "upload_cv",
+    "originalname": "resume-demo.pdf",
+    "encoding": "7bit",
+    "mimetype": "application/pdf",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/candidate",
+    "filename": "upload_cv-1735365145594-439545036.pdf",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/candidate/upload_cv-1735365145594-439545036.pdf",
+    "size": 739373
+  },
+  "contact": {
+    "current_address": {
+      "country": {
+        "$oid": "67d7b0142093d617976dcaaa"
+      },
+      "pin_code": 400067,
+      "state": {
+        "$oid": "67d571b18e4cf5bc7f14d29a"
+      },
+      "city": {
+        "$oid": "67d571ce8e4cf5bc7f14d2a9"
+      },
+      "lane2": "police chowky",
+      "lane1": "Airoli"
+    },
+    "permanent_address": {
+      "country": "67d7b0142093d617976dcaaa",
+      "pin_code": 400067,
+      "state": {
+        "$oid": "67d571b18e4cf5bc7f14d29a"
+      },
+      "city": {
+        "$oid": "67d571ce8e4cf5bc7f14d2a9"
+      },
+      "lane2": "police chowky",
+      "lane1": "Airoli"
+    },
+    "phone": "8080721003",
+    "email": "support@technofra.com"
+  },
+  "education": [
+    {
+      "name": "Mumbai University",
+      "to": {
+        "$date": "2021-05-07T06:30:00.000Z"
+      },
+      "qualification": "Master of Pharmacy (M.Pharm)",
+      "_id": {
+        "$oid": "670621ef9c6a7a8808f2a7a5"
+      }
+    },
+    {
+      "name": "G. V. Khade Vidhyalaya ",
+      "to": {
+        "$date": "2018-06-04T06:30:00.000Z"
+      },
+      "qualification": "HSC",
+      "_id": {
+        "$oid": "673c63e5efc14268aef33127"
+      }
+    }
+  ],
+  "registration_certificate": {
+    "fieldname": "registration_certificate",
+    "originalname": "a1.jpg",
+    "encoding": "7bit",
+    "mimetype": "image/jpeg",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/uploads/candidate",
+    "filename": "registration_certificate-1728455150993-452664119.jpg",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/uploads/candidate/registration_certificate-1728455150993-452664119.jpg",
+    "size": 392145
+  },
+  "employment": [
+    {
+      "name": "Technofra",
+      "position": "Web developer",
+      "department": "IT",
+      "from": {
+        "$date": "2025-03-10T06:30:00.000Z"
+      },
+      "categories": [
+        {
+          "$oid": "67d7284314cd4856d5be13c6"
+        }
+      ],
+      "scope": "testing",
+      "to": {
+        "$date": "2025-12-10T06:30:00.000Z"
+      },
+      "_id": {
+        "$oid": "67d7bcbc256718e1c14040b6"
+      }
+    }
+  ],
+  "references": [],
+  "english_language": {
+    "test_score": {
+      "overall": 100,
+      "speaking": 5,
+      "writing": 45,
+      "reading": 30,
+      "listening": 20
+    },
+    "score_card": {
+      "fieldname": "score_card",
+      "originalname": "a1.jpg",
+      "encoding": "7bit",
+      "mimetype": "image/jpeg",
+      "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/uploads/candidate",
+      "filename": "score_card-1728455150996-832261671.jpg",
+      "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/uploads/candidate/score_card-1728455150996-832261671.jpg",
+      "size": 392145
+    },
+    "recent_test": {
+      "$date": "2024-10-11T06:30:00.000Z"
+    },
+    "certification_attempted": "IELTS"
+  },
+  "hear_about_us": [
+    "EMail Campaign / Newsletter",
+    " Friends & Family",
+    " SMS Promotions",
+    " Facebook",
+    " Other"
+  ],
+  "public_resume": false,
+  "companies_resume_visible": [],
+  "createdAt": {
+    "$date": "2024-10-09T06:03:02.663Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-23T12:54:21.283Z"
+  },
+  "__v": 0,
+  "profile": {
+    "fieldname": "profile",
+    "originalname": "gl.jpg",
+    "encoding": "7bit",
+    "mimetype": "image/jpeg",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/candidate",
+    "filename": "profile-1737530611435-76017264.jpg",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/candidate/profile-1737530611435-76017264.jpg",
+    "size": 295822
+  },
+  "isresume": true,
+  "coverletter": "Pradnya Ashok Jagdale\nAiroli, Maharashtra\nEmail: pradnyajagdale96k@gmail.com | Phone: 7558542831\n\n06 Nov 2024\n\nGopal Giri\nTechnofra\nOffice No. 501, 5th Floor, Ghanshyam Enclave,\nNext To Laljipada Police Station, New Link Road ,\nKandivali (West), Mumbai - 400067. Maharashtra - India\n \n\nDear Gopal Sir,\n\nI am excited to apply for the Frontend Developer role at Technofra. With a BSc in Information Technology from S.B. College, a Python web development certification from IT Vedant, and my current role as a frontend developer at Technofra, I bring a well-rounded skill set and a solid understanding of both frontend and backend technologies.\n\nIn my position at Technofra, I have honed my frontend development skills using HTML, CSS, JavaScript, and Bootstrap to build responsive, user-centric applications. Additionally, my experience with backend technologies like Python, SQL, and Django equips me with the ability to work across the full stack, allowing for seamless integration of user interfaces with backend logic. This versatility has enabled me to contribute to dynamic projects and collaborate effectively within cross-functional teams.\n\nI am drawn to [Company Name] due to [mention a specific aspect of the company’s work, culture, or goals that resonates with you]. I am particularly excited about the opportunity to contribute to [mention any specific projects or initiatives, if known] and am confident that my experience and commitment to excellence will add value to your team.\n\nThank you for considering my application. I look forward to the opportunity to discuss how my background and skills align with the needs of  Technofra . Please feel free to contact me at your convenience to arrange a conversation.\n\nWarm regards,\nPradnya Ashok Jagdale",
+  "designation": "Web Developer",
+  "achievement": [
+    {
+      "year": "2023",
+      "description": "IMB COMPANY PYTHON WEB DEVELOPMENT"
+    }
+  ],
+  "experience": 1,
+  "currentsalary": 17000,
+  "expectedsalary": 50000,
+  "current_company": [
+    {
+      "$oid": "67879cb21b18bd5c7d5c6e42"
+    },
+    {
+      "$oid": "67076129c1a3901ad82d42a2"
+    },
+    {
+      "$oid": "67727b3e0fc5c2bd19daeccc"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "673de4ccd382c8243eab92d3"
+  },
+  "userId": {
+    "$oid": "673de368efc14268aef33652"
+  },
+  "name": "Mrs. Mayuri Meghnath Kshirsagar",
+  "email": "kshirsagarmayuri1996@gmail.com",
+  "gender": "Female",
+  "dob": {
+    "$date": "1976-11-08T06:30:00.000Z"
+  },
+  "marital_status": "Unmarried",
+  "profile": {
+    "fieldname": "profile",
+    "originalname": "5-tips-for-taking-a-really-good-author-photo.1.jpg",
+    "encoding": "7bit",
+    "mimetype": "image/jpeg",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/uploads/candidate",
+    "filename": "profile-1732109516294-745758764.jpg",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/uploads/candidate/profile-1732109516294-745758764.jpg",
+    "size": 83241
+  },
+  "cv": {
+    "fieldname": "upload_cv",
+    "originalname": "473522c2-909c-49f1-96b9-3e23ae7d0795.pdf",
+    "encoding": "7bit",
+    "mimetype": "application/pdf",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/uploads/candidate",
+    "filename": "upload_cv-1732109516294-396204893.pdf",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/uploads/candidate/upload_cv-1732109516294-396204893.pdf",
+    "size": 11362
+  },
+  "designation": "Social Marketing",
+  "contact": {
+    "email": "kshirsagarmayuri1996@gmail.com",
+    "phone": "9821161720",
+    "permanent_address": {
+      "lane1": "101, Nalasopara",
+      "lane2": "Nalasopara",
+      "city": "Mumbai",
+      "state": "Maharashtra",
+      "pin_code": 400067,
+      "country": "India"
+    },
+    "current_address": {
+      "lane1": "1, 101, Nalasopara",
+      "lane2": "Nalasopara",
+      "city": "Mumbai",
+      "state": "Maharashtra",
+      "pin_code": 400067,
+      "country": "India"
+    }
+  },
+  "education": [
+    {
+      "name": "Mumbai univesity",
+      "to": {
+        "$date": "2024-11-20T13:26:44.669Z"
+      },
+      "qualification": "B. Com",
+      "_id": {
+        "$oid": "673de4ccd382c8243eab92d4"
+      }
+    }
+  ],
+  "employment": [
+    {
+      "name": "Mayuri",
+      "position": "Social Media",
+      "department": "IT",
+      "from": {
+        "$date": "2024-11-15T06:30:00.000Z"
+      },
+      "categories": [
+        {
+          "$oid": "67d7284314cd4856d5be13c6"
+        }
+      ],
+      "scope": "INFORMATION TECHNOLOGY",
+      "to": {
+        "$date": "2024-11-14T06:30:00.000Z"
+      },
+      "_id": {
+        "$oid": "673de4ccd382c8243eab92d5"
+      }
+    }
+  ],
+  "achievement": [
+    {
+      "year": "2024",
+      "description": "Test"
+    }
+  ],
+  "references": [
+    {
+      "name": "Mayur",
+      "email": "test@gmail.com",
+      "phone": "8986787907",
+      "note": "test",
+      "_id": {
+        "$oid": "673de4ccd382c8243eab92d7"
+      }
+    }
+  ],
+  "hear_about_us": [
+    "EMail Campaign / Newsletter"
+  ],
+  "public_resume": false,
+  "companies_resume_visible": [],
+  "isresume": true,
+  "createdAt": {
+    "$date": "2024-11-20T13:31:56.335Z"
+  },
+  "updatedAt": {
+    "$date": "2024-11-20T13:38:33.372Z"
+  },
+  "__v": 0,
+  "experience": 3
+},
+{
+  "_id": {
+    "$oid": "67610a8a2a54b2fa893e25de"
+  },
+  "userId": {
+    "$oid": "676109152a54b2fa893e25b0"
+  },
+  "name": "Mr. Manish Rajesh singh",
+  "email": "hewile2020@kelenson.com",
+  "gender": "Male",
+  "dob": {
+    "$date": "2024-12-05T06:30:00.000Z"
+  },
+  "marital_status": "Unmarried",
+  "profile": {
+    "fieldname": "profile",
+    "originalname": "about-img-1.png",
+    "encoding": "7bit",
+    "mimetype": "image/png",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/candidate",
+    "filename": "profile-1734412938890-918210377.png",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/candidate/profile-1734412938890-918210377.png",
+    "size": 441804
+  },
+  "cv": {
+    "fieldname": "upload_cv",
+    "originalname": "sukanya_demo.pdf",
+    "encoding": "7bit",
+    "mimetype": "application/pdf",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/candidate",
+    "filename": "upload_cv-1734412938890-937965075.pdf",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/candidate/upload_cv-1734412938890-937965075.pdf",
+    "size": 8640
+  },
+  "designation": "Web Developer",
+  "contact": {
+    "current_address": {
+      "country": "India",
+      "pin_code": 400067,
+      "state": "Maharashtra",
+      "city": "Mumbai",
+      "lane2": "police chowky",
+      "lane1": "flat no 1, borivali."
+    },
+    "permanent_address": {
+      "country": "India",
+      "pin_code": 400059,
+      "state": "maharashtra",
+      "city": "Mumbai",
+      "lane2": "17, Navyug Industrial Estate,Vazir Glass Factory Lane, Off. Andheri-Kurla Road, Andheri (E), Mumbai – 59",
+      "lane1": "flat no 1, borivali."
+    },
+    "phone": "9004086582",
+    "email": "hewile2020@kelenson.com"
+  },
+  "education": [
+    {
+      "name": "Mumbai univesity",
+      "to": {
+        "$date": "2024-12-06T06:30:00.000Z"
+      },
+      "qualification": "B. Sc. I T",
+      "_id": {
+        "$oid": "67610a8a2a54b2fa893e25df"
+      }
+    }
+  ],
+  "employment": [
+    {
+      "name": "Manish ",
+      "position": "Jobseeker",
+      "department": "IT",
+      "from": {
+        "$date": "2024-12-12T06:30:00.000Z"
+      },
+      "categories": [
+        {
+          "$oid": "67d7284314cd4856d5be13c6"
+        }
+      ],
+      "scope": "INFORMATION TECHNOLOGY",
+      "to": {
+        "$date": "2024-12-01T06:30:00.000Z"
+      },
+      "_id": {
+        "$oid": "67610a8a2a54b2fa893e25e0"
+      }
+    }
+  ],
+  "achievement": [
+    {
+      "year": "1918",
+      "description": "tewst"
+    }
+  ],
+  "references": [
+    {
+      "name": "Mayur",
+      "email": "support@technofra.com",
+      "phone": "8080721003",
+      "note": "test",
+      "_id": {
+        "$oid": "67610a8a2a54b2fa893e25e3"
+      }
+    }
+  ],
+  "hear_about_us": [
+    "Facebook"
+  ],
+  "public_resume": false,
+  "companies_resume_visible": [],
+  "isresume": false,
+  "createdAt": {
+    "$date": "2024-12-17T05:22:18.905Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-17T05:24:33.918Z"
+  },
+  "__v": 0,
+  "experience": 3
+},
+{
+  "_id": {
+    "$oid": "67610feca0b8ef4ff741a34b"
+  },
+  "userId": {
+    "$oid": "67610d91a0b8ef4ff741a2df"
+  },
+  "name": "Mr. Gaurav Ashok Jagdale",
+  "email": "tinaxab835@rabitex.com",
+  "gender": "Male",
+  "dob": {
+    "$date": "2005-08-06T06:30:00.000Z"
+  },
+  "marital_status": "Unmarried",
+  "profile": {
+    "fieldname": "profile",
+    "originalname": "t4.png",
+    "encoding": "7bit",
+    "mimetype": "image/png",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/candidate",
+    "filename": "profile-1734414316660-298230179.png",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/candidate/profile-1734414316660-298230179.png",
+    "size": 10115
+  },
+  "cv": {
+    "fieldname": "upload_cv",
+    "originalname": "letter.docx",
+    "encoding": "7bit",
+    "mimetype": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/candidate",
+    "filename": "upload_cv-1734414316660-22204141.docx",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/candidate/upload_cv-1734414316660-22204141.docx",
+    "size": 21091
+  },
+  "designation": " Student",
+  "contact": {
+    "email": "tinaxab835@rabitex.com",
+    "phone": "8545652515",
+    "permanent_address": {
+      "lane1": "Airoli",
+      "lane2": "203, Airoli, Digha Navi mumbai",
+      "city": "Thane",
+      "state": "Maharashtra",
+      "pin_code": 786553,
+      "country": "India"
+    },
+    "current_address": {
+      "lane1": "Airoli",
+      "lane2": "203, Airoli, Digha Navi mumbai",
+      "city": "Thane",
+      "state": "Maharashtra",
+      "pin_code": 786553,
+      "country": "India"
+    }
+  },
+  "education": [
+    {
+      "name": "Mumbai University",
+      "to": {
+        "$date": "2024-12-17T06:30:00.000Z"
+      },
+      "qualification": "B. Tech",
+      "_id": {
+        "$oid": "67610feca0b8ef4ff741a34c"
+      }
+    }
+  ],
+  "employment": [
+    {
+      "name": "Gaurav",
+      "position": "Developer",
+      "department": "It",
+      "from": {
+        "$date": "2024-12-12T06:30:00.000Z"
+      },
+      "categories": [
+        {
+          "$oid": "67d7284314cd4856d5be13c6"
+        }
+      ],
+      "scope": "Test",
+      "to": {
+        "$date": "2024-12-04T06:30:00.000Z"
+      },
+      "_id": {
+        "$oid": "67610feca0b8ef4ff741a34d"
+      }
+    }
+  ],
+  "achievement": [
+    {
+      "year": "1901",
+      "description": "test"
+    }
+  ],
+  "references": [
+    {
+      "name": "ROhit",
+      "email": "rohit@gmail.com",
+      "phone": "6776898",
+      "note": "test",
+      "_id": {
+        "$oid": "67610feca0b8ef4ff741a34f"
+      }
+    }
+  ],
+  "hear_about_us": [
+    "SMS Promotions"
+  ],
+  "public_resume": false,
+  "companies_resume_visible": [],
+  "isresume": false,
+  "createdAt": {
+    "$date": "2024-12-17T05:45:16.670Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-17T05:45:16.670Z"
+  },
+  "__v": 0,
+  "experience": 3
+},
+{
+  "_id": {
+    "$oid": "676321b35aab09fd1ea0cd93"
+  },
+  "userId": {
+    "$oid": "676317595aab09fd1ea0cd4e"
+  },
+  "name": "Mr. test test tst",
+  "email": "shivam13jun@gmail.com",
+  "gender": "Male",
+  "dob": {
+    "$date": "2003-12-24T06:30:00.000Z"
+  },
+  "marital_status": "Married",
+  "designation": "Clinical Trials Associate",
+  "contact": {
+    "current_address": {
+      "country": "India",
+      "pin_code": 401209,
+      "state": "Maharashtra",
+      "city": "Mumbai",
+      "lane2": "Ghanshyam Enclave WING A New Link Road Shankar Pada Kandivali West",
+      "lane1": "test"
+    },
+    "permanent_address": {
+      "country": "India",
+      "pin_code": 401209,
+      "state": "Maharashtra",
+      "city": "Mumbai",
+      "lane2": "Ghanshyam Enclave WING A New Link Road Shankar Pada Kandivali West",
+      "lane1": "test"
+    },
+    "phone": "08459784241",
+    "email": "shivam13jun@gmail.com"
+  },
+  "education": [
+    {
+      "name": "Mumbai Univrsity",
+      "to": {
+        "$date": "2024-12-06T06:30:00.000Z"
+      },
+      "qualification": "B.com",
+      "_id": {
+        "$oid": "676321b35aab09fd1ea0cd94"
+      }
+    }
+  ],
+  "employment": [
+    {
+      "name": "bbbbb",
+      "position": "bbb",
+      "department": "bbbnn",
+      "from": {
+        "$date": "2015-12-04T06:30:00.000Z"
+      },
+      "categories": [
+        {
+          "$oid": "67d7284314cd4856d5be13c6"
+        }
+      ],
+      "scope": "bbb",
+      "to": {
+        "$date": "2024-12-04T06:30:00.000Z"
+      },
+      "_id": {
+        "$oid": "676321b35aab09fd1ea0cd95"
+      }
+    }
+  ],
+  "achievement": [],
+  "references": [
+    {
+      "name": "nbn",
+      "email": "wwww@kk.com",
+      "phone": "1234567890",
+      "note": "bbb",
+      "_id": {
+        "$oid": "676321b35aab09fd1ea0cd97"
+      }
+    }
+  ],
+  "hear_about_us": [
+    "EMail Campaign / Newsletter"
+  ],
+  "public_resume": false,
+  "companies_resume_visible": [],
+  "isresume": false,
+  "createdAt": {
+    "$date": "2024-12-18T19:25:39.401Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-18T20:04:47.752Z"
+  },
+  "__v": 0,
+  "cv": {
+    "fieldname": "upload_cv",
+    "originalname": "shivam 15 dec 2024.pdf",
+    "encoding": "7bit",
+    "mimetype": "application/pdf",
+    "destination": "D:\\shivam shukl git repo\\Job_Portal_Server\\uploads\\candidate",
+    "filename": "upload_cv-1734552287651-710314076.pdf",
+    "path": "D:\\shivam shukl git repo\\Job_Portal_Server\\uploads\\candidate\\upload_cv-1734552287651-710314076.pdf",
+    "size": 92588
+  },
+  "profile": {
+    "fieldname": "profile",
+    "originalname": "logo.png",
+    "encoding": "7bit",
+    "mimetype": "image/png",
+    "destination": "D:\\shivam shukl git repo\\Job_Portal_Server\\uploads\\candidate",
+    "filename": "profile-1734552287653-748268335.png",
+    "path": "D:\\shivam shukl git repo\\Job_Portal_Server\\uploads\\candidate\\profile-1734552287653-748268335.png",
+    "size": 213938
+  },
+  "experience": 3
+},
+{
+  "_id": {
+    "$oid": "67685cbd100a947b977f045c"
+  },
+  "userId": {
+    "$oid": "676839396990dc1ec2e7c3f5"
+  },
+  "name": "Mr. john dean ambrose",
+  "email": "jimi.landin@deallabs.org",
+  "gender": "Male",
+  "dob": {
+    "$date": "2024-12-22T18:35:31.479Z"
+  },
+  "marital_status": "Married",
+  "profile": {
+    "fieldname": "profile",
+    "originalname": "images.jpg",
+    "encoding": "7bit",
+    "mimetype": "image/jpeg",
+    "destination": "D:\\shivam shukl git repo\\Job_Portal_Server\\uploads\\candidate",
+    "filename": "profile-1738047272581-700647357.jpg",
+    "path": "D:\\shivam shukl git repo\\Job_Portal_Server\\uploads\\candidate\\profile-1738047272581-700647357.jpg",
+    "size": 8440
+  },
+  "cv": {
+    "fieldname": "upload_cv",
+    "originalname": "sample (2).pdf",
+    "encoding": "7bit",
+    "mimetype": "application/pdf",
+    "destination": "D:\\shivam shukl git repo\\Job_Portal_Server\\uploads\\candidate",
+    "filename": "upload_cv-1734892733551-614689653.pdf",
+    "path": "D:\\shivam shukl git repo\\Job_Portal_Server\\uploads\\candidate\\upload_cv-1734892733551-614689653.pdf",
+    "size": 1465
+  },
+  "designation": "Software Developer",
+  "contact": {
+    "current_address": {
+      "country": "India",
+      "pin_code": 401206,
+      "state": "Delhi",
+      "city": "Delhi",
+      "lane2": "hhh",
+      "lane1": "444"
+    },
+    "permanent_address": {
+      "country": "India",
+      "pin_code": 401206,
+      "state": "Delhi",
+      "city": "Delhi",
+      "lane2": "hhh",
+      "lane1": "444"
+    },
+    "phone": "1234567890",
+    "email": "jimi.landin@deallabs.org"
+  },
+  "education": [
+    {
+      "name": "Mumbai University",
+      "to": {
+        "$date": "2022-12-08T06:30:00.000Z"
+      },
+      "qualification": "Bachelor of Pharmacy (B.Pharm)",
+      "_id": {
+        "$oid": "67685cbd100a947b977f045d"
+      }
+    },
+    {
+      "name": "nnn",
+      "to": {
+        "$date": "2025-01-02T06:30:00.000Z"
+      },
+      "qualification": "Doctor of Pharmacy (Pharm.D)",
+      "_id": {
+        "$oid": "678947d4c24de172382f352b"
+      }
+    },
+    {
+      "name": "hhh",
+      "to": {
+        "$date": "2025-01-03T06:30:00.000Z"
+      },
+      "qualification": "Doctorate in Pharmaceutical Sciences (Ph.D.)",
+      "_id": {
+        "$oid": "678947d4c24de172382f352c"
+      }
+    }
+  ],
+  "employment": [
+    {
+      "name": "WWE",
+      "position": "Nodejs Developer",
+      "department": "Human Resources",
+      "from": {
+        "$date": "2007-12-20T06:30:00.000Z"
+      },
+      "categories": [
+        {
+          "$oid": "67d7284314cd4856d5be13c6"
+        }
+      ],
+      "scope": "BUSINSS",
+      "to": {
+        "$date": "2011-12-06T06:30:00.000Z"
+      },
+      "_id": {
+        "$oid": "67685cbd100a947b977f045e"
+      }
+    }
+  ],
+  "achievement": [],
+  "references": [
+    {
+      "name": "sss",
+      "email": "test@mail.com",
+      "phone": "12356780",
+      "note": "m",
+      "_id": {
+        "$oid": "67685cbd100a947b977f0460"
+      }
+    }
+  ],
+  "hear_about_us": [
+    "Internet Search",
+    " Friends & Family"
+  ],
+  "public_resume": false,
+  "companies_resume_visible": [],
+  "isresume": false,
+  "createdAt": {
+    "$date": "2024-12-22T18:38:53.828Z"
+  },
+  "updatedAt": {
+    "$date": "2025-02-02T16:30:51.075Z"
+  },
+  "__v": 0,
+  "experience": 3,
+  "currentsalary": -1,
+  "expectedsalary": 9,
+  "current_company": [
+    {
+      "$oid": "67879cb21b18bd5c7d5c6e42"
+    },
+    {
+      "$oid": "678757acc8d070ab0b4d3c10"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "67723e0208fa712705c530c9"
+  },
+  "userId": {
+    "$oid": "67723c6508fa712705c53075"
+  },
+  "name": "Mrs. Vidya Ashok Jagdale",
+  "email": "coyagig352@gholar.com",
+  "gender": "Female",
+  "experience": 1,
+  "dob": {
+    "$date": "2002-03-30T06:30:00.000Z"
+  },
+  "marital_status": "Unmarried",
+  "profile": {
+    "fieldname": "profile",
+    "originalname": "t3.png",
+    "encoding": "7bit",
+    "mimetype": "image/png",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/candidate",
+    "filename": "profile-1735540226052-320775268.png",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/candidate/profile-1735540226052-320775268.png",
+    "size": 9958
+  },
+  "cv": {
+    "fieldname": "upload_cv",
+    "originalname": "resume-demo.pdf",
+    "encoding": "7bit",
+    "mimetype": "application/pdf",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/candidate",
+    "filename": "upload_cv-1735540226020-44574631.pdf",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/candidate/upload_cv-1735540226020-44574631.pdf",
+    "size": 739373
+  },
+  "designation": "Basic Chemicals",
+  "contact": {
+    "current_address": {
+      "country": "India",
+      "pin_code": 400067,
+      "state": "Maharashtra",
+      "city": "Thane",
+      "lane2": "202, Nandanwan Apartment, Digha, ",
+      "lane1": "Airoli"
+    },
+    "permanent_address": {
+      "country": "India",
+      "pin_code": 400067,
+      "state": "Maharashtra",
+      "city": "Thane",
+      "lane2": "202, Nandanwan Apartment, Digha, ",
+      "lane1": "Airoli"
+    },
+    "phone": "8080721003",
+    "email": "coyagig352@gholar.com"
+  },
+  "education": [
+    {
+      "name": "Mumbai University",
+      "to": {
+        "$date": "2022-05-17T06:30:00.000Z"
+      },
+      "qualification": "Master of Pharmacy (M.Pharm)",
+      "_id": {
+        "$oid": "67723e0208fa712705c530ca"
+      }
+    }
+  ],
+  "employment": [
+    {
+      "name": "Vidya ",
+      "position": "Basic Chemicals",
+      "department": "Business Development",
+      "from": {
+        "$date": "2022-01-03T06:30:00.000Z"
+      },
+      "categories": [
+        {
+          "$oid": "67d7284314cd4856d5be13c6"
+        }
+      ],
+      "scope": "accounting",
+      "to": {
+        "$date": "2023-12-28T06:30:00.000Z"
+      },
+      "_id": {
+        "$oid": "67723e0208fa712705c530cb"
+      }
+    }
+  ],
+  "achievement": [
+    {
+      "year": "2021",
+      "description": "State Level Kabaddi Champiyan"
+    }
+  ],
+  "references": [
+    {
+      "name": "Pradnya",
+      "email": "pradnya@technofra.com",
+      "phone": "7558542831",
+      "note": "test",
+      "_id": {
+        "$oid": "67723e0208fa712705c530cd"
+      }
+    }
+  ],
+  "hear_about_us": [
+    "EMail Campaign / Newsletter"
+  ],
+  "public_resume": false,
+  "companies_resume_visible": [],
+  "isresume": false,
+  "createdAt": {
+    "$date": "2024-12-30T06:30:26.083Z"
+  },
+  "updatedAt": {
+    "$date": "2025-01-24T10:33:30.864Z"
+  },
+  "__v": 0,
+  "currentsalary": 35000,
+  "expectedsalary": 550000
+},
+{
+  "_id": {
+    "$oid": "6772770508fa712705c542bf"
+  },
+  "userId": {
+    "$oid": "6772747908fa712705c5429e"
+  },
+  "name": "Mr. Sagar Monoj Jogi",
+  "email": "tecoca3841@myweblaw.com",
+  "gender": "Male",
+  "experience": 1,
+  "dob": {
+    "$date": "1996-11-15T06:30:00.000Z"
+  },
+  "marital_status": "Unmarried",
+  "cv": {
+    "fieldname": "upload_cv",
+    "originalname": "sagar-jogi.jpg",
+    "encoding": "7bit",
+    "mimetype": "image/jpeg",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/candidate",
+    "filename": "upload_cv-1738060258772-54888116.jpg",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/candidate/upload_cv-1738060258772-54888116.jpg",
+    "size": 20356
+  },
+  "designation": "Basic Chemicals",
+  "contact": {
+    "current_address": {
+      "country": "India",
+      "pin_code": 421601,
+      "state": "Maharashtra",
+      "city": "Mumbai",
+      "lane2": "202, Nandanwan Apartment, Digha, ",
+      "lane1": "Airoli"
+    },
+    "permanent_address": {
+      "country": "India",
+      "pin_code": 421601,
+      "state": "Maharashtra",
+      "city": "Mumbai",
+      "lane2": "202, Nandanwan Apartment, Digha, ",
+      "lane1": "Airoli"
+    },
+    "phone": "8080721003",
+    "email": "tecoca3841@myweblaw.com"
+  },
+  "education": [
+    {
+      "name": "Mumbai University",
+      "to": {
+        "$date": "2024-12-01T06:30:00.000Z"
+      },
+      "qualification": "Bachelor of Pharmacy (B.Pharm)",
+      "_id": {
+        "$oid": "6772770508fa712705c542c0"
+      }
+    }
+  ],
+  "employment": [
+    {
+      "name": "TCS",
+      "position": "Sql Developer",
+      "department": "Information Technology",
+      "from": {
+        "$date": "2024-12-31T06:30:00.000Z"
+      },
+      "categories": [
+        {
+          "$oid": "67d7284314cd4856d5be13c6"
+        }
+      ],
+      "scope": "it",
+      "to": {
+        "$date": "2024-12-31T06:30:00.000Z"
+      },
+      "_id": {
+        "$oid": "6772770508fa712705c542c1"
+      }
+    }
+  ],
+  "achievement": [
+    {
+      "year": "2024",
+      "description": "Best employee of the year."
+    }
+  ],
+  "references": [
+    {
+      "name": "Samir",
+      "email": "samir@gmail.com",
+      "phone": "8988676899",
+      "note": "test",
+      "_id": {
+        "$oid": "6772770508fa712705c542c3"
+      }
+    }
+  ],
+  "hear_about_us": [
+    "EMail Campaign / Newsletter"
+  ],
+  "public_resume": false,
+  "companies_resume_visible": [],
+  "isresume": false,
+  "createdAt": {
+    "$date": "2024-12-30T10:33:41.925Z"
+  },
+  "updatedAt": {
+    "$date": "2025-01-28T10:30:58.778Z"
+  },
+  "__v": 0,
+  "profile": {},
+  "currentsalary": 0,
+  "expectedsalary": 1
+},
+{
+  "_id": {
+    "$oid": "67820d4444dd39045eb19e64"
+  },
+  "userId": {
+    "$oid": "678207093ea241ffd5d19326"
+  },
+  "name": "Mrs. Khushi Kumari Gupta",
+  "email": "hawofep194@nalwan.com",
+  "gender": "Female",
+  "experience": 2,
+  "expectedsalary": 1250000,
+  "currentsalary": 850000,
+  "dob": {
+    "$date": "1999-01-08T06:30:00.000Z"
+  },
+  "marital_status": "Unmarried",
+  "profile": {
+    "fieldname": "profile",
+    "originalname": "girl.jpeg",
+    "encoding": "7bit",
+    "mimetype": "image/jpeg",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/candidate",
+    "filename": "profile-1737004913078-10482212.jpeg",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/candidate/profile-1737004913078-10482212.jpeg",
+    "size": 11167
+  },
+  "cv": {
+    "fieldname": "upload_cv",
+    "originalname": "resume-demo.pdf",
+    "encoding": "7bit",
+    "mimetype": "application/pdf",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/candidate",
+    "filename": "upload_cv-1736576324737-779985369.pdf",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/candidate/upload_cv-1736576324737-779985369.pdf",
+    "size": 739373
+  },
+  "designation": "Chemical Lab Specialist",
+  "contact": {
+    "current_address": {
+      "country": "India",
+      "pin_code": 400067,
+      "state": "Maharashtra",
+      "city": "Mumbai",
+      "lane2": "police chowky",
+      "lane1": "111, kandivali "
+    },
+    "permanent_address": {
+      "country": "India",
+      "pin_code": 400059,
+      "state": "Maharashtra",
+      "city": "Nashik",
+      "lane2": "police chowky",
+      "lane1": "111, kandivali "
+    },
+    "phone": "8080721003",
+    "email": "hawofep194@nalwan.com"
+  },
+  "education": [
+    {
+      "name": "Mumbai univesity",
+      "to": {
+        "$date": "2019-01-15T06:30:00.000Z"
+      },
+      "qualification": "Bachelor of Pharmacy (B.Pharm)",
+      "_id": {
+        "$oid": "67820d4444dd39045eb19e65"
+      }
+    },
+    {
+      "name": "Mumbai University",
+      "to": {
+        "$date": "2023-04-06T06:30:00.000Z"
+      },
+      "qualification": "Master of Pharmacy (M.Pharm)",
+      "_id": {
+        "$oid": "67820d4444dd39045eb19e66"
+      }
+    }
+  ],
+  "employment": [
+    {
+      "name": "Technofra",
+      "position": "Chemical Lab Specialist",
+      "department": "Sales",
+      "from": {
+        "$date": "2024-06-12T06:30:00.000Z"
+      },
+      "categories": [
+        {
+          "$oid": "67d7284314cd4856d5be13c6"
+        }
+      ],
+      "scope": "Chemical Lab ",
+      "to": {
+        "$date": "2025-01-01T06:30:00.000Z"
+      },
+      "_id": {
+        "$oid": "67820d4444dd39045eb19e67"
+      }
+    }
+  ],
+  "achievement": [
+    {
+      "year": "2023",
+      "description": "University topper"
+    },
+    {
+      "year": "2024",
+      "description": "Chemical Lab Specialist"
+    },
+    {
+      "year": "2025",
+      "description": "Best Employee of the Year"
+    }
+  ],
+  "references": [
+    {
+      "name": "Sudhir Gupta",
+      "email": "support@technofra.com",
+      "phone": "08080721003",
+      "note": "test",
+      "_id": {
+        "$oid": "67820d4444dd39045eb19e69"
+      }
+    }
+  ],
+  "hear_about_us": [
+    "SMS Promotions"
+  ],
+  "public_resume": false,
+  "companies_resume_visible": [],
+  "isresume": false,
+  "createdAt": {
+    "$date": "2025-01-11T06:18:44.781Z"
+  },
+  "updatedAt": {
+    "$date": "2025-01-16T05:21:53.087Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6784c6bb4a3065d0a862a51a"
+  },
+  "userId": {
+    "$oid": "6784bda515f2143d6d891dd0"
+  },
+  "name": "Mr. Rohit Aabaji Pawar",
+  "email": "accounts@technofra.com",
+  "gender": "Male",
+  "experience": 4,
+  "expectedsalary": 1600000,
+  "currentsalary": 800000,
+  "dob": {
+    "$date": "1999-12-26T06:30:00.000Z"
+  },
+  "marital_status": "Unmarried",
+  "profile": {
+    "fieldname": "profile",
+    "originalname": "rohit.jpg",
+    "encoding": "7bit",
+    "mimetype": "image/jpeg",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/candidate",
+    "filename": "profile-1736754875695-264160293.jpg",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/candidate/profile-1736754875695-264160293.jpg",
+    "size": 69048
+  },
+  "cv": {
+    "fieldname": "upload_cv",
+    "originalname": "resume-demo.pdf",
+    "encoding": "7bit",
+    "mimetype": "application/pdf",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/candidate",
+    "filename": "upload_cv-1736754875643-696196085.pdf",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/candidate/upload_cv-1736754875643-696196085.pdf",
+    "size": 739373
+  },
+  "designation": "Manual Tester",
+  "contact": {
+    "current_address": {
+      "country": "India",
+      "pin_code": 400067,
+      "state": "Maharashtra",
+      "city": "Mumbai",
+      "lane2": "police chowky",
+      "lane1": "Airoli"
+    },
+    "permanent_address": {
+      "country": "India",
+      "pin_code": 400067,
+      "state": "Maharashtra",
+      "city": "Thane",
+      "lane2": "Sanjay ghandi nagar, digha, airoli",
+      "lane1": "Airoli"
+    },
+    "phone": "8080803375",
+    "email": "accounts@technofra.com"
+  },
+  "education": [
+    {
+      "name": "Mumbai univesity",
+      "to": {
+        "$date": "2021-04-21T06:30:00.000Z"
+      },
+      "qualification": "Diploma in Pharmacy (D.Pharm)",
+      "_id": {
+        "$oid": "6784c6bb4a3065d0a862a51b"
+      }
+    },
+    {
+      "name": "Mumbai University",
+      "to": {
+        "$date": "2022-01-26T06:30:00.000Z"
+      },
+      "qualification": "Master of Pharmacy (M.Pharm)",
+      "_id": {
+        "$oid": "6784d86c4a3065d0a862a658"
+      }
+    }
+  ],
+  "employment": [
+    {
+      "name": "TCS",
+      "position": "Java Developer",
+      "department": "Engineering",
+      "from": {
+        "$date": "2022-05-11T06:30:00.000Z"
+      },
+      "categories": [
+        {
+          "$oid": "67d7284314cd4856d5be13c6"
+        }
+      ],
+      "scope": "Developer",
+      "to": {
+        "$date": "2023-02-28T06:30:00.000Z"
+      },
+      "_id": {
+        "$oid": "6784c6bb4a3065d0a862a51c"
+      }
+    },
+    {
+      "name": "L&T",
+      "position": "Java Developer Tester",
+      "department": "Engineering",
+      "from": {
+        "$date": "2023-03-06T06:30:00.000Z"
+      },
+      "categories": [
+        {
+          "$oid": "67d7284314cd4856d5be13c6"
+        }
+      ],
+      "scope": "Developer",
+      "to": {
+        "$date": "2024-01-13T06:30:00.000Z"
+      },
+      "_id": {
+        "$oid": "6784c6bb4a3065d0a862a51e"
+      }
+    },
+    {
+      "name": "Delhi company",
+      "position": "Manul tester",
+      "department": "Information Technology",
+      "from": {
+        "$date": "2024-02-12T06:30:00.000Z"
+      },
+      "categories": [
+        {
+          "$oid": "67d7284314cd4856d5be13c6"
+        }
+      ],
+      "scope": "Developer",
+      "to": {
+        "$date": "2025-01-13T07:52:46.361Z"
+      },
+      "_id": {
+        "$oid": "6784c6bb4a3065d0a862a520"
+      }
+    }
+  ],
+  "achievement": [
+    {
+      "year": "2021",
+      "description": "Top of the Year."
+    },
+    {
+      "year": "2022",
+      "description": "The selection for the Java developer position has been made from the college campus."
+    }
+  ],
+  "references": [
+    {
+      "name": "Pradnya",
+      "email": "pradnya@technofra.com",
+      "phone": "8080721003",
+      "note": "test",
+      "_id": {
+        "$oid": "6784c6bb4a3065d0a862a522"
+      }
+    }
+  ],
+  "hear_about_us": [
+    "Internet Search",
+    " Other"
+  ],
+  "public_resume": false,
+  "companies_resume_visible": [],
+  "isresume": false,
+  "createdAt": {
+    "$date": "2025-01-13T07:54:35.710Z"
+  },
+  "updatedAt": {
+    "$date": "2025-01-30T07:22:53.764Z"
+  },
+  "__v": 0,
+  "current_company": [
+    {
+      "$oid": "679372c3df6b21910046c03e"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "67875bd6c8d070ab0b4d3cf7"
+  },
+  "userId": {
+    "$oid": "6787596cc8d070ab0b4d3cbb"
+  },
+  "name": "Mrs. Suman Sudhir Shinde",
+  "email": "kesaw55212@nalwan.com",
+  "gender": "Female",
+  "experience": 1,
+  "expectedsalary": 60000,
+  "currentsalary": 30000,
+  "dob": {
+    "$date": "1999-01-12T06:30:00.000Z"
+  },
+  "marital_status": "Married",
+  "profile": {
+    "fieldname": "profile",
+    "originalname": "profile.jpg",
+    "encoding": "7bit",
+    "mimetype": "image/jpeg",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/candidate",
+    "filename": "profile-1736924118221-523671629.jpg",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/candidate/profile-1736924118221-523671629.jpg",
+    "size": 120847
+  },
+  "cv": {
+    "fieldname": "upload_cv",
+    "originalname": "resume.jpeg",
+    "encoding": "7bit",
+    "mimetype": "image/jpeg",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/candidate",
+    "filename": "upload_cv-1736924118221-975156067.jpeg",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/candidate/upload_cv-1736924118221-975156067.jpeg",
+    "size": 9339
+  },
+  "designation": "Chemical Testing Specialist",
+  "contact": {
+    "email": "kesaw55212@nalwan.com",
+    "phone": "9004086582",
+    "permanent_address": {
+      "lane1": "1, 301, Appartnert",
+      "lane2": "17, Navyug Industrial Estate,Vazir Glass Factory Lane, Off. Andheri-Kurla Road, Andheri (E), Mumbai – 59",
+      "city": "Bhiwandi",
+      "state": "Maharashtra",
+      "pin_code": 400059,
+      "country": "India"
+    },
+    "current_address": {
+      "lane1": "1, 301, Appartnert",
+      "lane2": "police chowky",
+      "city": "Mumbai",
+      "state": "Maharashtra",
+      "pin_code": 400067,
+      "country": "India"
+    }
+  },
+  "education": [
+    {
+      "name": "Mumbai univesity",
+      "to": {
+        "$date": "2020-01-15T06:30:00.000Z"
+      },
+      "qualification": "Bachelor of Pharmacy (B.Pharm)",
+      "_id": {
+        "$oid": "67875bd6c8d070ab0b4d3cf8"
+      }
+    },
+    {
+      "name": "Mumbai University",
+      "to": {
+        "$date": "2021-01-14T06:30:00.000Z"
+      },
+      "qualification": "Bachelor of Pharmacy (B.Pharm)",
+      "_id": {
+        "$oid": "67875bd6c8d070ab0b4d3cf9"
+      }
+    }
+  ],
+  "employment": [
+    {
+      "name": "Technofra",
+      "position": "Jobseeker",
+      "department": "Information Technology",
+      "from": {
+        "$date": "2025-01-06T06:30:00.000Z"
+      },
+      "categories": [
+        {
+          "$oid": "67d7284314cd4856d5be13c6"
+        }
+      ],
+      "scope": "INFORMATION TECHNOLOGY",
+      "to": {
+        "$date": "2025-12-31T06:30:00.000Z"
+      },
+      "_id": {
+        "$oid": "67875bd6c8d070ab0b4d3cfa"
+      }
+    }
+  ],
+  "achievement": [
+    {
+      "year": "2023",
+      "description": "Student of the year"
+    }
+  ],
+  "references": [
+    {
+      "name": "Sambhaji Patil",
+      "email": "support@technofra.com",
+      "phone": "9975878963",
+      "note": "test",
+      "_id": {
+        "$oid": "67875bd6c8d070ab0b4d3cfd"
+      }
+    }
+  ],
+  "hear_about_us": [
+    "EMail Campaign / Newsletter"
+  ],
+  "public_resume": false,
+  "companies_resume_visible": [],
+  "isresume": false,
+  "createdAt": {
+    "$date": "2025-01-15T06:55:18.234Z"
+  },
+  "updatedAt": {
+    "$date": "2025-01-15T06:55:18.234Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "678decbf744933ffcbcb98a3"
+  },
+  "userId": {
+    "$oid": "67840a0e3ea241ffd5d19af0"
+  },
+  "name": "Mr. shivam KAMLESH shukla",
+  "email": "shivamshukla13jun@gmail.com",
+  "gender": "Male",
+  "experience": 0,
+  "expectedsalary": 2,
+  "currentsalary": 2,
+  "dob": {
+    "$date": "2025-01-20T06:23:54.680Z"
+  },
+  "marital_status": "Married",
+  "profile": {
+    "fieldname": "profile",
+    "originalname": "Shivam Shukla LOI - Copy.pdf",
+    "encoding": "7bit",
+    "mimetype": "application/pdf",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/candidate",
+    "filename": "profile-1737354431940-997593840.pdf",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/candidate/profile-1737354431940-997593840.pdf",
+    "size": 179878
+  },
+  "cv": {
+    "fieldname": "upload_cv",
+    "originalname": "shivam 4 jan  2024.pdf",
+    "encoding": "7bit",
+    "mimetype": "application/pdf",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/candidate",
+    "filename": "upload_cv-1737354431937-469704367.pdf",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/candidate/upload_cv-1737354431937-469704367.pdf",
+    "size": 364933
+  },
+  "designation": "Clinical Trials Associate",
+  "contact": {
+    "current_address": {
+      "country": "India",
+      "pin_code": 401209,
+      "state": "Maharashtra",
+      "city": "Thane",
+      "lane2": "VALAIPADA RD, SANTOSH BHUWAN",
+      "lane1": "rreew"
+    },
+    "permanent_address": {
+      "country": "India",
+      "pin_code": 401209,
+      "state": "Maharashtra",
+      "city": "Vasai-Virar",
+      "lane2": "Room No 10",
+      "lane1": "rreew"
+    },
+    "phone": "08459784241",
+    "email": "shivamshukla13jun@gmail.com"
+  },
+  "education": [
+    {
+      "name": "Mumbai Univrsity",
+      "to": {
+        "$date": "2025-01-20T06:23:54.680Z"
+      },
+      "qualification": "Master of Science in Pharmacology",
+      "_id": {
+        "$oid": "678decbf744933ffcbcb98a4"
+      }
+    }
+  ],
+  "employment": [
+    {
+      "name": "India",
+      "position": "hhh",
+      "department": "Operations",
+      "from": {
+        "$date": "2025-01-23T06:30:00.000Z"
+      },
+      "categories": [
+        {
+          "$oid": "67d7284314cd4856d5be13c6"
+        }
+      ],
+      "scope": "Tscope",
+      "to": {
+        "$date": "2025-01-25T06:30:00.000Z"
+      },
+      "_id": {
+        "$oid": "678decbf744933ffcbcb98a5"
+      }
+    }
+  ],
+  "achievement": [],
+  "references": [],
+  "hear_about_us": [
+    "Facebook"
+  ],
+  "public_resume": false,
+  "companies_resume_visible": [],
+  "isresume": false,
+  "createdAt": {
+    "$date": "2025-01-20T06:27:11.956Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-02T19:46:52.807Z"
+  },
+  "__v": 0,
+  "current_company": [
+    {
+      "$oid": "679cbf6777f01b0affabe346"
+    },
+    {
+      "$oid": "679372c3df6b21910046c03e"
+    },
+    {
+      "$oid": "678757acc8d070ab0b4d3c10"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "679c7575e7b9becd347d8677"
+  },
+  "userId": {
+    "$oid": "679c72db78cea33647669d98"
+  },
+  "name": "Mrs. Komal Prakash Pawar",
+  "email": "gawit50869@eluxeer.com",
+  "gender": "Female",
+  "experience": 2,
+  "expectedsalary": 120000,
+  "currentsalary": 60000,
+  "dob": {
+    "$date": "1986-08-05T06:30:00.000Z"
+  },
+  "current_company": [
+    {
+      "$oid": "678757acc8d070ab0b4d3c10"
+    }
+  ],
+  "marital_status": "Married",
+  "profile": {
+    "fieldname": "profile",
+    "originalname": "t2.png",
+    "encoding": "7bit",
+    "mimetype": "image/png",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/candidate",
+    "filename": "profile-1738306933668-913852955.png",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/candidate/profile-1738306933668-913852955.png",
+    "size": 10365
+  },
+  "cv": {
+    "fieldname": "upload_cv",
+    "originalname": "resume-demo (1).pdf",
+    "encoding": "7bit",
+    "mimetype": "application/pdf",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/candidate",
+    "filename": "upload_cv-1738306933656-942929899.pdf",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/candidate/upload_cv-1738306933656-942929899.pdf",
+    "size": 739373
+  },
+  "designation": "SAP",
+  "contact": {
+    "current_address": {
+      "country": "India",
+      "pin_code": 400067,
+      "state": "Maharashtra",
+      "city": "Mumbai",
+      "lane2": "police chowky",
+      "lane1": "103/01/Seawood"
+    },
+    "permanent_address": {
+      "country": "India",
+      "pin_code": 400059,
+      "state": "Maharashtra",
+      "city": "Mumbai",
+      "lane2": "Aanand nagar ",
+      "lane1": "103/01/Seawood"
+    },
+    "phone": "9004086582",
+    "email": "gawit50869@eluxeer.com"
+  },
+  "education": [
+    {
+      "name": "Maharashtra board",
+      "to": {
+        "$date": "2018-04-17T06:30:00.000Z"
+      },
+      "qualification": "Bachelor of Science in Chemistry",
+      "_id": {
+        "$oid": "679c7575e7b9becd347d8678"
+      }
+    },
+    {
+      "name": "Maharashtra Board",
+      "to": {
+        "$date": "2020-07-21T06:30:00.000Z"
+      },
+      "qualification": "Master of Science in Chemistry",
+      "_id": {
+        "$oid": "679c7575e7b9becd347d8679"
+      }
+    }
+  ],
+  "employment": [
+    {
+      "name": "Cloud",
+      "position": "Sql Developer",
+      "department": "Information Technology",
+      "from": {
+        "$date": "2021-01-18T06:30:00.000Z"
+      },
+      "categories": [
+        {
+          "$oid": "67d7284314cd4856d5be13c6"
+        }
+      ],
+      "scope": "Chemical Lab ",
+      "to": {
+        "$date": "2023-01-31T06:30:00.000Z"
+      },
+      "_id": {
+        "$oid": "679c7575e7b9becd347d867a"
+      }
+    }
+  ],
+  "achievement": [
+    {
+      "year": "2023",
+      "description": "Best Employee Of The Year"
+    }
+  ],
+  "references": [
+    {
+      "name": "govind",
+      "email": "support@technofra.com",
+      "phone": "8080721003",
+      "note": "test",
+      "_id": {
+        "$oid": "679c7575e7b9becd347d867c"
+      }
+    }
+  ],
+  "hear_about_us": [
+    "EMail Campaign / Newsletter"
+  ],
+  "public_resume": false,
+  "companies_resume_visible": [],
+  "isresume": false,
+  "createdAt": {
+    "$date": "2025-01-31T07:02:13.687Z"
+  },
+  "updatedAt": {
+    "$date": "2025-01-31T07:39:41.963Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "679cc710bd8446a1a928bcf5"
+  },
+  "userId": {
+    "$oid": "679cc4debd8446a1a928bc90"
+  },
+  "name": "Mr. Shubham Subhedar Suryavanshi",
+  "email": "lemipi5041@ahaks.com",
+  "gender": "Male",
+  "experience": 4,
+  "expectedsalary": 2400000,
+  "currentsalary": 1300000,
+  "dob": {
+    "$date": "1996-11-04T06:30:00.000Z"
+  },
+  "current_company": [
+    {
+      "$oid": "67610d9da0b8ef4ff741a2e7"
+    }
+  ],
+  "marital_status": "Unmarried",
+  "cv": {
+    "fieldname": "upload_cv",
+    "originalname": "resume-demo (1).pdf",
+    "encoding": "7bit",
+    "mimetype": "application/pdf",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/candidate",
+    "filename": "upload_cv-1738327824041-48828449.pdf",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/candidate/upload_cv-1738327824041-48828449.pdf",
+    "size": 739373
+  },
+  "designation": "Cloud Developer",
+  "contact": {
+    "email": "lemipi5041@ahaks.com",
+    "phone": "8080721003",
+    "permanent_address": {
+      "lane1": "Airoli",
+      "lane2": "police chowky",
+      "city": "Mumbai",
+      "state": "Maharashtra",
+      "pin_code": 400067,
+      "country": "India"
+    },
+    "current_address": {
+      "lane1": "Airoli",
+      "lane2": "police chowky",
+      "city": "Mumbai",
+      "state": "Maharashtra",
+      "pin_code": 400067,
+      "country": "India"
+    }
+  },
+  "education": [
+    {
+      "name": "Mumbai univesity",
+      "to": {
+        "$date": "2018-06-12T06:30:00.000Z"
+      },
+      "qualification": "Bachelor of Pharmacy (B.Pharm)",
+      "_id": {
+        "$oid": "679cc710bd8446a1a928bcf6"
+      }
+    },
+    {
+      "name": "Mumbai University",
+      "to": {
+        "$date": "2020-07-21T06:30:00.000Z"
+      },
+      "qualification": "Master of Pharmacy (M.Pharm)",
+      "_id": {
+        "$oid": "679cc710bd8446a1a928bcf7"
+      }
+    }
+  ],
+  "employment": [
+    {
+      "name": "Technofra",
+      "position": "Jobseeker",
+      "department": "Human Resources",
+      "from": {
+        "$date": "2021-01-12T06:30:00.000Z"
+      },
+      "categories": [
+        {
+          "$oid": "67d7284314cd4856d5be13c6"
+        }
+      ],
+      "scope": "Chemical Lab ",
+      "to": {
+        "$date": "2024-10-15T06:30:00.000Z"
+      },
+      "_id": {
+        "$oid": "679cc710bd8446a1a928bcf8"
+      }
+    }
+  ],
+  "achievement": [
+    {
+      "year": "2022",
+      "description": "Best Employer"
+    }
+  ],
+  "references": [
+    {
+      "name": "govind",
+      "email": "support@technofra.com",
+      "phone": "08080721003",
+      "note": "test",
+      "_id": {
+        "$oid": "679cc710bd8446a1a928bcfa"
+      }
+    }
+  ],
+  "hear_about_us": [
+    "EMail Campaign / Newsletter"
+  ],
+  "public_resume": false,
+  "companies_resume_visible": [],
+  "isresume": false,
+  "createdAt": {
+    "$date": "2025-01-31T12:50:24.060Z"
+  },
+  "updatedAt": {
+    "$date": "2025-01-31T12:50:24.060Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67aed26418a42e30ab965160"
+  },
+  "userId": {
+    "$oid": "67aecf32dccbd9d1bd0779cd"
+  },
+  "name": "Mr. Sagar Manoj Jogi",
+  "email": "haxiho5338@nike4s.com",
+  "gender": "Male",
+  "experience": 2,
+  "expectedsalary": 840000,
+  "currentsalary": 420000,
+  "dob": {
+    "$date": "1996-11-15T06:30:00.000Z"
+  },
+  "current_company": [
+    {
+      "$oid": "67727b3e0fc5c2bd19daeccc"
+    }
+  ],
+  "marital_status": "Unmarried",
+  "profile": {
+    "fieldname": "profile",
+    "originalname": "sagar-jogi.jpg",
+    "encoding": "7bit",
+    "mimetype": "image/jpeg",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/candidate",
+    "filename": "profile-1739510372271-275047770.jpg",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/candidate/profile-1739510372271-275047770.jpg",
+    "size": 20356
+  },
+  "cv": {
+    "fieldname": "upload_cv",
+    "originalname": "resume-demo (1).pdf",
+    "encoding": "7bit",
+    "mimetype": "application/pdf",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/candidate",
+    "filename": "upload_cv-1739510372262-714292213.pdf",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/candidate/upload_cv-1739510372262-714292213.pdf",
+    "size": 739373
+  },
+  "designation": "Developer",
+  "contact": {
+    "email": "haxiho5338@nike4s.com",
+    "phone": "9820821608",
+    "permanent_address": {
+      "lane1": "Airoli",
+      "lane2": "314, 315, 316, Ghanshyam Enclave, Near Lalji Pada Police Chowky, New Link Road, Kandivali (West)",
+      "city": "Mumbai",
+      "state": "Maharashtra",
+      "pin_code": 400067,
+      "country": "India"
+    },
+    "current_address": {
+      "lane1": "Airoli",
+      "lane2": "police chowky",
+      "city": "Mumbai",
+      "state": "Maharashtra",
+      "pin_code": 400067,
+      "country": "India"
+    }
+  },
+  "education": [
+    {
+      "name": "Mumbai univesity",
+      "to": {
+        "$date": "2023-05-16T06:30:00.000Z"
+      },
+      "qualification": "Master of Pharmacy (M.Pharm)",
+      "_id": {
+        "$oid": "67aed26418a42e30ab965161"
+      }
+    }
+  ],
+  "employment": [
+    {
+      "name": "TCS",
+      "position": "Developer",
+      "department": "Information Technology",
+      "from": {
+        "$date": "2021-02-09T06:30:00.000Z"
+      },
+      "categories": [
+        {
+          "$oid": "67d7284314cd4856d5be13c6"
+        }
+      ],
+      "scope": "Chemical Lab ",
+      "to": {
+        "$date": "2025-12-31T06:30:00.000Z"
+      },
+      "_id": {
+        "$oid": "67aed26418a42e30ab965162"
+      }
+    }
+  ],
+  "achievement": [
+    {
+      "year": "2024",
+      "description": "Best Employee Of The Year"
+    }
+  ],
+  "references": [
+    {
+      "name": "govind",
+      "email": "support@technofra.com",
+      "phone": "08080721003",
+      "note": "test",
+      "_id": {
+        "$oid": "67aed26418a42e30ab965164"
+      }
+    }
+  ],
+  "hear_about_us": [
+    "EMail Campaign / Newsletter"
+  ],
+  "public_resume": false,
+  "companies_resume_visible": [],
+  "isresume": false,
+  "createdAt": {
+    "$date": "2025-02-14T05:19:32.298Z"
+  },
+  "updatedAt": {
+    "$date": "2025-02-14T05:19:32.298Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67c2ed9ae0c146ccc11cb834"
+  },
+  "userId": {
+    "$oid": "67c2ebed1d033061a051913c"
+  },
+  "name": "Mr. Sahil Subhedar Suryawanshi",
+  "email": "cimibaj567@apklamp.com",
+  "gender": "Male",
+  "experience": 0,
+  "expectedsalary": 2000000,
+  "currentsalary": 300000,
+  "dob": {
+    "$date": "2001-02-27T06:30:00.000Z"
+  },
+  "current_company": [
+    {
+      "$oid": "679c796ee7b9becd347d86f4"
+    }
+  ],
+  "marital_status": "Unmarried",
+  "profile": {
+    "fieldname": "profile",
+    "originalname": "sahil.jpg",
+    "encoding": "7bit",
+    "mimetype": "image/jpeg",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/candidate",
+    "filename": "profile-1740828058064-121889168.jpg",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/candidate/profile-1740828058064-121889168.jpg",
+    "size": 33926
+  },
+  "cv": {
+    "fieldname": "upload_cv",
+    "originalname": "resume-demo.pdf",
+    "encoding": "7bit",
+    "mimetype": "application/pdf",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/candidate",
+    "filename": "upload_cv-1740828058054-287403532.pdf",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/candidate/upload_cv-1740828058054-287403532.pdf",
+    "size": 739373
+  },
+  "designation": "Web Developer",
+  "contact": {
+    "current_address": {
+      "country": "India",
+      "pin_code": 400067,
+      "state": "Maharashtra",
+      "city": "Mumbai",
+      "lane2": "police chowky",
+      "lane1": "Airoli"
+    },
+    "permanent_address": {
+      "country": "India",
+      "pin_code": 400067,
+      "state": "Maharashtra",
+      "city": "Thane",
+      "lane2": "Sudhan nagar, Airoli , Sector 2",
+      "lane1": "Airoli"
+    },
+    "phone": "8080721003",
+    "email": "cimibaj567@apklamp.com"
+  },
+  "education": [
+    {
+      "name": "Mumbai univesity",
+      "to": {
+        "$date": "2024-06-18T06:30:00.000Z"
+      },
+      "qualification": "Master of Pharmacy (M.Pharm)",
+      "_id": {
+        "$oid": "67c2ed9ae0c146ccc11cb835"
+      }
+    }
+  ],
+  "employment": [
+    {
+      "name": "eClerx",
+      "position": "Web developer",
+      "department": "Information Technology",
+      "from": {
+        "$date": "2024-03-01T06:30:00.000Z"
+      },
+      "categories": [
+        {
+          "$oid": "67d7284314cd4856d5be13c6"
+        }
+      ],
+      "scope": "Data Anyalatics",
+      "to": {
+        "$date": "2025-03-01T11:14:21.295Z"
+      },
+      "_id": {
+        "$oid": "67c2ed9ae0c146ccc11cb836"
+      }
+    }
+  ],
+  "achievement": [
+    {
+      "year": "2025",
+      "description": "Best Employee"
+    }
+  ],
+  "references": [
+    {
+      "name": "govind",
+      "email": "support@technofra.com",
+      "phone": "08080721003",
+      "note": "test",
+      "_id": {
+        "$oid": "67c2ed9ae0c146ccc11cb838"
+      }
+    }
+  ],
+  "hear_about_us": [
+    "Friends & Family"
+  ],
+  "public_resume": false,
+  "companies_resume_visible": [],
+  "isresume": false,
+  "createdAt": {
+    "$date": "2025-03-01T11:20:58.091Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-01T12:32:21.285Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67c4bcf26c49287019054016"
+  },
+  "userId": {
+    "$oid": "67c4b318ac6d92b56b986569"
+  },
+  "name": "Mr. mm nnn nnn",
+  "email": "govati1854@egvoo.com",
+  "gender": "Others",
+  "experience": 0,
+  "expectedsalary": 0,
+  "currentsalary": -2,
+  "dob": {
+    "$date": "2025-03-02T20:14:42.705Z"
+  },
+  "current_company": [],
+  "marital_status": "Married",
+  "designation": "Clinical Trials Associate",
+  "contact": {
+    "current_address": {
+      "country": "India",
+      "pin_code": 401209,
+      "state": "Maharashtra",
+      "city": "Sangli",
+      "lane2": "Room No 10",
+      "lane1": "rreew"
+    },
+    "permanent_address": {
+      "country": "India",
+      "pin_code": 401209,
+      "state": "Maharashtra",
+      "city": "Sangli",
+      "lane2": "Room No 10",
+      "lane1": "rreew"
+    },
+    "phone": "123456789",
+    "email": "govati1854@egvoo.com"
+  },
+  "education": [
+    {
+      "name": "hhhh",
+      "to": {
+        "$date": "2016-02-04T06:30:00.000Z"
+      },
+      "qualification": "jjj",
+      "_id": {
+        "$oid": "67c4bcf26c49287019054017"
+      }
+    }
+  ],
+  "employment": [
+    {
+      "name": "ss",
+      "position": "ss",
+      "department": "ss",
+      "from": {
+        "$date": "2025-03-04T07:43:55.925Z"
+      },
+      "categories": [
+        {
+          "$oid": "67d7284314cd4856d5be13c6"
+        }
+      ],
+      "scope": "sss",
+      "to": {
+        "$date": "2025-03-04T07:43:55.925Z"
+      },
+      "_id": {
+        "$oid": "67c6af880daa0a3ba4138a2d"
+      }
+    },
+    {
+      "name": "ddd",
+      "position": "ddd",
+      "department": "d",
+      "from": {
+        "$date": "2025-03-05T06:30:00.000Z"
+      },
+      "categories": [
+        {
+          "$oid": "67d7284314cd4856d5be13c6"
+        }
+      ],
+      "scope": "ddd",
+      "to": {
+        "$date": "2025-03-14T06:30:00.000Z"
+      },
+      "_id": {
+        "$oid": "67c6af880daa0a3ba4138a2f"
+      }
+    }
+  ],
+  "achievement": [],
+  "references": [],
+  "hear_about_us": [
+    "EMail Campaign / Newsletter"
+  ],
+  "public_resume": false,
+  "companies_resume_visible": [],
+  "isresume": false,
+  "createdAt": {
+    "$date": "2025-03-02T20:17:54.740Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-04T07:45:12.263Z"
+  },
+  "__v": 0,
+  "cv": {
+    "fieldname": "upload_cv",
+    "originalname": "chempharmajobschenages-14-02-25.docx",
+    "encoding": "7bit",
+    "mimetype": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "destination": "D:\\shivam shukl git repo\\Job_Portal_Server\\uploads\\candidate",
+    "filename": "upload_cv-1740946723348-455201051.docx",
+    "path": "D:\\shivam shukl git repo\\Job_Portal_Server\\uploads\\candidate\\upload_cv-1740946723348-455201051.docx",
+    "size": 1718718
+  },
+  "profile": {}
+},
+{
+  "_id": {
+    "$oid": "67cac0f6d338b28153e34543"
+  },
+  "userId": {
+    "$oid": "67adb31adccbd9d1bd077981"
+  },
+  "name": "Mr. KUMAR RAJU GOWDA",
+  "email": "krgowda@hotmail.com",
+  "gender": "Male",
+  "experience": 10,
+  "expectedsalary": 10000000,
+  "currentsalary": 1100000,
+  "dob": {
+    "$date": "1973-03-01T06:30:00.000Z"
+  },
+  "current_company": [
+    {
+      "$oid": "679cbf6777f01b0affabe346"
+    },
+    {
+      "$oid": "67879cb21b18bd5c7d5c6e42"
+    },
+    {
+      "$oid": "677244a30fc5c2bd19dadd4e"
+    }
+  ],
+  "marital_status": "Married",
+  "profile": {
+    "fieldname": "profile",
+    "originalname": "360_F_430896523_0uOBW9YQMxEe5R0iMgn2jTiJrzxb8I7z.jpg",
+    "encoding": "7bit",
+    "mimetype": "image/jpeg",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/candidate",
+    "filename": "profile-1741340918431-502367146.jpg",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/candidate/profile-1741340918431-502367146.jpg",
+    "size": 27974
+  },
+  "designation": "Manager - Purchase",
+  "contact": {
+    "email": "krgowda@hotmail.com",
+    "phone": "9870122286",
+    "permanent_address": {
+      "lane1": "1401, Beuna Vista",
+      "lane2": "IC Colony, borivali west, Mumbai ",
+      "city": "Mumbai",
+      "state": "Maharashtra",
+      "pin_code": 400103,
+      "country": "India"
+    },
+    "current_address": {
+      "lane1": "1401, Beuna Vista",
+      "lane2": "IC Colony, borivali west, Mumbai ",
+      "city": "Mumbai",
+      "state": "Maharashtra",
+      "pin_code": 400103,
+      "country": "India"
+    }
+  },
+  "education": [
+    {
+      "name": "Mumbai University",
+      "to": {
+        "$date": "1995-03-31T06:30:00.000Z"
+      },
+      "qualification": "B SC",
+      "_id": {
+        "$oid": "67cac0f6d338b28153e34544"
+      }
+    },
+    {
+      "name": "IIMM",
+      "to": {
+        "$date": "2000-03-01T06:30:00.000Z"
+      },
+      "qualification": "DIPLOMA IN IMPORT & EXPORT MANAGEMENT",
+      "_id": {
+        "$oid": "67cac0f6d338b28153e34545"
+      }
+    }
+  ],
+  "employment": [
+    {
+      "name": "AARTI",
+      "position": "PURCHASE MANAGER",
+      "department": "SOURCING",
+      "from": {
+        "$date": "2007-09-01T06:30:00.000Z"
+      },
+      "categories": [
+        {
+          "$oid": "67d7284314cd4856d5be13c6"
+        }
+      ],
+      "scope": "GLDJSGLDSJGKSA;LG;SDMB;LMD;GMA;SDMDLGJADSLGLDSGLKJADLGJDSLJGLSADJGLJDSLKGJDSLGJLDSJGLADSJGLJDLKGJDSALJGLDASJGLAJSDLGJDSLGJASDLGJADLSKGJLKDASJGLDSJGLJADSLGJASLKDGJLAGJL",
+      "to": {
+        "$date": "2024-03-31T06:30:00.000Z"
+      },
+      "_id": {
+        "$oid": "67cac0f6d338b28153e34546"
+      }
+    },
+    {
+      "name": "UPL",
+      "position": "MANAGER ",
+      "department": "PURCHASAE",
+      "from": {
+        "$date": "2025-03-07T09:12:27.890Z"
+      },
+      "categories": [
+        {
+          "$oid": "67d7284314cd4856d5be13c6"
+        }
+      ],
+      "scope": "GADSHADSHADHASGAHASDHADSHGA",
+      "to": {
+        "$date": "2025-03-07T09:12:27.890Z"
+      },
+      "_id": {
+        "$oid": "67cac0f6d338b28153e34548"
+      }
+    },
+    {
+      "name": "SABERO",
+      "position": "ASST MANAGER",
+      "department": "PURCHASE",
+      "from": {
+        "$date": "2001-01-01T06:30:00.000Z"
+      },
+      "categories": [
+        {
+          "$oid": "67d7284314cd4856d5be13c6"
+        }
+      ],
+      "scope": "GASDHBDSGHASDHGA",
+      "to": {
+        "$date": "2004-09-30T06:30:00.000Z"
+      },
+      "_id": {
+        "$oid": "67cac0f6d338b28153e3454a"
+      }
+    },
+    {
+      "name": "WANBURY",
+      "position": "ASST MANAGER",
+      "department": "PURCHASE",
+      "from": {
+        "$date": "1994-03-01T06:30:00.000Z"
+      },
+      "categories": [
+        {
+          "$oid": "67d7284314cd4856d5be13c6"
+        }
+      ],
+      "scope": "SDJGLJASDLGJL",
+      "to": {
+        "$date": "2000-03-01T06:30:00.000Z"
+      },
+      "_id": {
+        "$oid": "67cac0f6d338b28153e3454c"
+      }
+    }
+  ],
+  "achievement": [],
+  "references": [],
+  "hear_about_us": [
+    "EMail Campaign / Newsletter",
+    " Friends & Family"
+  ],
+  "public_resume": false,
+  "companies_resume_visible": [],
+  "isresume": false,
+  "createdAt": {
+    "$date": "2025-03-07T09:48:38.479Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-07T09:48:38.479Z"
+  },
+  "__v": 0
+}]

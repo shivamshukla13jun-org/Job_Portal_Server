@@ -21,6 +21,7 @@ const getEmployer = async (req: Request, res: Response, next: NextFunction) => {
                 {
                     $match: { employerId: new Types.ObjectId(id) }
                 },
+               
                 {
                     $facet: {
                         jobs: [
@@ -34,7 +35,7 @@ const getEmployer = async (req: Request, res: Response, next: NextFunction) => {
                     }
                 }
             ]),
-            Employer.findById(id).lean()
+            Employer.findById(id).populate("categories").populate("address.city").populate("address.state").populate("address.country").lean()
         ]);
 
         if (!jobsResult.length || !employerDetails) {

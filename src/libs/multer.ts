@@ -1,7 +1,7 @@
 
 import multer from 'multer';
 import path from 'path';
-
+import fs from 'fs';
 // Define a type for the options
 interface MulterOptions {
     destination: string;
@@ -15,6 +15,10 @@ interface ExtendedMulterFile extends Express.Multer.File {
 
 // Create a configurable multer middleware factory
 const createMulterMiddleware = (options: MulterOptions) => {
+    // if destination folder not found then create it
+    if (!fs.existsSync(options.destination)) {
+        fs.mkdirSync(options.destination, { recursive: true });
+    }
     const storage = multer.diskStorage({
         destination: (req, file, cb) => {
             cb(null, options.destination);

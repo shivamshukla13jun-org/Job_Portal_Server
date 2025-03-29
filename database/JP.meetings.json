@@ -1,0 +1,320 @@
+[{
+  "_id": {
+    "$oid": "675fd2cfbb871ac91e536510"
+  },
+  "date": "2024-12-16T07:11:38.366Z",
+  "time": "00:30",
+  "timeDuration": "30",
+  "email": "pradnya@technofra.com",
+  "phone": "7558542831",
+  "message": "test",
+  "meetingLink": "https://technofra.com/",
+  "createdBy": {
+    "$oid": "674da48a84ccf6ab9f7f29a3"
+  },
+  "createdAt": {
+    "$date": "2024-12-16T07:12:15.243Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-16T07:12:15.243Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "675fd30b9c5df812eacb62c0"
+  },
+  "date": "2024-12-16T07:13:02.054Z",
+  "time": "04:00",
+  "timeDuration": "30",
+  "email": "pradnya@technofra.com",
+  "phone": "8080721003",
+  "message": "tesyt2",
+  "meetingLink": "https://technofra.com/",
+  "createdBy": {
+    "$oid": "674da48a84ccf6ab9f7f29a3"
+  },
+  "createdAt": {
+    "$date": "2024-12-16T07:13:15.943Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-16T07:13:15.943Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67611d58a0b8ef4ff741a4f3"
+  },
+  "date": "2024-12-12T06:30:00.000Z",
+  "time": "01:00",
+  "timeDuration": "30",
+  "email": "pradnya@technofra.com",
+  "phone": "7558542831",
+  "message": "test",
+  "meetingLink": "https://demo.chempharmajobs.com/",
+  "address": "",
+  "createdBy": {
+    "$oid": "674da48a84ccf6ab9f7f29a3"
+  },
+  "createdAt": {
+    "$date": "2024-12-17T06:42:32.782Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-17T06:42:32.782Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "676a61da4a5ae9c293bd836b"
+  },
+  "date": "2024-12-11T06:30:00.000Z",
+  "time": "00:15",
+  "timeDuration": "75",
+  "email": "pradnya@technofra.com",
+  "phone": "7558542831",
+  "message": "test",
+  "meetingLink": "",
+  "address": "https://technofra.com/",
+  "createdBy": {
+    "$oid": "674da48a84ccf6ab9f7f29a3"
+  },
+  "createdAt": {
+    "$date": "2024-12-24T07:25:14.697Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-24T07:25:14.697Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "676db10725178d5229bd12fc"
+  },
+  "date": "2024-12-31T06:30:00.000Z",
+  "time": "02:15",
+  "timeDuration": "30",
+  "email": "quincy.sabriel@deallabs.org",
+  "phone": "8459784241",
+  "message": "hiiii",
+  "meetingLink": "",
+  "address": "rwefsdfdf",
+  "createdBy": {
+    "$oid": "676daf8325178d5229bd12a8"
+  },
+  "createdAt": {
+    "$date": "2024-12-26T19:39:51.476Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-26T19:39:51.476Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "676f95b349ea1511b60aacc9"
+  },
+  "date": "2024-12-27T06:30:00.000Z",
+  "time": "01:00",
+  "timeDuration": "60",
+  "email": "pradnya@technofra.com",
+  "phone": "7558542831",
+  "message": "Come for interview dot 1:00 am",
+  "meetingLink": "",
+  "address": "Office No. 501, 5th Floor, Ghanshyam Enclave,\nNew Link Road , Kandivali (West), Mumbai - 400067.",
+  "createdBy": {
+    "$oid": "674da48a84ccf6ab9f7f29a3"
+  },
+  "createdAt": {
+    "$date": "2024-12-28T06:07:47.456Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-28T06:07:47.456Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6772325708fa712705c52deb"
+  },
+  "date": "2024-12-11T06:30:00.000Z",
+  "time": "00:30",
+  "timeDuration": "60",
+  "email": "pradnya@technofra.com",
+  "phone": "09004086582",
+  "message": "call for interview",
+  "meetingLink": "",
+  "address": "17, Navyug Industrial Estate,Vazir Glass Factory Lane, Off. Andheri-Kurla Road, Andheri (E), Mumbai – 59",
+  "createdBy": {
+    "$oid": "67483c718285172ceb497b03"
+  },
+  "createdAt": {
+    "$date": "2024-12-30T05:40:39.773Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-30T05:40:39.773Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "677268b80fc5c2bd19dae4ea"
+  },
+  "date": "2024-12-31T06:30:00.000Z",
+  "time": "01:00",
+  "timeDuration": "60",
+  "email": "coyagig352@gholar.com",
+  "phone": "7578542831",
+  "message": "come on time",
+  "meetingLink": "",
+  "address": "kandivali",
+  "createdBy": {
+    "$oid": "674da48a84ccf6ab9f7f29a3"
+  },
+  "createdAt": {
+    "$date": "2024-12-30T09:32:40.486Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-30T09:32:40.486Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67726f8c08fa712705c5400a"
+  },
+  "date": "2024-12-31T06:30:00.000Z",
+  "time": "01:00",
+  "timeDuration": "30",
+  "email": "coyagig352@gholar.com",
+  "phone": "7578542831",
+  "message": "test",
+  "meetingLink": "",
+  "address": "Mumbai",
+  "createdBy": {
+    "$oid": "6772475b08fa712705c533aa"
+  },
+  "createdAt": {
+    "$date": "2024-12-30T10:01:48.255Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-30T10:01:48.255Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6772701508fa712705c54109"
+  },
+  "date": "2024-12-13T06:30:00.000Z",
+  "time": "01:45",
+  "timeDuration": "30",
+  "email": "coyagig352@gholar.com",
+  "phone": "7578542831",
+  "message": "ewt",
+  "meetingLink": "",
+  "address": "tet",
+  "createdBy": {
+    "$oid": "674da48a84ccf6ab9f7f29a3"
+  },
+  "createdAt": {
+    "$date": "2024-12-30T10:04:05.822Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-30T10:04:05.822Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6772e5f30fc5c2bd19daee91"
+  },
+  "date": "2024-12-30T18:26:43.646Z",
+  "time": "01:45",
+  "timeDuration": "30",
+  "email": "quincy.sabriel@deallabs.org",
+  "phone": "1234567890",
+  "message": "hello\n",
+  "meetingLink": "",
+  "address": "ss",
+  "createdBy": {
+    "$oid": "676322075aab09fd1ea0cdbd"
+  },
+  "createdAt": {
+    "$date": "2024-12-30T18:26:59.641Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-30T18:26:59.641Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "677508b508fa712705c54826"
+  },
+  "date": "2025-01-16T06:30:00.000Z",
+  "time": "00:30",
+  "timeDuration": "30",
+  "email": "pradnya@technofra.com",
+  "phone": "8080721003",
+  "message": "test",
+  "meetingLink": "https://technofra.com/",
+  "address": "police chowky",
+  "createdBy": {
+    "$oid": "66fe2ea8025c97f8c08e97d9"
+  },
+  "createdAt": {
+    "$date": "2025-01-01T09:19:49.225Z"
+  },
+  "updatedAt": {
+    "$date": "2025-01-01T09:19:49.225Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67791e779a08784278663e09"
+  },
+  "date": "2025-01-04T11:41:10.257Z",
+  "time": "00:15",
+  "timeDuration": "30",
+  "email": "pradnya@technofra.com",
+  "phone": "08080721003",
+  "message": "test",
+  "meetingLink": "https://technofra.com/",
+  "address": "police chowky",
+  "createdBy": {
+    "$oid": "674da48a84ccf6ab9f7f29a3"
+  },
+  "createdAt": {
+    "$date": "2025-01-04T11:41:43.995Z"
+  },
+  "updatedAt": {
+    "$date": "2025-01-04T11:41:43.995Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "677cb67d1b7e3f61ab6f0d41"
+  },
+  "date": "2025-01-08T06:30:00.000Z",
+  "time": "00:15",
+  "timeDuration": "30",
+  "email": "pradnya@technofra.com",
+  "phone": "8080721003",
+  "message": "test",
+  "meetingLink": "",
+  "address": "police chowky",
+  "createdBy": {
+    "$oid": "674da48a84ccf6ab9f7f29a3"
+  },
+  "createdAt": {
+    "$date": "2025-01-07T05:07:09.556Z"
+  },
+  "updatedAt": {
+    "$date": "2025-01-07T05:07:09.556Z"
+  },
+  "__v": 0
+}]

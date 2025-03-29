@@ -1,0 +1,1104 @@
+[{
+  "_id": {
+    "$oid": "67040ea44c5e86a21668fade"
+  },
+  "candidateId": {
+    "$oid": "66e704a887de36e37577c224"
+  },
+  "description": "Check again",
+  "educations": [
+    {
+      "degree": "BCOM",
+      "university": "MU",
+      "start_date": "2024-10-01T06:30:00.000Z",
+      "end_date": "2024-10-17T06:30:00.000Z",
+      "description": "asdasd",
+      "_id": {
+        "$oid": "67040d3a9f0be4382a7739af"
+      }
+    },
+    {
+      "degree": "Masters",
+      "university": "MU",
+      "start_date": "2024-10-01T06:30:00.000Z",
+      "end_date": "2024-10-17T06:30:00.000Z",
+      "description": "asdasd",
+      "_id": {
+        "$oid": "67040d3a9f0be4382a7739af"
+      }
+    }
+  ],
+  "work_experiences": [
+    {
+      "position": "SDE1",
+      "company_name": "INFOSYS",
+      "start_date": "2024-10-01T06:30:00.000Z",
+      "end_date": "2024-10-24T06:30:00.000Z",
+      "description": "asdasdasd",
+      "_id": {
+        "$oid": "67040d3a9f0be4382a7739b0"
+      }
+    },
+    {
+      "position": "asdasd",
+      "company_name": "asdada",
+      "start_date": "2024-10-01T06:30:00.000Z",
+      "end_date": "2024-10-24T06:30:00.000Z",
+      "description": "asdasdasd",
+      "_id": {
+        "$oid": "67040d3a9f0be4382a7739b0"
+      }
+    }
+  ],
+  "portfolio": {
+    "fieldname": "portfolio",
+    "originalname": "kaneki-hide.jpg",
+    "encoding": "7bit",
+    "mimetype": "image/jpeg",
+    "destination": "X:\\freelance\\jp\\server\\uploads\\resume",
+    "filename": "portfolio-1728319285424-19446177.jpg",
+    "path": "X:\\freelance\\jp\\server\\uploads\\resume\\portfolio-1728319285424-19446177.jpg",
+    "size": 21242
+  },
+  "awards": [
+    {
+      "award_name": "asdasd",
+      "start_date": "2024-10-01T06:30:00.000Z",
+      "end_date": "2024-10-15T06:30:00.000Z",
+      "description": "asdasd",
+      "_id": {
+        "$oid": "67040d3a9f0be4382a7739b1"
+      }
+    },
+    {
+      "award_name": "asdasd",
+      "start_date": "2024-10-01T06:30:00.000Z",
+      "end_date": "2024-10-15T06:30:00.000Z",
+      "description": "asdasd",
+      "_id": {
+        "$oid": "67040d3a9f0be4382a7739b1"
+      }
+    }
+  ],
+  "skills": [
+    {
+      "label": "Python",
+      "value": "Python",
+      "_id": {
+        "$oid": "67040d3a9f0be4382a7739b2"
+      }
+    }
+  ],
+  "current_salary": 12358,
+  "expected_salary": 32145,
+  "social_media": {
+    "twitter": "https://x.com/4day_week?lang=en",
+    "linkedIn": "https://www.linkedin.com/company/4-day-week-campaign?originalSubdomain=uk"
+  },
+  "createdAt": {
+    "$date": "2024-10-07T16:39:00.466Z"
+  },
+  "updatedAt": {
+    "$date": "2024-10-08T18:50:18.604Z"
+  },
+  "__v": 0,
+  "languages": [
+    {
+      "label": "English",
+      "value": "English",
+      "_id": {
+        "$oid": "67040ee0d51b57233598568f"
+      }
+    },
+    {
+      "label": "Bengali",
+      "value": "Bengali",
+      "_id": {
+        "$oid": "67040ee0d51b572335985690"
+      }
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "670622f99c6a7a8808f2a7b3"
+  },
+  "candidateId": {
+    "$oid": "670621609c6a7a8808f2a536"
+  },
+  "description": "Are you looking for sample job descriptions for specific roles or guidance on how to write job descriptions? Let me know which roles or details you're interested in!",
+  "educations": [
+    {
+      "degree": "bsc it",
+      "university": "Mumbai univesity",
+      "start_date": "2017-10-17T06:30:00.000Z",
+      "end_date": "2024-11-19T06:30:00.000Z",
+      "description": "Are you looking for sample job descriptions for specific roles or guidance on how to write job descriptions? Let me know which roles or details you're interested in!",
+      "_id": {
+        "$oid": "670622f99c6a7a8808f2a7b4"
+      }
+    }
+  ],
+  "work_experiences": [
+    {
+      "position": "web developer",
+      "company_name": "technofra",
+      "start_date": "2024-05-13T06:30:00.000Z",
+      "end_date": "2024-06-13T06:30:00.000Z",
+      "description": "Are you looking for sample job descriptions for specific roles or guidance on how to write job descriptions? Let me know which roles or details you're interested in!",
+      "_id": {
+        "$oid": "670622f99c6a7a8808f2a7b5"
+      }
+    }
+  ],
+  "portfolio": {
+    "fieldname": "portfolio",
+    "originalname": "login.jpg",
+    "encoding": "7bit",
+    "mimetype": "image/jpeg",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/uploads/resume",
+    "filename": "portfolio-1728885274061-71919168.jpg",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/uploads/resume/portfolio-1728885274061-71919168.jpg",
+    "size": 82575
+  },
+  "awards": [],
+  "skills": [
+    {
+      "label": "Python",
+      "value": "Python",
+      "_id": {
+        "$oid": "670622f99c6a7a8808f2a7b7"
+      }
+    },
+    {
+      "label": "Data Analysis",
+      "value": "Data Analysis",
+      "_id": {
+        "$oid": "670622f99c6a7a8808f2a7b8"
+      }
+    },
+    {
+      "label": "SQL",
+      "value": "SQL",
+      "_id": {
+        "$oid": "670622f99c6a7a8808f2a7b9"
+      }
+    },
+    {
+      "label": "HTML/CSS",
+      "value": "HTML/CSS",
+      "_id": {
+        "$oid": "670622f99c6a7a8808f2a7ba"
+      }
+    },
+    {
+      "label": "SAP",
+      "value": "SAP",
+      "_id": {
+        "$oid": "670622f99c6a7a8808f2a7bb"
+      }
+    }
+  ],
+  "current_salary": 12000,
+  "expected_salary": 35000,
+  "languages": [
+    {
+      "label": "English",
+      "value": "English",
+      "_id": {
+        "$oid": "670622f99c6a7a8808f2a7bc"
+      }
+    },
+    {
+      "label": "Hindi",
+      "value": "Hindi",
+      "_id": {
+        "$oid": "670622f99c6a7a8808f2a7bd"
+      }
+    },
+    {
+      "label": "Marathi",
+      "value": "Marathi",
+      "_id": {
+        "$oid": "670622f99c6a7a8808f2a7be"
+      }
+    }
+  ],
+  "social_media": {
+    "twitter": "https://x.com/?lang=en",
+    "linkedIn": "https://in.linkedin.com/"
+  },
+  "createdAt": {
+    "$date": "2024-10-09T06:30:17.760Z"
+  },
+  "updatedAt": {
+    "$date": "2024-10-14T05:54:34.076Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6706d8e63b5c5dda156cf10b"
+  },
+  "candidateId": {
+    "$oid": "6706d8b73b5c5dda156cf0f1"
+  },
+  "description": "asdasd",
+  "educations": [
+    {
+      "degree": "asdasd",
+      "university": "asdasd",
+      "start_date": "2008-10-09T06:30:00.000Z",
+      "end_date": "2009-10-08T06:30:00.000Z",
+      "description": "asdasd",
+      "_id": {
+        "$oid": "6706d8e63b5c5dda156cf10c"
+      }
+    }
+  ],
+  "work_experiences": [
+    {
+      "position": "asdasd",
+      "company_name": "asdasd",
+      "start_date": "2024-10-09T06:30:00.000Z",
+      "end_date": "2024-10-17T06:30:00.000Z",
+      "description": "asdadasd",
+      "_id": {
+        "$oid": "6706d8e63b5c5dda156cf10d"
+      }
+    }
+  ],
+  "portfolio": {
+    "fieldname": "portfolio",
+    "originalname": "kaneki-hide.jpg",
+    "encoding": "7bit",
+    "mimetype": "image/jpeg",
+    "destination": "X:\\freelance\\jp\\server\\uploads\\resume",
+    "filename": "portfolio-1728501990054-206335975.jpg",
+    "path": "X:\\freelance\\jp\\server\\uploads\\resume\\portfolio-1728501990054-206335975.jpg",
+    "size": 21242
+  },
+  "awards": [
+    {
+      "award_name": "asdasd",
+      "start_date": "2024-10-02T06:30:00.000Z",
+      "end_date": "2024-10-04T06:30:00.000Z",
+      "description": "sadasd",
+      "_id": {
+        "$oid": "6706d8e63b5c5dda156cf10e"
+      }
+    }
+  ],
+  "skills": [
+    {
+      "label": "Java",
+      "value": "Java",
+      "_id": {
+        "$oid": "6706d8e63b5c5dda156cf10f"
+      }
+    }
+  ],
+  "current_salary": 12323,
+  "expected_salary": 14444,
+  "languages": [
+    {
+      "label": "English",
+      "value": "English",
+      "_id": {
+        "$oid": "6706d8e63b5c5dda156cf110"
+      }
+    }
+  ],
+  "social_media": {
+    "twitter": "https://www.youtube.com/watch?v=De9VIp37CjY&list=RDMMvgpH9go537Q&index=26",
+    "linkedIn": "https://www.youtube.com/watch?v=De9VIp37CjY&list=RDMMvgpH9go537Q&index=26"
+  },
+  "createdAt": {
+    "$date": "2024-10-09T19:26:30.110Z"
+  },
+  "updatedAt": {
+    "$date": "2024-10-09T19:26:30.110Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6710a4c409e459aadf68bac3"
+  },
+  "candidateId": {
+    "$oid": "67109ffa09e459aadf68ba9b"
+  },
+  "description": "I am an enthusiastic, self-motivated, reliable, responsible and hard working person. I am a mature team worker and adaptable to all challenging situations. I am able to work well both in a team environment as well as using own initiative. I am able to work well under pressure and adhere to strict deadlines.",
+  "educations": [
+    {
+      "degree": "MCE",
+      "university": "Mumbai University",
+      "start_date": "2024-10-17T05:39:41.655Z",
+      "end_date": "2022-08-10T06:30:00.000Z",
+      "description": "Master of Computer Engineer",
+      "_id": {
+        "$oid": "6710a4c409e459aadf68bac4"
+      }
+    }
+  ],
+  "work_experiences": [
+    {
+      "position": "UI/UX Designer",
+      "company_name": "Technofra",
+      "start_date": "2024-04-25T06:30:00.000Z",
+      "end_date": "2024-12-24T06:30:00.000Z",
+      "description": "I'm working as a UI/UX designer, and I also work in website development",
+      "_id": {
+        "$oid": "6710a4c409e459aadf68bac5"
+      }
+    }
+  ],
+  "portfolio": {
+    "fieldname": "portfolio",
+    "originalname": "Resellerclub-list.png",
+    "encoding": "7bit",
+    "mimetype": "image/png",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/uploads/resume",
+    "filename": "portfolio-1729144004538-696793383.png",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/uploads/resume/portfolio-1729144004538-696793383.png",
+    "size": 64447
+  },
+  "awards": [
+    {
+      "award_name": "NO ",
+      "start_date": "2024-10-17T05:39:41.655Z",
+      "end_date": "2024-10-17T05:39:41.655Z",
+      "description": "No",
+      "_id": {
+        "$oid": "6710a4c409e459aadf68bac6"
+      }
+    }
+  ],
+  "skills": [
+    {
+      "label": "Python",
+      "value": "Python",
+      "_id": {
+        "$oid": "6710a4c409e459aadf68bac7"
+      }
+    },
+    {
+      "label": "JavaScript",
+      "value": "JavaScript",
+      "_id": {
+        "$oid": "6710a4c409e459aadf68bac8"
+      }
+    },
+    {
+      "label": "HTML/CSS",
+      "value": "HTML/CSS",
+      "_id": {
+        "$oid": "6710a4c409e459aadf68bac9"
+      }
+    },
+    {
+      "label": "SQL",
+      "value": "SQL",
+      "_id": {
+        "$oid": "6710a4c409e459aadf68baca"
+      }
+    }
+  ],
+  "current_salary": 10000,
+  "expected_salary": 20000,
+  "languages": [
+    {
+      "label": "Hindi",
+      "value": "Hindi",
+      "_id": {
+        "$oid": "6710a4c409e459aadf68bacb"
+      }
+    },
+    {
+      "label": "English",
+      "value": "English",
+      "_id": {
+        "$oid": "6710a4c409e459aadf68bacc"
+      }
+    },
+    {
+      "label": "Marathi",
+      "value": "Marathi",
+      "_id": {
+        "$oid": "6710a4c409e459aadf68bacd"
+      }
+    }
+  ],
+  "social_media": {
+    "twitter": "https://x.com/?lang=en",
+    "linkedIn": "https://www.linkedin.com/"
+  },
+  "createdAt": {
+    "$date": "2024-10-17T05:46:44.560Z"
+  },
+  "updatedAt": {
+    "$date": "2024-10-17T05:46:44.560Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6710a6be9e18b35777321acc"
+  },
+  "candidateId": {
+    "$oid": "6710a6579e18b35777321ab1"
+  },
+  "description": "I am an enthusiastic, self-motivated, reliable, responsible and hard working person. I am a mature team worker and adaptable to all challenging situations. I am able to work well both in a team environment as well as using own initiative. I am able to work well under pressure and adhere to strict deadlines.",
+  "educations": [
+    {
+      "degree": "MCE",
+      "university": "Mumbai University",
+      "start_date": "2024-10-09T06:30:00.000Z",
+      "end_date": "2024-10-02T06:30:00.000Z",
+      "description": "Master of Computer Engineer",
+      "_id": {
+        "$oid": "6710a6be9e18b35777321acd"
+      }
+    }
+  ],
+  "work_experiences": [
+    {
+      "position": "UI/UX Designer",
+      "company_name": "Technofra",
+      "start_date": "2024-10-09T06:30:00.000Z",
+      "end_date": "2024-10-15T06:30:00.000Z",
+      "description": "I'm working as a UI/UX designer, and I also work in website development",
+      "_id": {
+        "$oid": "6710a6be9e18b35777321ace"
+      }
+    }
+  ],
+  "portfolio": {
+    "fieldname": "portfolio",
+    "originalname": "Screenshot 2024-09-30 144221.png",
+    "encoding": "7bit",
+    "mimetype": "image/png",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/uploads/resume",
+    "filename": "portfolio-1730282935354-723545593.png",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/uploads/resume/portfolio-1730282935354-723545593.png",
+    "size": 46571
+  },
+  "awards": [],
+  "skills": [
+    {
+      "label": "JavaScript",
+      "value": "JavaScript",
+      "_id": {
+        "$oid": "6710a6be9e18b35777321ad0"
+      }
+    },
+    {
+      "label": "Python",
+      "value": "Python",
+      "_id": {
+        "$oid": "67220278894f146fb8850b99"
+      }
+    },
+    {
+      "label": "Digital Marketing",
+      "value": "Digital Marketing",
+      "_id": {
+        "$oid": "67220278894f146fb8850b9a"
+      }
+    },
+    {
+      "label": "Machine Learning",
+      "value": "Machine Learning",
+      "_id": {
+        "$oid": "67220278894f146fb8850b9b"
+      }
+    },
+    {
+      "label": "Node.js",
+      "value": "Node.js",
+      "_id": {
+        "$oid": "67220278894f146fb8850b9c"
+      }
+    },
+    {
+      "label": "SEO",
+      "value": "SEO",
+      "_id": {
+        "$oid": "67220278894f146fb8850b9d"
+      }
+    },
+    {
+      "label": "Financial Analysis",
+      "value": "Financial Analysis",
+      "_id": {
+        "$oid": "67220278894f146fb8850b9e"
+      }
+    }
+  ],
+  "current_salary": 12000,
+  "expected_salary": 55000,
+  "languages": [
+    {
+      "label": "Bengali",
+      "value": "Bengali",
+      "_id": {
+        "$oid": "6710a6be9e18b35777321ad1"
+      }
+    }
+  ],
+  "social_media": {
+    "twitter": "https://x.com/?lang=en",
+    "linkedIn": "https://www.linkedin.com/"
+  },
+  "createdAt": {
+    "$date": "2024-10-17T05:55:10.577Z"
+  },
+  "updatedAt": {
+    "$date": "2024-10-30T10:24:23.027Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "671d384006b53245f2bbe25b"
+  },
+  "candidateId": {
+    "$oid": "67143698129ed20083a17871"
+  },
+  "description": "xzxZ",
+  "educations": [
+    {
+      "degree": "sas",
+      "university": "as",
+      "start_date": "2024-10-11T06:30:00.000Z",
+      "end_date": "2024-10-03T06:30:00.000Z",
+      "description": "asas",
+      "_id": {
+        "$oid": "671d384006b53245f2bbe25c"
+      }
+    }
+  ],
+  "work_experiences": [
+    {
+      "position": "sasss",
+      "company_name": "sas",
+      "start_date": "2024-10-10T06:30:00.000Z",
+      "end_date": "2024-10-01T06:30:00.000Z",
+      "description": "sS",
+      "_id": {
+        "$oid": "671d384006b53245f2bbe25d"
+      }
+    }
+  ],
+  "portfolio": {
+    "fieldname": "portfolio",
+    "originalname": "pexels-fauxels-3183197.jpg",
+    "encoding": "7bit",
+    "mimetype": "image/jpeg",
+    "destination": "D:\\shivam shukl git repo\\Job_Portal_Server\\uploads\\resume",
+    "filename": "portfolio-1729968192255-16682528.jpg",
+    "path": "D:\\shivam shukl git repo\\Job_Portal_Server\\uploads\\resume\\portfolio-1729968192255-16682528.jpg",
+    "size": 1971089
+  },
+  "awards": [
+    {
+      "award_name": "sas",
+      "start_date": "2024-10-10T06:30:00.000Z",
+      "end_date": "2024-10-02T06:30:00.000Z",
+      "description": "Ss",
+      "_id": {
+        "$oid": "671d384006b53245f2bbe25e"
+      }
+    }
+  ],
+  "skills": [
+    {
+      "label": "Python",
+      "value": "Python",
+      "_id": {
+        "$oid": "671d384006b53245f2bbe25f"
+      }
+    },
+    {
+      "label": "Machine Learning",
+      "value": "Machine Learning",
+      "_id": {
+        "$oid": "671d384006b53245f2bbe260"
+      }
+    }
+  ],
+  "current_salary": 12,
+  "expected_salary": 230,
+  "languages": [
+    {
+      "label": "English",
+      "value": "English",
+      "_id": {
+        "$oid": "671d384006b53245f2bbe261"
+      }
+    }
+  ],
+  "social_media": {
+    "twitter": "https://www.expertia.ai/",
+    "linkedIn": "https://www.expertia.ai/"
+  },
+  "createdAt": {
+    "$date": "2024-10-26T18:43:12.462Z"
+  },
+  "updatedAt": {
+    "$date": "2024-10-26T20:28:39.303Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "672222b9894f146fb8851d0a"
+  },
+  "candidateId": {
+    "$oid": "67061c969c6a7a8808f29ca5"
+  },
+  "description": "My name is Pradnya Ashok Jagdale, and I am from Airoli. I have completed a BSc in IT from D.G. Ruparel College of Arts, Science and Commers and a Python web development course at IT Vedant. I have a strong knowledge of frontend technologies, including HTML, CSS, JavaScript, and Bootstrap, as well as backend technologies like Python, SQL, and Django.",
+  "educations": [
+    {
+      "degree": "BSc I T ",
+      "university": "Mumbai University",
+      "start_date": "2024-08-02T06:30:00.000Z",
+      "end_date": "2021-07-13T06:30:00.000Z",
+      "description": "I have completed BSc I T",
+      "_id": {
+        "$oid": "672222b9894f146fb8851d0b"
+      }
+    }
+  ],
+  "work_experiences": [
+    {
+      "position": "Frontend Developer",
+      "company_name": "Technofra",
+      "start_date": "2024-05-13T06:30:00.000Z",
+      "end_date": "2024-12-31T06:30:00.000Z",
+      "description": "I'm currently working in Technofra company.",
+      "_id": {
+        "$oid": "672222b9894f146fb8851d0c"
+      }
+    }
+  ],
+  "portfolio": {
+    "fieldname": "portfolio",
+    "originalname": "Pradnesh Resume.pdf",
+    "encoding": "7bit",
+    "mimetype": "application/pdf",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/uploads/resume",
+    "filename": "portfolio-1730290361275-464372668.pdf",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/uploads/resume/portfolio-1730290361275-464372668.pdf",
+    "size": 144117
+  },
+  "awards": [
+    {
+      "award_name": "2024",
+      "start_date": "2024-10-29T06:30:00.000Z",
+      "end_date": "2024-10-29T06:30:00.000Z",
+      "description": "Top Of The Year's",
+      "_id": {
+        "$oid": "672222b9894f146fb8851d0d"
+      }
+    }
+  ],
+  "skills": [
+    {
+      "label": "Problem Solving",
+      "value": "Problem Solving",
+      "_id": {
+        "$oid": "672222b9894f146fb8851d12"
+      }
+    },
+    {
+      "label": "Product Management",
+      "value": "product_management",
+      "_id": {
+        "$oid": "672b122f073cf423274d7d1a"
+      }
+    },
+    {
+      "label": "Regulatory Affairs",
+      "value": "regulatory_affairs",
+      "_id": {
+        "$oid": "672b122f073cf423274d7d1b"
+      }
+    }
+  ],
+  "current_salary": 20000,
+  "expected_salary": 55000,
+  "languages": [
+    {
+      "label": "Hindi",
+      "value": "Hindi",
+      "_id": {
+        "$oid": "672222b9894f146fb8851d13"
+      }
+    },
+    {
+      "label": "English",
+      "value": "English",
+      "_id": {
+        "$oid": "672222b9894f146fb8851d14"
+      }
+    },
+    {
+      "label": "Marathi",
+      "value": "Marathi",
+      "_id": {
+        "$oid": "672222b9894f146fb8851d15"
+      }
+    }
+  ],
+  "social_media": {
+    "twitter": "https://x.com/",
+    "linkedIn": "https://in.linkedin.com/"
+  },
+  "createdAt": {
+    "$date": "2024-10-30T12:12:41.321Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-02T12:53:51.059Z"
+  },
+  "__v": 0,
+  "portfoliolink": ""
+},
+{
+  "_id": {
+    "$oid": "672d118efe282375a3c1508e"
+  },
+  "candidateId": {
+    "$oid": "672d1025fe282375a3c15044"
+  },
+  "description": "Passionate software engineer with 5+ years of experience in developing scalable web applications.",
+  "educations": [
+    {
+      "degree": "Bachelor of Technology (B.Tech)",
+      "university": "Indian Institute of Technology (IIT) Bombay",
+      "start_date": "2015-08-01T00:00:00.000Z",
+      "end_date": "2019-06-30T00:00:00.000Z",
+      "description": "Specialized in software engineering with a focus on backend development and cloud computing.",
+      "_id": {
+        "$oid": "672d118efe282375a3c1508f"
+      }
+    }
+  ],
+  "work_experiences": [],
+  "portfolio": {
+    "fieldname": "portfolio",
+    "originalname": "upload_cv-1730918705755-298440121.jpg",
+    "encoding": "7bit",
+    "mimetype": "image/jpeg",
+    "destination": "D:\\JP demo\\Job_Portal_Server\\uploads\\resume",
+    "filename": "portfolio-1731006861779-774036834.jpg",
+    "path": "D:\\JP demo\\Job_Portal_Server\\uploads\\resume\\portfolio-1731006861779-774036834.jpg",
+    "size": 180456
+  },
+  "portfoliolink": "https://github.com/johndoe",
+  "awards": [
+    {
+      "award_name": "Employee of the Year",
+      "start_date": "2021-12-01T00:00:00.000Z",
+      "end_date": "2021-12-31T00:00:00.000Z",
+      "description": "Recognized for exceptional performance in leading a critical project and delivering on-time results.",
+      "_id": {
+        "$oid": "672d118efe282375a3c15092"
+      }
+    }
+  ],
+  "skills": [
+    {
+      "label": "Pharmaceutical Research",
+      "value": "pharmaceutical_research",
+      "_id": {
+        "$oid": "672d118efe282375a3c15093"
+      }
+    },
+    {
+      "label": "Clinical Trials",
+      "value": "clinical_trials",
+      "_id": {
+        "$oid": "672d118efe282375a3c15094"
+      }
+    }
+  ],
+  "current_salary": 80000,
+  "expected_salary": 100000,
+  "languages": [
+    {
+      "label": "English",
+      "value": "English",
+      "_id": {
+        "$oid": "672d118efe282375a3c15095"
+      }
+    }
+  ],
+  "social_media": {
+    "twitter": "https://twitter.com/johndoe",
+    "linkedIn": "https://www.linkedin.com/in/johndoe"
+  },
+  "createdAt": {
+    "$date": "2024-11-07T19:14:22.137Z"
+  },
+  "updatedAt": {
+    "$date": "2024-11-18T07:27:22.066Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "672d28aec7b9c0107a36f651"
+  },
+  "candidateId": {
+    "$oid": "672d26b30241f4e37bd265af"
+  },
+  "description": "Passionate software engineer with 5+ years of experience in developing scalable web applications.",
+  "educations": [
+    {
+      "degree": "Bachelor of Technology (B.Tech)",
+      "university": "Indian Institute of Technology (IIT) Bombay",
+      "start_date": "2015-08-01T00:00:00.000Z",
+      "end_date": "2019-06-30T00:00:00.000Z",
+      "description": "Specialized in software engineering with a focus on backend development and cloud computing.",
+      "_id": {
+        "$oid": "672d28aec7b9c0107a36f652"
+      }
+    }
+  ],
+  "work_experiences": [
+    {
+      "position": "Software Engineer",
+      "company_name": "TechCorp Solutions",
+      "start_date": "2019-07-01T00:00:00.000Z",
+      "end_date": "2022-05-15T00:00:00.000Z",
+      "description": "Developed and maintained core features of a cloud-based SaaS product. Led a team of 5 engineers and collaborated with cross-functional teams to improve product scalability and performance.",
+      "_id": {
+        "$oid": "672d28aec7b9c0107a36f653"
+      }
+    },
+    {
+      "position": "Senior Software Engineer",
+      "company_name": "Innovative Solutions",
+      "start_date": "2022-06-01T00:00:00.000Z",
+      "end_date": "2024-11-07T20:52:51.928Z",
+      "description": "Leading the architecture and development of a new microservices-based platform. Optimizing systems for high performance and low latency.",
+      "_id": {
+        "$oid": "672d28aec7b9c0107a36f654"
+      }
+    }
+  ],
+  "portfoliolink": "https://github.com/johndoe",
+  "awards": [
+    {
+      "award_name": "Employee of the Year",
+      "start_date": "2021-12-01T00:00:00.000Z",
+      "end_date": "2021-12-31T00:00:00.000Z",
+      "description": "Recognized for exceptional performance in leading a critical project and delivering on-time results.",
+      "_id": {
+        "$oid": "672d28aec7b9c0107a36f655"
+      }
+    }
+  ],
+  "skills": [
+    {
+      "label": "JavaScript",
+      "value": "Expert",
+      "_id": {
+        "$oid": "672d28aec7b9c0107a36f656"
+      }
+    },
+    {
+      "label": "Node.js",
+      "value": "Advanced",
+      "_id": {
+        "$oid": "672d28aec7b9c0107a36f657"
+      }
+    },
+    {
+      "label": "React",
+      "value": "Advanced",
+      "_id": {
+        "$oid": "672d28aec7b9c0107a36f658"
+      }
+    },
+    {
+      "label": "AWS",
+      "value": "Intermediate",
+      "_id": {
+        "$oid": "672d28aec7b9c0107a36f659"
+      }
+    },
+    {
+      "label": "Docker",
+      "value": "Intermediate",
+      "_id": {
+        "$oid": "672d28aec7b9c0107a36f65a"
+      }
+    }
+  ],
+  "current_salary": 80000,
+  "expected_salary": 100000,
+  "languages": [
+    {
+      "label": "English",
+      "value": "Fluent",
+      "_id": {
+        "$oid": "672d28aec7b9c0107a36f65b"
+      }
+    },
+    {
+      "label": "Hindi",
+      "value": "Fluent",
+      "_id": {
+        "$oid": "672d28aec7b9c0107a36f65c"
+      }
+    },
+    {
+      "label": "Spanish",
+      "value": "Intermediate",
+      "_id": {
+        "$oid": "672d28aec7b9c0107a36f65d"
+      }
+    }
+  ],
+  "social_media": {
+    "twitter": "https://twitter.com/johndoe",
+    "linkedIn": "https://www.linkedin.com/in/johndoe"
+  },
+  "createdAt": {
+    "$date": "2024-11-07T20:53:02.676Z"
+  },
+  "updatedAt": {
+    "$date": "2024-11-07T20:53:02.676Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "673de659efc14268aef33698"
+  },
+  "candidateId": {
+    "$oid": "673de4ccd382c8243eab92d3"
+  },
+  "description": "Passionate software engineer with 5+ years of experience in developing scalable web applications.",
+  "educations": [
+    {
+      "degree": "Bachelor of Technology (B.Tech)",
+      "university": "Indian Institute of Technology (IIT) Bombay",
+      "start_date": "2015-08-01T00:00:00.000Z",
+      "end_date": "2019-06-30T00:00:00.000Z",
+      "description": "Specialized in software engineering with a focus on backend development and cloud computing.",
+      "_id": {
+        "$oid": "673de659efc14268aef33699"
+      }
+    }
+  ],
+  "work_experiences": [
+    {
+      "position": "Software Engineer",
+      "company_name": "TechCorp Solutions",
+      "start_date": "2019-07-01T00:00:00.000Z",
+      "end_date": "2022-05-15T00:00:00.000Z",
+      "description": "Developed and maintained core features of a cloud-based SaaS product. Led a team of 5 engineers and collaborated with cross-functional teams to improve product scalability and performance.",
+      "_id": {
+        "$oid": "673de659efc14268aef3369a"
+      }
+    },
+    {
+      "position": "Senior Software Engineer",
+      "company_name": "Innovative Solutions",
+      "start_date": "2022-06-01T00:00:00.000Z",
+      "end_date": "2024-11-20T13:38:24.752Z",
+      "description": "Leading the architecture and development of a new microservices-based platform. Optimizing systems for high performance and low latency.",
+      "_id": {
+        "$oid": "673de659efc14268aef3369b"
+      }
+    }
+  ],
+  "portfoliolink": "https://github.com/johndoe",
+  "awards": [
+    {
+      "award_name": "Employee of the Year",
+      "start_date": "2021-12-01T00:00:00.000Z",
+      "end_date": "2021-12-31T00:00:00.000Z",
+      "description": "Recognized for exceptional performance in leading a critical project and delivering on-time results.",
+      "_id": {
+        "$oid": "673de659efc14268aef3369c"
+      }
+    }
+  ],
+  "skills": [
+    {
+      "label": "JavaScript",
+      "value": "Expert",
+      "_id": {
+        "$oid": "673de659efc14268aef3369d"
+      }
+    },
+    {
+      "label": "Node.js",
+      "value": "Advanced",
+      "_id": {
+        "$oid": "673de659efc14268aef3369e"
+      }
+    },
+    {
+      "label": "React",
+      "value": "Advanced",
+      "_id": {
+        "$oid": "673de659efc14268aef3369f"
+      }
+    },
+    {
+      "label": "AWS",
+      "value": "Intermediate",
+      "_id": {
+        "$oid": "673de659efc14268aef336a0"
+      }
+    },
+    {
+      "label": "Docker",
+      "value": "Intermediate",
+      "_id": {
+        "$oid": "673de659efc14268aef336a1"
+      }
+    }
+  ],
+  "current_salary": 80000,
+  "expected_salary": 100000,
+  "languages": [
+    {
+      "label": "English",
+      "value": "Fluent",
+      "_id": {
+        "$oid": "673de659efc14268aef336a2"
+      }
+    },
+    {
+      "label": "Hindi",
+      "value": "Fluent",
+      "_id": {
+        "$oid": "673de659efc14268aef336a3"
+      }
+    },
+    {
+      "label": "Spanish",
+      "value": "Intermediate",
+      "_id": {
+        "$oid": "673de659efc14268aef336a4"
+      }
+    }
+  ],
+  "social_media": {
+    "twitter": "https://twitter.com/johndoe",
+    "linkedIn": "https://www.linkedin.com/in/johndoe"
+  },
+  "createdAt": {
+    "$date": "2024-11-20T13:38:33.394Z"
+  },
+  "updatedAt": {
+    "$date": "2024-11-20T13:38:33.394Z"
+  },
+  "__v": 0
+}]

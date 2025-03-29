@@ -1,0 +1,1204 @@
+[{
+  "_id": {
+    "$oid": "670607969c6a7a8808f2911c"
+  },
+  "userId": {
+    "$oid": "66eaa51fa1776b44ea3f1dcf"
+  },
+  "name": "Pradnya Ashok Jagdale",
+  "email": "pradnya@technofra.com",
+  "business_name": "BASF",
+  "business_gst": "Technofra",
+  "pan_card": "CPAJA5353A",
+  "phone_area": "080807",
+  "phone": "7558542831",
+  "address": {
+    "lane1": "101",
+    "lane2": "Galaxy Apartments, MG Road",
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "pin_code": 400067,
+    "country": "India"
+  },
+  "product_services": "Products\nBasic Chemicals:\n\nInorganic Chemicals: Acids (sulfuric, hydrochloric), bases (sodium hydroxide), salts (sodium chloride).\nOrganic Chemicals: Ethanol, methanol, acetone, benzene, and other solvents.\nSpecialty Chemicals:\n\nAdditives: Paints, coatings, plastics, lubricants, and adhesives.\nPerformance Chemicals: Cleaning agents, surfactants, and specialty polymers.\nServices\nResearch and Development (R&D):\n\nCustom formulations and product development for specific applications.\nCollaborative research with clients to develop new chemical products.\nConsulting Services:\n\nProcess optimization and efficiency improvement in chemical manufacturing.\nRegulatory compliance and safety assessments.",
+  "url": "https://www.basf.com/in/en",
+  "year_established": {
+    "$date": "2005-03-08T06:30:00.000Z"
+  },
+  "keywords": "Chemical manufacturing, Specialty chemicals, Inorganic chemicals, Organic chemicals, Fine chemicals",
+  "logo": {
+    "fieldname": "logo",
+    "originalname": "images.png",
+    "encoding": "7bit",
+    "mimetype": "image/png",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/employer",
+    "filename": "logo-1734410947537-951840837.png",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/employer/logo-1734410947537-951840837.png",
+    "size": 4335
+  },
+  "videos": {
+    "fieldname": "video[]",
+    "originalname": "c84951701f747f40a3933eeff3de1c6f.jpg",
+    "encoding": "7bit",
+    "mimetype": "image/jpeg",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/uploads/employer",
+    "filename": "video[]-1728448414305-910797710.jpg",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/uploads/employer/video[]-1728448414305-910797710.jpg",
+    "size": 51872
+  },
+  "pictures": {
+    "fieldname": "picture[]",
+    "originalname": "company1.png",
+    "encoding": "7bit",
+    "mimetype": "image/png",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/uploads/employer",
+    "filename": "picture[]-1728565306176-193756257.png",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/uploads/employer/picture[]-1728565306176-193756257.png",
+    "size": 374452
+  },
+  "jobs": [],
+  "isBlocked": false,
+  "createdAt": {
+    "$date": "2024-10-09T04:33:26.108Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-17T04:49:07.555Z"
+  },
+  "__v": 0,
+  "categories": [
+    {
+      "value": "Specialty Chemicals",
+      "label": "Specialty Chemicals",
+      "_id": {
+        "$oid": "676102c3a0b8ef4ff741a068"
+      }
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "67062e899c6a7a8808f2ad2c"
+  },
+  "userId": {
+    "$oid": "66ea7edca1776b44ea3f1da6"
+  },
+  "name": "Khushi  Yadav",
+  "email": "accounts@technofra.com",
+  "business_name": "Organic Chemical",
+  "business_gst": "27ASHGFFDW27F",
+  "pan_card": "GW23456UH",
+  "phone_area": "400067",
+  "phone": "8080803375",
+  "address": {
+    "lane1": "Office No. 501, 5th Floor, Ghanshyam Enclave, Next To Laljipada Police Station,",
+    "lane2": "New Link Road , Kandivali (West)",
+    "city": "Mumbai",
+    "state": "Maharasthra",
+    "pin_code": 400067,
+    "country": "India"
+  },
+  "product_services": "Custom/Contract Manufacturing\nResearch & Development (R&D)\nConsulting Services\nLogistics and Distribution\nWaste Management and Recycling\nTechnical Support & Training\nLaboratory Testing and Analytical Services",
+  "url": "https://technofra.com/",
+  "year_established": {
+    "$date": "1998-01-09T06:30:00.000Z"
+  },
+  "keywords": "Custom/Contract Manufacturing Research & Development (R&D) Consulting Services Logistics and Distribution Waste Management and Recycling Technical Support & Training Laboratory Testing and Analytical Services",
+  "logo": {
+    "fieldname": "logo",
+    "originalname": "Logo.png",
+    "encoding": "7bit",
+    "mimetype": "image/png",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/uploads/employer",
+    "filename": "logo-1728458377379-393012096.png",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/uploads/employer/logo-1728458377379-393012096.png",
+    "size": 23040
+  },
+  "videos": {
+    "fieldname": "video[]",
+    "originalname": "Logo.png",
+    "encoding": "7bit",
+    "mimetype": "image/png",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/uploads/employer",
+    "filename": "video[]-1728458377379-487744163.png",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/uploads/employer/video[]-1728458377379-487744163.png",
+    "size": 23040
+  },
+  "pictures": {
+    "fieldname": "picture[]",
+    "originalname": "Logo.png",
+    "encoding": "7bit",
+    "mimetype": "image/png",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/uploads/employer",
+    "filename": "picture[]-1728458377379-395534812.png",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/uploads/employer/picture[]-1728458377379-395534812.png",
+    "size": 23040
+  },
+  "jobs": [],
+  "isBlocked": false,
+  "createdAt": {
+    "$date": "2024-10-09T07:19:37.384Z"
+  },
+  "updatedAt": {
+    "$date": "2024-10-09T07:19:37.384Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67076129c1a3901ad82d42a2"
+  },
+  "userId": {
+    "$oid": "66fe2ea8025c97f8c08e97d9"
+  },
+  "name": "Pradnya Ashok Jagdale",
+  "email": "jagdalepradnya5@gmail.com",
+  "business_name": "Elkay Chemicals Private Limited",
+  "business_gst": "27ABCDE1234F2Z5",
+  "pan_card": "CGARA5353A",
+  "phone_area": "+91",
+  "phone": " 808 080 3375",
+  "address": {
+    "lane1": "Office No. 501, 5th Floor",
+    "lane2": "Ghanshyam Enclave, Next To Laljipada Police Station, New Link Road , Kandivali (West), Mumbai - 400067. Maharashtra - India",
+    "city": {
+      "$oid": "67d571ce8e4cf5bc7f14d2a9"
+    },
+    "state": {
+      "$oid": "67d571b18e4cf5bc7f14d29a"
+    },
+    "pin_code": 400067,
+    "country": {
+      "$oid": "67d5718f8e4cf5bc7f14d290"
+    }
+  },
+  "product_services": "Elkay Chemicals Private Limited is a leading manufacturer and supplier of high-quality chemical products, specializing in a diverse range of applications for various industries. With a commitment to innovation and sustainability, Elkay Chemicals focuses on delivering reliable solutions that meet the evolving needs of its clients. Our extensive product portfolio includes specialty chemicals, industrial solvents, and performance additives, all manufactured to stringent quality standards.\n\nAt Elkay Chemicals, we prioritize customer satisfaction and strive to build long-lasting partnerships through exceptional service and technical expertise. Our state-of-the-art facilities, skilled workforce, and adherence to industry regulations ensure that we provide products that not only meet but exceed our customers' expectations.\n\nWith a vision to be a trusted name in the chemical industry, Elkay Chemicals is dedicated to promoting sustainable practices and contributing to the development of eco-friendly solutions that benefit both our clients and the environment.",
+  "url": "https://technofra.com/",
+  "year_established": {
+    "$date": "2012-01-02T06:30:00.000Z"
+  },
+  "keywords": "Fragrance Manufacturer in India, fragrance manufacturer in mumbai, industrial fragrance manufacturer, personal care fragrance manufacturer, home care fragrance manyfacturer, perfume fragrance manufacturer, new, pradnya",
+  "logo": {
+    "fieldname": "logo",
+    "originalname": "chemical-logo-design_1142-886.avif",
+    "encoding": "7bit",
+    "mimetype": "image/avif",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/employer",
+    "filename": "logo-1736406825184-163375126.avif",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/employer/logo-1736406825184-163375126.avif",
+    "size": 11938
+  },
+  "videos": {
+    "fieldname": "video[]",
+    "originalname": "Information.png",
+    "encoding": "7bit",
+    "mimetype": "image/png",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/uploads/employer",
+    "filename": "video[]-1728536873738-200358245.png",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/uploads/employer/video[]-1728536873738-200358245.png",
+    "size": 4428
+  },
+  "pictures": {},
+  "jobs": [],
+  "isBlocked": false,
+  "createdAt": {
+    "$date": "2024-10-10T05:07:53.755Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-23T13:28:29.537Z"
+  },
+  "__v": 0,
+  "categories": [
+    {
+      "$oid": "67d7284314cd4856d5be13c6"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "670f95c29e18b3577732135d"
+  },
+  "userId": {
+    "$oid": "670f93a19e18b35777321326"
+  },
+  "name": "Manish Rajesh Singh",
+  "email": "supportl@technofr.com",
+  "business_name": "valntic",
+  "business_gst": "Manish8898",
+  "pan_card": "CPAJA5353A",
+  "phone_area": "8080721003",
+  "phone": "7039553408",
+  "address": {
+    "lane1": "Office No. 501, 5th Floor",
+    "lane2": "Galaxy Apartments, MG Road",
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "pin_code": 400067,
+    "country": "India"
+  },
+  "product_services": "Quality assurance is at the heart of the entire drug manufacturing process. That’s why thousands of pharmaceutical manufacturers trust Spectrum Chemical for essential raw materials.",
+  "url": "https://www.valantic.com/en/",
+  "year_established": {
+    "$date": "2006-07-11T06:30:00.000Z"
+  },
+  "keywords": "manish",
+  "logo": {
+    "fieldname": "logo",
+    "originalname": "logo4 (1).png",
+    "encoding": "7bit",
+    "mimetype": "image/png",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/uploads/employer",
+    "filename": "logo-1729074626335-372541806.png",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/uploads/employer/logo-1729074626335-372541806.png",
+    "size": 10448
+  },
+  "jobs": [],
+  "isBlocked": false,
+  "createdAt": {
+    "$date": "2024-10-16T10:30:26.353Z"
+  },
+  "updatedAt": {
+    "$date": "2024-10-18T09:54:03.745Z"
+  },
+  "__v": 0,
+  "pictures": {},
+  "videos": {}
+},
+{
+  "_id": {
+    "$oid": "67610d9da0b8ef4ff741a2e7"
+  },
+  "userId": {
+    "$oid": "67610cb42a54b2fa893e2779"
+  },
+  "name": "Gajanan Ashok Chavan",
+  "email": "birinip816@evusd.com",
+  "business_name": "manish",
+  "business_gst": "48447489440",
+  "categories": [
+    {
+      "value": "Agrochemicals",
+      "label": "Agrochemicals",
+      "_id": {
+        "$oid": "67610d9da0b8ef4ff741a2e8"
+      }
+    }
+  ],
+  "phone_area": "91",
+  "phone": "8080721003",
+  "address": {
+    "lane1": "Office No. 501, 5th Floor",
+    "lane2": "Galaxy Apartments, MG Road",
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "pin_code": 400067,
+    "country": "India"
+  },
+  "product_services": "test",
+  "url": "https://www.snainfotech.co.in/",
+  "year_established": {
+    "$date": "2024-12-12T06:30:00.000Z"
+  },
+  "keywords": "chemical",
+  "logo": {
+    "fieldname": "logo",
+    "originalname": "customer-satisfaction-service-care-problem-solving.jpg",
+    "encoding": "7bit",
+    "mimetype": "image/jpeg",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/employer",
+    "filename": "logo-1734414376580-513272670.jpg",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/employer/logo-1734414376580-513272670.jpg",
+    "size": 288284
+  },
+  "jobs": [],
+  "isBlocked": false,
+  "createdAt": {
+    "$date": "2024-12-17T05:35:25.969Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-17T05:46:16.593Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67614465a0b8ef4ff741a63c"
+  },
+  "userId": {
+    "$oid": "676142532a54b2fa893e2b65"
+  },
+  "name": "umesh P. jadhav",
+  "email": "umeshjgalpha@gmail.com",
+  "business_name": "GALPHA LABORATORIES LTD.",
+  "business_gst": "C2DF24F2DEWFW",
+  "categories": [
+    {
+      "value": "Basic Chemicals",
+      "label": "Basic Chemicals",
+      "_id": {
+        "$oid": "6789f7a1958d4b95b74a243a"
+      }
+    }
+  ],
+  "phone_area": "91",
+  "phone": "1313216464",
+  "address": {
+    "lane1": "sv-gsgdgrdghdhgdgdfg,dgdrfgdg,dgdfgdfgfd",
+    "lane2": "tyutrtyrye, retrewtrtre,ipiopoipoi",
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "pin_code": 400070,
+    "country": "India"
+  },
+  "product_services": "specially chemical production since 1978 by Mr. jdosjad, khfkhfkhfkhKLJFHJkljfklJASFKLZJSCKLJKCDFSASCJJASFLASDCASDASWDASCASC\nKAHFKAHFKASFLHAS;FLHASFHLKJAFLKJOLFJUFJOIJFOKLJDSLVJD;LSVJDS\nSDJVFBNSKBNFM3QWBRFf\nvdskjnvfksdfkljshfkdhesfiuewhuiuuuuuuuuuuuuuuuuuuurliQJROQUORUPOQURPO9QUJFKLWMNFKLNSKJCB;LpljufoidhjscknmcnklnkjhfjQGDFqwwrheklbqakjbgdjhF\nGHVFJsfudhsbiyugfiQOWRUDPOQIWUDFOjknxsbnkcvbgiwseohhfqewohfjwfooijuoixzjlkhnkjhcgyueplqkdfkbnakbvdcknl,zchaisuefqkdnflaxcjlacjkaghcolqajudhqu3wryh",
+  "url": "http://google.com",
+  "year_established": {
+    "$date": "1978-01-01T06:30:00.000Z"
+  },
+  "keywords": "CHEMICAL",
+  "logo": {
+    "fieldname": "logo",
+    "originalname": "GLLogo.jpg",
+    "encoding": "7bit",
+    "mimetype": "image/jpeg",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/employer",
+    "filename": "logo-1737096474241-447398777.jpg",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/employer/logo-1737096474241-447398777.jpg",
+    "size": 438204
+  },
+  "jobs": [],
+  "isBlocked": false,
+  "createdAt": {
+    "$date": "2024-12-17T09:29:09.200Z"
+  },
+  "updatedAt": {
+    "$date": "2025-01-17T06:47:54.302Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6763280c71a189db5b077ca2"
+  },
+  "userId": {
+    "$oid": "676322075aab09fd1ea0cdbd"
+  },
+  "name": "test hhhh jjj",
+  "email": "rebel.kamarius@deallabs.org",
+  "business_name": "test",
+  "business_gst": "Technofra",
+  "categories": [
+    {
+      "value": "Specialty Chemicals",
+      "label": "Specialty Chemicals",
+      "_id": {
+        "$oid": "6763229e5aab09fd1ea0cddb"
+      }
+    },
+    {
+      "value": "Agrochemicals",
+      "label": "Agrochemicals",
+      "_id": {
+        "$oid": "6785621f62ee3522366cb40c"
+      }
+    }
+  ],
+  "phone_area": "80807",
+  "phone": "1234567890",
+  "address": {
+    "lane1": "101",
+    "lane2": "Galaxy Apartments, MG Road",
+    "city": "Yokohama",
+    "state": "Kanagawa",
+    "pin_code": 401206,
+    "country": "Japan"
+  },
+  "product_services": "hhhh",
+  "url": "https://paytm.com/",
+  "year_established": {
+    "$date": "2013-12-03T06:30:00.000Z"
+  },
+  "keywords": "Web Development, Digital Marketing, SEO Services, Branding Solutions",
+  "logo": {
+    "fieldname": "logo",
+    "originalname": "logo.png",
+    "encoding": "7bit",
+    "mimetype": "image/png",
+    "destination": "D:\\shivam shukl git repo\\Job_Portal_Server\\uploads\\employer",
+    "filename": "logo-1734550174301-437586038.png",
+    "path": "D:\\shivam shukl git repo\\Job_Portal_Server\\uploads\\employer\\logo-1734550174301-437586038.png",
+    "size": 213938
+  },
+  "jobs": [],
+  "isBlocked": false,
+  "createdAt": {
+    "$date": "2024-12-18T19:52:44.951Z"
+  },
+  "updatedAt": {
+    "$date": "2025-01-13T18:57:35.127Z"
+  },
+  "__v": 0,
+  "pictures": {
+    "fieldname": "picture[]",
+    "originalname": "logo.png",
+    "encoding": "7bit",
+    "mimetype": "image/png",
+    "destination": "D:\\shivam shukl git repo\\Job_Portal_Server\\uploads\\employer",
+    "filename": "picture[]-1734552225583-716546194.png",
+    "path": "D:\\shivam shukl git repo\\Job_Portal_Server\\uploads\\employer\\picture[]-1734552225583-716546194.png",
+    "size": 213938
+  },
+  "videos": {
+    "fieldname": "video[]",
+    "originalname": "videoplayback (1).mp4",
+    "encoding": "7bit",
+    "mimetype": "video/mp4",
+    "destination": "D:\\shivam shukl git repo\\Job_Portal_Server\\uploads\\employer",
+    "filename": "video[]-1734552225531-335356168.mp4",
+    "path": "D:\\shivam shukl git repo\\Job_Portal_Server\\uploads\\employer\\video[]-1734552225531-335356168.mp4",
+    "size": 4896116
+  }
+},
+{
+  "_id": {
+    "$oid": "676388e23f33e3918f04781f"
+  },
+  "userId": {
+    "$oid": "67638816ef848e80f6e44ad7"
+  },
+  "name": "fff nnn hh",
+  "email": "shivam13jun@gmail.com",
+  "business_name": "India",
+  "business_gst": "trwerwrwre",
+  "categories": [
+    {
+      "value": "Agrochemicals",
+      "label": "Agrochemicals",
+      "_id": {
+        "$oid": "676388e23f33e3918f047820"
+      }
+    }
+  ],
+  "phone_area": "91",
+  "phone": "8459784241",
+  "address": {
+    "lane1": "sdfghj",
+    "lane2": "test",
+    "city": "66448a0cc6e63093c2054e79",
+    "state": "United Arab Emirates",
+    "pin_code": 401209,
+    "country": "India"
+  },
+  "product_services": "nnn",
+  "url": "https://youtu.be/Tk66xUW4vTA?si=plLh0xjWjbbiOykf",
+  "year_established": {
+    "$date": "2024-12-19T06:30:00.000Z"
+  },
+  "keywords": "rtr,rrwer",
+  "logo": {
+    "fieldname": "logo",
+    "originalname": "logo.png",
+    "encoding": "7bit",
+    "mimetype": "image/png",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/employer",
+    "filename": "logo-1734576354811-284761765.png",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/employer/logo-1734576354811-284761765.png",
+    "size": 213938
+  },
+  "videos": {
+    "fieldname": "video[]",
+    "originalname": "videoplayback (1).mp4",
+    "encoding": "7bit",
+    "mimetype": "video/mp4",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/employer",
+    "filename": "video[]-1734576354814-871379032.mp4",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/employer/video[]-1734576354814-871379032.mp4",
+    "size": 4896116
+  },
+  "pictures": {
+    "fieldname": "picture[]",
+    "originalname": "logo.png",
+    "encoding": "7bit",
+    "mimetype": "image/png",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/employer",
+    "filename": "picture[]-1734576354839-564194391.png",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/employer/picture[]-1734576354839-564194391.png",
+    "size": 213938
+  },
+  "jobs": [],
+  "isBlocked": false,
+  "createdAt": {
+    "$date": "2024-12-19T02:45:54.862Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-19T18:19:35.799Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "676a46ab74bc6f68e3603f1c"
+  },
+  "userId": {
+    "$oid": "6763ef71ef848e80f6e44bbd"
+  },
+  "name": "Sachin middle Yadav",
+  "email": "design@technofra.com",
+  "business_name": " Sauradip Chemical Industries ",
+  "business_gst": "27AAAAP0267H2ZN",
+  "categories": [
+    {
+      "value": "Industrial Gases",
+      "label": "Industrial Gases",
+      "_id": {
+        "$oid": "676a46ab74bc6f68e3603f1d"
+      }
+    }
+  ],
+  "phone_area": "91",
+  "phone": "7558542831",
+  "address": {
+    "lane1": "Dadar",
+    "lane2": "Ghanshyam Enclave, Next To Laljipada Police Station, New Link Road , Kandivali (West), Mumbai - 400067. Maharashtra - India",
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "pin_code": 400067,
+    "country": "India"
+  },
+  "product_services": "test",
+  "url": "https://technofra.com/",
+  "year_established": {
+    "$date": "2024-12-19T06:30:00.000Z"
+  },
+  "keywords": "Fragrance Manufacturer in India, fragrance manufacturer in mumbai, industrial fragrance manufacturer, personal care fragrance manufacturer, home care fragrance manyfacturer, perfume fragrance manufacturer",
+  "logo": {
+    "fieldname": "logo",
+    "originalname": "logo-sauradip-chem.jpg",
+    "encoding": "7bit",
+    "mimetype": "image/jpeg",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/employer",
+    "filename": "logo-1736927713002-128336997.jpg",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/employer/logo-1736927713002-128336997.jpg",
+    "size": 8954
+  },
+  "jobs": [],
+  "isBlocked": false,
+  "createdAt": {
+    "$date": "2024-12-24T05:29:15.096Z"
+  },
+  "updatedAt": {
+    "$date": "2025-01-15T07:55:13.022Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67722ecd0fc5c2bd19dad586"
+  },
+  "userId": {
+    "$oid": "67722d9908fa712705c52995"
+  },
+  "name": "manish rajesh singh",
+  "email": "wagej68381@chansd.com",
+  "business_name": "Markidentitez",
+  "business_gst": "984984947*79",
+  "categories": [
+    {
+      "value": "Bioplastics",
+      "label": "Bioplastics",
+      "_id": {
+        "$oid": "67722ecd0fc5c2bd19dad587"
+      }
+    }
+  ],
+  "phone_area": "7039553408",
+  "phone": "86582",
+  "address": {
+    "lane1": "Office No. 501, 5th Floor",
+    "lane2": "Galaxy Apartments, MG Road",
+    "city": "Mumbai",
+    "state": "maharashtra",
+    "pin_code": 400067,
+    "country": "India"
+  },
+  "product_services": "When it comes to mobile app development, we stand out for several reasons. Our team brings a wealth of expertise and experience to the table, ensuring that your app is not just built, but crafted to perfection. Innovation is at the core of everything we do – we constantly explore new technologies and trends to deliver cutting-edge solutions. But perhaps what truly sets us apart is our unwavering commitment to customer satisfaction. We prioritize your needs and vision, working closely with you every step of the way to ensure that the final product exceeds your expectations. With us, you're not just getting an app; you're getting a partner dedicated to your success. Choose us for mobile app development that's not just exceptional, but truly tailored to your unique requirements.\n\nicon\n300+\nHybrid App Development\nicon\n750+\niOS App Development\nicon\n250+\nAndroid App Developmentr\nicon\n150+\nApp Maintenance\n",
+  "url": "https://markidentitiez.com/",
+  "year_established": {
+    "$date": "2011-12-13T06:30:00.000Z"
+  },
+  "keywords": "chemical",
+  "logo": {
+    "fieldname": "logo",
+    "originalname": "Logo (2).png",
+    "encoding": "7bit",
+    "mimetype": "image/png",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/employer",
+    "filename": "logo-1735536333458-94313251.png",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/employer/logo-1735536333458-94313251.png",
+    "size": 101614
+  },
+  "jobs": [],
+  "isBlocked": false,
+  "createdAt": {
+    "$date": "2024-12-30T05:25:33.523Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-30T05:25:33.523Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6772384108fa712705c52f6c"
+  },
+  "userId": {
+    "$oid": "677237bf08fa712705c52f0b"
+  },
+  "name": "manisgy fewgfe sdgsdghrehg",
+  "email": "weles77071@evnft.com",
+  "business_name": "65u56",
+  "business_gst": "4789729/799h",
+  "categories": [
+    {
+      "value": "Specialty Chemicals",
+      "label": "Specialty Chemicals",
+      "_id": {
+        "$oid": "6772384108fa712705c52f6d"
+      }
+    }
+  ],
+  "phone_area": "400067",
+  "phone": "7039553407",
+  "address": {
+    "lane1": "grehgrhg",
+    "lane2": "ghdf",
+    "city": "mumbai",
+    "state": "maharashtra",
+    "pin_code": 40067,
+    "country": "India"
+  },
+  "product_services": ".feature-bg-mockup {\n    position: absolute;\n    /* opacity: .35; */\n    -o-object-fit: cover;\n    object-fit: cover;\n    height: 360px;\n}",
+  "url": "https://markidentitiez.com/",
+  "year_established": {
+    "$date": "2024-12-03T06:30:00.000Z"
+  },
+  "keywords": "comnidvdsfgvds",
+  "logo": {
+    "fieldname": "logo",
+    "originalname": "hand-drawn-marketing-agency-template_23-2150626860.jpg",
+    "encoding": "7bit",
+    "mimetype": "image/jpeg",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/employer",
+    "filename": "logo-1735538753346-705080171.jpg",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/employer/logo-1735538753346-705080171.jpg",
+    "size": 113231
+  },
+  "jobs": [],
+  "isBlocked": false,
+  "createdAt": {
+    "$date": "2024-12-30T06:05:53.398Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-30T06:05:53.398Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6772387f08fa712705c52fc2"
+  },
+  "userId": {
+    "$oid": "677237f108fa712705c52f37"
+  },
+  "name": "Khushi Kumari Gupta",
+  "email": "firate5316@chansd.com",
+  "business_name": "SRF",
+  "business_gst": "09AAACH7409R1ZZ",
+  "categories": [
+    {
+      "value": "Specialty Chemicals",
+      "label": "Specialty Chemicals",
+      "_id": {
+        "$oid": "677238f60fc5c2bd19dadab9"
+      }
+    },
+    {
+      "value": "Basic Chemicals",
+      "label": "Basic Chemicals",
+      "_id": {
+        "$oid": "677238f60fc5c2bd19dadaba"
+      }
+    }
+  ],
+  "phone_area": "91",
+  "phone": "7558542831",
+  "address": {
+    "lane1": "Kandivali west",
+    "lane2": "5th floor, Ghanshyam ",
+    "city": "Mumbai",
+    "state": "MH",
+    "pin_code": 400067,
+    "country": "India"
+  },
+  "product_services": "Testing , test",
+  "url": "https://www.srf.com/",
+  "year_established": {
+    "$date": "2024-12-03T06:30:00.000Z"
+  },
+  "keywords": "test, chemicals, company, pharma, ",
+  "logo": {
+    "fieldname": "logo",
+    "originalname": "srf-logo.png",
+    "encoding": "7bit",
+    "mimetype": "image/png",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/employer",
+    "filename": "logo-1735538934279-873518675.png",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/employer/logo-1735538934279-873518675.png",
+    "size": 25511
+  },
+  "jobs": [],
+  "isBlocked": false,
+  "createdAt": {
+    "$date": "2024-12-30T06:06:55.915Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-30T06:08:54.291Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "677244a30fc5c2bd19dadd4e"
+  },
+  "userId": {
+    "$oid": "6772432708fa712705c53285"
+  },
+  "name": "Kishori Bhagawan Shinde",
+  "email": "sefeja1629@pixdd.com",
+  "business_name": "Tata Chemicals",
+  "business_gst": "27ABCDE1234F2Z5",
+  "categories": [
+    {
+      "value": "Basic Chemicals",
+      "label": "Basic Chemicals",
+      "_id": {
+        "$oid": "677244a30fc5c2bd19dadd4f"
+      }
+    },
+    {
+      "value": "Specialty Chemicals",
+      "label": "Specialty Chemicals",
+      "_id": {
+        "$oid": "677244a30fc5c2bd19dadd50"
+      }
+    }
+  ],
+  "phone_area": "+91",
+  "phone": "7578542831",
+  "address": {
+    "lane1": "Office No. 501, 5th Floor",
+    "lane2": "Ghanshyam Enclave, Next To Laljipada Police Station, New Link Road , Kandivali (West), Mumbai - 400067. Maharashtra - India",
+    "city": "Kandivali",
+    "state": "Maharashtra",
+    "pin_code": 421601,
+    "country": "India"
+  },
+  "product_services": "test",
+  "url": "https://www.tatachemicals.com/",
+  "year_established": {
+    "$date": "2000-01-02T06:30:00.000Z"
+  },
+  "keywords": "Chemicals , Pharma , Jobs ,manufacturer, personal care fragrance manufacturer, home care fragrance manyfacturer, perfume fragrance manufacturer",
+  "logo": {
+    "fieldname": "logo",
+    "originalname": "Tata-Chemicals-Logo.png",
+    "encoding": "7bit",
+    "mimetype": "image/png",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/employer",
+    "filename": "logo-1735541923354-393626616.png",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/employer/logo-1735541923354-393626616.png",
+    "size": 154928
+  },
+  "jobs": [],
+  "isBlocked": false,
+  "createdAt": {
+    "$date": "2024-12-30T06:58:43.368Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-30T06:58:43.368Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67727b3e0fc5c2bd19daeccc"
+  },
+  "userId": {
+    "$oid": "6772777b0fc5c2bd19daeca5"
+  },
+  "name": "Kishor Prakash Pawar",
+  "email": "vosilog710@pofmagic.com employe@123",
+  "business_name": "Vinati Organics",
+  "business_gst": "27ABCDE1234F2Z5",
+  "categories": [
+    {
+      "value": "Nutraceuticals",
+      "label": "Nutraceuticals",
+      "_id": {
+        "$oid": "67727b3e0fc5c2bd19daeccd"
+      }
+    }
+  ],
+  "phone_area": "+91",
+  "phone": "7578542831",
+  "address": {
+    "lane1": "Office No. 501, 5th Floor",
+    "lane2": "Ghanshyam Enclave, Next To Laljipada Police Station, New Link Road , Kandivali (West), Mumbai - 400067. Maharashtra - India",
+    "city": "Kandivali",
+    "state": "Maharashtra",
+    "pin_code": 435367,
+    "country": "India"
+  },
+  "product_services": "Speciality Aromatics: These are used in various industries, including pharmaceuticals, perfumes, and flavors. Key products include Iso Butyl Benzene (IBB), Normal Butyl Benzene (NBB), Secondary Butyl Benzene (SBB), and Tertiary Amyl Benzene (TAB). \nVINATI ORGANICS\n\nSpeciality Monomers: These are essential in polymer production and other chemical processes. Specific products in this category were not detailed in the provided information.\n\nButyl Phenols: These serve as intermediates in the production of resins, adhesives, and other industrial applications. Specific products in this category were not detailed in the provided information.\n\nAntioxidants: These are used to prevent oxidation in various products, enhancing their shelf life and stability. Specific products in this category were not detailed in the provided information.\n\nOther Speciality Products: This category includes chemicals like Isobutylene, Methanol, High Purity Methyl Tertiary Butyl Ether (HP-MTBE), Tertiary Butylamine, Para Tertiary Butyl Benzoic Acid (PTBBA), Methyl 4-Tertiary Butyl Benzoate (PTBMB), and Mixed Hexene. These chemicals find applications in pharmaceuticals, personal care, and other industries.",
+  "url": "https://vinatiorganics.com/",
+  "year_established": {
+    "$date": "2024-12-31T06:30:00.000Z"
+  },
+  "keywords": "test , chemical, pharma",
+  "logo": {
+    "fieldname": "logo",
+    "originalname": "images.png",
+    "encoding": "7bit",
+    "mimetype": "image/png",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/employer",
+    "filename": "logo-1735555902881-600486622.png",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/employer/logo-1735555902881-600486622.png",
+    "size": 3092
+  },
+  "jobs": [],
+  "isBlocked": false,
+  "createdAt": {
+    "$date": "2024-12-30T10:51:42.897Z"
+  },
+  "updatedAt": {
+    "$date": "2025-01-01T09:25:10.345Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "678757acc8d070ab0b4d3c10"
+  },
+  "userId": {
+    "$oid": "678755fdc8d070ab0b4d3bed"
+  },
+  "name": "Khushi Rajesh Yadav",
+  "email": "jimip30327@kvegg.com",
+  "business_name": "Marin Chemical",
+  "business_gst": "09AAACH7409R1ZZ",
+  "categories": [
+    {
+      "value": "Specialty Chemicals",
+      "label": "Specialty Chemicals",
+      "_id": {
+        "$oid": "678757acc8d070ab0b4d3c11"
+      }
+    },
+    {
+      "value": "Petrochemicals",
+      "label": "Petrochemicals",
+      "_id": {
+        "$oid": "678757acc8d070ab0b4d3c12"
+      }
+    },
+    {
+      "value": "Biochemicals",
+      "label": "Biochemicals",
+      "_id": {
+        "$oid": "678757acc8d070ab0b4d3c13"
+      }
+    }
+  ],
+  "phone_area": "91",
+  "phone": "7896387897",
+  "address": {
+    "lane1": "1, 202, andheri",
+    "lane2": "Galaxy Apartments, MG Road",
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "pin_code": 400066,
+    "country": "India"
+  },
+  "product_services": "Products:\nIndustrial Chemicals\n\nSpecialty solvents\nCorrosion inhibitors\nDegreasers and cleaners\nAgricultural Chemicals\n\nFertilizers\nPesticides\nSoil conditioners\nWater Treatment Chemicals\n\npH adjusters\nFlocculants and coagulants\nBiocides and disinfectants\n\nServices:\nResearch & Development (R&D)\n\nInnovative solutions tailored to meet evolving market demands.\nDedicated team for customized chemical formulations.\nTechnical Support\n\nOn-site consultation for optimal chemical usage.\nTroubleshooting and efficiency enhancement.\nLogistics & Delivery\n\nReliable and timely global distribution.\nCompliance with international safety standards.\n",
+  "url": "https://marinechemical.in/",
+  "year_established": {
+    "$date": "2011-01-04T06:30:00.000Z"
+  },
+  "keywords": "Chemical manufacturing, Specialty chemicals, Inorganic chemicals, Organic chemicals, Fine chemicals",
+  "logo": {
+    "fieldname": "logo",
+    "originalname": "images.png",
+    "encoding": "7bit",
+    "mimetype": "image/png",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/employer",
+    "filename": "logo-1736923052894-478096263.png",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/employer/logo-1736923052894-478096263.png",
+    "size": 7622
+  },
+  "videos": {
+    "fieldname": "video[]",
+    "originalname": "Pinedia.com_1732172058217.mp4",
+    "encoding": "7bit",
+    "mimetype": "video/mp4",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/employer",
+    "filename": "video[]-1736923052895-598764441.mp4",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/employer/video[]-1736923052895-598764441.mp4",
+    "size": 4524420
+  },
+  "pictures": {
+    "fieldname": "picture[]",
+    "originalname": "images.png",
+    "encoding": "7bit",
+    "mimetype": "image/png",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/employer",
+    "filename": "picture[]-1736923052949-403820338.png",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/employer/picture[]-1736923052949-403820338.png",
+    "size": 7622
+  },
+  "jobs": [],
+  "isBlocked": false,
+  "createdAt": {
+    "$date": "2025-01-15T06:37:32.981Z"
+  },
+  "updatedAt": {
+    "$date": "2025-01-15T06:37:32.981Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67879cb21b18bd5c7d5c6e42"
+  },
+  "userId": {
+    "$oid": "676106e12a54b2fa893e256b"
+  },
+  "name": "Kishori Bhagwan Shinde",
+  "email": "support@technofra.com",
+  "business_name": "Pidilite Inds",
+  "business_gst": "33AAACH7409R1Z8",
+  "categories": [
+    {
+      "value": "Catalysts",
+      "label": "Catalysts",
+      "_id": {
+        "$oid": "67879cb21b18bd5c7d5c6e43"
+      }
+    }
+  ],
+  "phone_area": "91",
+  "phone": "7558542831",
+  "address": {
+    "lane1": "Office No. 501, 5th Floor",
+    "lane2": "Malad",
+    "city": "Thane",
+    "state": "Maharashtra",
+    "pin_code": 400067,
+    "country": "India"
+  },
+  "product_services": "Products\n1. Adhesives and Sealants\nFevicol Range: Trusted white adhesives for woodworking and furniture industries.\nFevicol SH, Fevicol MR, Fevicol Marine, etc.\nFevikwik: Instant adhesive for quick fixes.\nM-Seal: Epoxy sealant for plumbing and repair.\nSteelGrip: Electrical insulation tapes.\nFevibond: Adhesive for rubber, leather, and more.\n2. Art and Craft Materials\nFevicryl: Acrylic colors, fabric paints, and art supplies.\nFevistik: Glue sticks for paper and crafting needs.\nHobby Ideas: Crafting kits and art accessories.\nServices\nWaterproofing Solutions\n\nConsultation and application services under the Dr. Fixit brand.\nOn-site expert advice for homeowners and professionals.\nTraining Programs\n\nTraining workshops for carpenters, contractors, and painters to enhance skills in using adhesives and waterproofing products.\n",
+  "url": "https://www.pidilite.com/",
+  "year_established": {
+    "$date": "2019-01-01T06:30:00.000Z"
+  },
+  "keywords": "Fragrance Manufacturer in India, fragrance manufacturer in mumbai, industrial fragrance manufacturer, personal care fragrance manufacturer, home care fragrance manyfacturer, perfume fragrance manufacturer",
+  "logo": {
+    "fieldname": "logo",
+    "originalname": "pidilite-logo-1.jpg",
+    "encoding": "7bit",
+    "mimetype": "image/jpeg",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/employer",
+    "filename": "logo-1736940722397-227694180.jpg",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/employer/logo-1736940722397-227694180.jpg",
+    "size": 57942
+  },
+  "jobs": [],
+  "isBlocked": false,
+  "createdAt": {
+    "$date": "2025-01-15T11:32:02.433Z"
+  },
+  "updatedAt": {
+    "$date": "2025-01-15T11:32:02.433Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "679372c3df6b21910046c03e"
+  },
+  "userId": {
+    "$oid": "66fe32d6025c97f8c08e985d"
+  },
+  "name": "Manish Rajesh Singh",
+  "email": "itwebdeveloper7@gmail.com",
+  "business_name": "PubChem ",
+  "business_gst": "29AAACH7409R1ZX",
+  "categories": [
+    {
+      "value": "Explosives",
+      "label": "Explosives",
+      "_id": {
+        "$oid": "679372c3df6b21910046c03f"
+      }
+    }
+  ],
+  "phone_area": "91",
+  "phone": "8554236987",
+  "address": {
+    "lane1": "Office No. 501, 5th Floor",
+    "lane2": "Ghanshyam Enclave, Next To Laljipada Police Station, New Link Road , Kandivali (West), Mumbai - 400067. Maharashtra - India",
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "pin_code": 400067,
+    "country": "India"
+  },
+  "product_services": "PubChem is an open chemistry database at the National Institutes of Health (NIH). “Open” means that you can put your scientific data in PubChem and that others may use it. Since the launch in 2004, PubChem has become a key chemical information resource for scientists, students, and the general public. Each month our website and programmatic services provide data to several million users worldwide.\n\nPubChem mostly contains small molecules, but also larger molecules such as nucleotides, carbohydrates, lipids, peptides, and chemically-modified macromolecules. We collect information on chemical structures, identifiers, chemical and physical properties, biological activities, patents, health, safety, toxicity data, and many others.\n\nWhere does the data in PubChem come from? PubChem records are contributed by hundreds of data sources. Examples include: government agencies, chemical vendors, journal publishers, and more.\n\nThe amount of data in PubChem is ever-growing, please visit the PubChem Statistics page to find out what the latest data counts are.\n\nPubChem and the NCBI Entrez Interface\nIn the past, the majority of our users found it very difficult to navigate between multiple Entrez text search interfaces (one had to use a separate Entrez interface for compounds, substances, and bioassays), a separate structure search interface, the content pages, and the homepage. Additionally, Entrez does not support content that was added to PubChem later, such as patents.\n\nIn order to provide a better user experience, we created a unified chemical search interface that supports text search across all PubChem data collections as well as structure and molecular formula search. This unified search interface is found on the PubChem homepage.\n\nPubChem still provides an interface to Entrez. From the search interface, one can click \"Use Entrez\" and select from one of the three Entrez databases. Alternatively, one can navigate directly to the database of interest and access it there. They are also found here using one of the three links below:\n\nPubChem Compound in Entrez\nPubChem Substance in Entrez\nPubChem BioAssay in Entrez\nThe PubChem Entrez database interfaces have some powerful features that are not available in PubChem's search interface, such as a large array of indexes and filters combined with a powerful query language.",
+  "url": "https://pubchem.ncbi.nlm.nih.gov/",
+  "year_established": {
+    "$date": "2004-01-06T06:30:00.000Z"
+  },
+  "keywords": "Chemical manufacturing, Specialty chemicals, Inorganic chemicals, Organic chemicals, Fine chemicals",
+  "logo": {
+    "fieldname": "logo",
+    "originalname": "pubchem-logo.jpeg",
+    "encoding": "7bit",
+    "mimetype": "image/jpeg",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/employer",
+    "filename": "logo-1737716419767-442058458.jpeg",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/employer/logo-1737716419767-442058458.jpeg",
+    "size": 7798
+  },
+  "jobs": [],
+  "isBlocked": false,
+  "createdAt": {
+    "$date": "2025-01-24T11:00:19.789Z"
+  },
+  "updatedAt": {
+    "$date": "2025-01-24T11:02:15.287Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "679c796ee7b9becd347d86f4"
+  },
+  "userId": {
+    "$oid": "679c75a3e7b9becd347d86ba"
+  },
+  "name": "Ganesh Bhagwan Shinde",
+  "email": "paxarah586@ahaks.com",
+  "business_name": " LG Chem",
+  "business_gst": "27AAAAP0267H2ZN",
+  "categories": [
+    {
+      "$oid": "67e28c43edae86771dd9330b"
+    }
+  ],
+  "phone_area": "91",
+  "phone": "8965743215",
+  "address": {
+    "lane1": "Office No. 501, 5th Floor",
+    "lane2": "Ghanshyam Enclave, Next To Laljipada Police Station, New Link Road , Kandivali (West), Mumbai - 400067. Maharashtra - India",
+    "city": {
+      "$oid": "67d571ce8e4cf5bc7f14d2a9"
+    },
+    "state": {
+      "$oid": "67d571b18e4cf5bc7f14d29a"
+    },
+    "pin_code": 400067,
+    "country": {
+      "$oid": "67d5718f8e4cf5bc7f14d290"
+    }
+  },
+  "product_services": "Beyond a chemical company, LG Chem will become a leading science-oriented corporation that creates value for our customers.\nLG Chem’s promising next-generation growth engines range from battery materials to sustainability to bio-industry.\nWe aim to rise as a powerful global leader that achieves sales of over 60 trillion KRW by 2030.\nWe connect science to life for a better future.\n\nLG Chem aims to connect science to life for a better future, integrating new insight with our wealth of knowledge, technologies, and solutions.",
+  "url": "https://www.lgchem.com/",
+  "year_established": {
+    "$date": {
+      "$numberLong": "-725823000000"
+    }
+  },
+  "keywords": "Chemical manufacturing, Specialty chemicals, Inorganic chemicals, Organic chemicals, Fine chemicals",
+  "logo": {
+    "fieldname": "logo",
+    "originalname": "LG_Chem_logo_(english).svg.png",
+    "encoding": "7bit",
+    "mimetype": "image/png",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/employer",
+    "filename": "logo-1738307950037-591027338.png",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/employer/logo-1738307950037-591027338.png",
+    "size": 67767
+  },
+  "jobs": [],
+  "isBlocked": false,
+  "createdAt": {
+    "$date": "2025-01-31T07:19:10.056Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-25T12:36:47.010Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "679cbf6777f01b0affabe346"
+  },
+  "userId": {
+    "$oid": "679cbdc377f01b0affabe317"
+  },
+  "name": "Shyam Sudhir Jaiswal",
+  "email": "sayak34121@andinews.com",
+  "business_name": "Dow",
+  "business_gst": "9AAACH7409R1ZZ",
+  "categories": [
+    {
+      "value": "Inks and Printing Chemicals",
+      "label": "Inks and Printing Chemicals",
+      "_id": {
+        "$oid": "679cbf6777f01b0affabe347"
+      }
+    }
+  ],
+  "phone_area": "91",
+  "phone": "5696546578",
+  "address": {
+    "lane1": "Office No. 501, 5th Floor",
+    "lane2": "Ghanshyam Enclave, Next To Laljipada Police Station, New Link Road , Kandivali (West), Mumbai - 400067. Maharashtra - India",
+    "city": "Malerkotla",
+    "state": "Punjab",
+    "pin_code": 400059,
+    "country": "India"
+  },
+  "product_services": "Science-backed new year’s resolutions\nEach year, many of us set resolutions to improve our lives, like saving money, getting fit, or enhancing well-being. Often overlooked is the role of materials science in achieving these goals. From fuel-efficient vehicle materials to performance-enhancing workout fabrics, everyday materials are key allies in our journey. Check out these popular New Year’s resolutions and how science makes them possible. Partnering for sustainable auto solutions\nDelian Group has integrated REVOLOOP™ recycled resins into auto care product packaging. This innovation reduces the carbon footprint by minimizing virgin resin use and marks the first commercial application of REVOLOOP™ in the auto care market.",
+  "url": "https://www.dow.com/",
+  "year_established": {
+    "$date": "1987-01-21T06:30:00.000Z"
+  },
+  "keywords": "Chemical manufacturing, Specialty chemicals, Inorganic chemicals, Organic chemicals, Fine chemicals",
+  "logo": {
+    "fieldname": "logo",
+    "originalname": "logo-dow.png",
+    "encoding": "7bit",
+    "mimetype": "image/png",
+    "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/employer",
+    "filename": "logo-1738325863927-657408323.png",
+    "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/Job_Portal_Server/uploads/employer/logo-1738325863927-657408323.png",
+    "size": 3534
+  },
+  "jobs": [],
+  "isBlocked": false,
+  "createdAt": {
+    "$date": "2025-01-31T12:17:43.949Z"
+  },
+  "updatedAt": {
+    "$date": "2025-01-31T12:17:43.949Z"
+  },
+  "__v": 0
+}]

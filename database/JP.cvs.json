@@ -1,0 +1,229 @@
+[{
+  "_id": {
+    "$oid": "67056fc806d9addd8f88e57f"
+  },
+  "candidateId": {
+    "$oid": "66e704a887de36e37577c224"
+  },
+  "cvs": [
+    {
+      "fieldname": "cv[]",
+      "originalname": "Lec-3.pdf",
+      "encoding": "7bit",
+      "mimetype": "application/pdf",
+      "destination": "X:\\freelance\\jp\\server\\uploads\\cv",
+      "filename": "cv[]-1728409544201-661690695.pdf",
+      "path": "X:\\freelance\\jp\\server\\uploads\\cv\\cv[]-1728409544201-661690695.pdf",
+      "size": 201328
+    },
+    {
+      "fieldname": "cv[]",
+      "originalname": "Lec-2.pdf",
+      "encoding": "7bit",
+      "mimetype": "application/pdf",
+      "destination": "X:\\freelance\\jp\\server\\uploads\\cv",
+      "filename": "cv[]-1728410886406-626728264.pdf",
+      "path": "X:\\freelance\\jp\\server\\uploads\\cv\\cv[]-1728410886406-626728264.pdf",
+      "size": 529187
+    },
+    {
+      "fieldname": "cv[]",
+      "originalname": "Pro Mern.pdf",
+      "encoding": "7bit",
+      "mimetype": "application/pdf",
+      "destination": "X:\\freelance\\jp\\server\\uploads\\cv",
+      "filename": "cv[]-1728410973460-611284773.pdf",
+      "path": "X:\\freelance\\jp\\server\\uploads\\cv\\cv[]-1728410973460-611284773.pdf",
+      "size": 8100896
+    }
+  ],
+  "createdAt": {
+    "$date": "2024-10-08T17:45:44.314Z"
+  },
+  "updatedAt": {
+    "$date": "2024-10-08T18:09:33.734Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6706d8f63b5c5dda156cf126"
+  },
+  "candidateId": {
+    "$oid": "6706d8b73b5c5dda156cf0f1"
+  },
+  "cvs": [
+    {
+      "fieldname": "cv[]",
+      "originalname": "Lec-3.pdf",
+      "encoding": "7bit",
+      "mimetype": "application/pdf",
+      "destination": "X:\\freelance\\jp\\server\\uploads\\cv",
+      "filename": "cv[]-1728502006578-583894605.pdf",
+      "path": "X:\\freelance\\jp\\server\\uploads\\cv\\cv[]-1728502006578-583894605.pdf",
+      "size": 201328
+    },
+    {
+      "fieldname": "cv[]",
+      "originalname": "Employer Registration - Business Details.pdf",
+      "encoding": "7bit",
+      "mimetype": "application/pdf",
+      "destination": "X:\\freelance\\jp\\server\\uploads\\cv",
+      "filename": "cv[]-1728502006579-931829614.pdf",
+      "path": "X:\\freelance\\jp\\server\\uploads\\cv\\cv[]-1728502006579-931829614.pdf",
+      "size": 1175204
+    }
+  ],
+  "createdAt": {
+    "$date": "2024-10-09T19:26:46.609Z"
+  },
+  "updatedAt": {
+    "$date": "2024-10-09T19:26:46.609Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "670ca746c1a3901ad82d7061"
+  },
+  "candidateId": {
+    "$oid": "670621609c6a7a8808f2a536"
+  },
+  "cvs": [
+    {
+      "fieldname": "cv[]",
+      "originalname": "Sender+ID+and+Template+for+OTP+Login.pdf",
+      "encoding": "7bit",
+      "mimetype": "application/pdf",
+      "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/uploads/cv",
+      "filename": "cv[]-1728882502327-641317290.pdf",
+      "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/uploads/cv/cv[]-1728882502327-641317290.pdf",
+      "size": 64473
+    }
+  ],
+  "createdAt": {
+    "$date": "2024-10-14T05:08:22.340Z"
+  },
+  "updatedAt": {
+    "$date": "2024-10-14T05:08:22.340Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "670e3d19c1a3901ad82d79de"
+  },
+  "candidateId": {
+    "$oid": "67061c969c6a7a8808f29ca5"
+  },
+  "cvs": [
+    {
+      "fieldname": "cv[]",
+      "originalname": "Pradnesh Resume.pdf",
+      "encoding": "7bit",
+      "mimetype": "application/pdf",
+      "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/uploads/cv",
+      "filename": "cv[]-1728986393071-461599634.pdf",
+      "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/uploads/cv/cv[]-1728986393071-461599634.pdf",
+      "size": 144117
+    },
+    {
+      "fieldname": "cv[]",
+      "originalname": "sample.pdf",
+      "encoding": "7bit",
+      "mimetype": "application/pdf",
+      "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/uploads/cv",
+      "filename": "cv[]-1730876028428-586842023.pdf",
+      "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/uploads/cv/cv[]-1730876028428-586842023.pdf",
+      "size": 46596
+    }
+  ],
+  "createdAt": {
+    "$date": "2024-10-15T09:59:53.084Z"
+  },
+  "updatedAt": {
+    "$date": "2024-11-06T06:53:48.445Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6710a54a9e18b35777321a8c"
+  },
+  "candidateId": {
+    "$oid": "67109ffa09e459aadf68ba9b"
+  },
+  "cvs": [
+    {
+      "fieldname": "cv[]",
+      "originalname": "contactus.aspx.pdf",
+      "encoding": "7bit",
+      "mimetype": "application/pdf",
+      "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/uploads/cv",
+      "filename": "cv[]-1729144138982-960907333.pdf",
+      "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/uploads/cv/cv[]-1729144138982-960907333.pdf",
+      "size": 5406
+    }
+  ],
+  "createdAt": {
+    "$date": "2024-10-17T05:48:58.992Z"
+  },
+  "updatedAt": {
+    "$date": "2024-10-17T05:48:58.992Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6710a7009e18b35777321b03"
+  },
+  "candidateId": {
+    "$oid": "6710a6579e18b35777321ab1"
+  },
+  "cvs": [
+    {
+      "fieldname": "cv[]",
+      "originalname": "Minutes of Meeting Job Portal.pdf",
+      "encoding": "7bit",
+      "mimetype": "application/pdf",
+      "destination": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/uploads/cv",
+      "filename": "cv[]-1730282026006-505140833.pdf",
+      "path": "/home/technofra-chempharma/htdocs/chempharma.technofra.com/uploads/cv/cv[]-1730282026006-505140833.pdf",
+      "size": 159943
+    }
+  ],
+  "createdAt": {
+    "$date": "2024-10-17T05:56:16.493Z"
+  },
+  "updatedAt": {
+    "$date": "2024-10-30T09:53:46.019Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "671685298b497bd8197cf14a"
+  },
+  "candidateId": {
+    "$oid": "67143698129ed20083a17871"
+  },
+  "cvs": [
+    {
+      "fieldname": "cv[]",
+      "originalname": "Shivam Shukla (7).pdf",
+      "encoding": "7bit",
+      "mimetype": "application/pdf",
+      "destination": "C:\\Users\\asus\\Documents\\GitHub\\job portal siddhesh\\jp-server\\uploads\\cv",
+      "filename": "cv[]-1729529129326-447256865.pdf",
+      "path": "C:\\Users\\asus\\Documents\\GitHub\\job portal siddhesh\\jp-server\\uploads\\cv\\cv[]-1729529129326-447256865.pdf",
+      "size": 168237
+    }
+  ],
+  "createdAt": {
+    "$date": "2024-10-21T16:45:29.533Z"
+  },
+  "updatedAt": {
+    "$date": "2024-10-21T16:49:25.247Z"
+  },
+  "__v": 0
+}]

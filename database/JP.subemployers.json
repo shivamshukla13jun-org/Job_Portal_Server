@@ -1,0 +1,570 @@
+[{
+  "_id": {
+    "$oid": "67481d75b1b33873549023a3"
+  },
+  "parentEmployerId": {
+    "$oid": "67076129c1a3901ad82d42a2"
+  },
+  "userId": {
+    "$oid": "67481d75b1b33873549023a2"
+  },
+  "name": "Amit Yadav",
+  "email": "amittadav91@gmail.com",
+  "phone": "8080721003",
+  "dashboardPermissions": {
+    "shortlistCandidatesviewCVs": {
+      "view": false,
+      "create": false,
+      "update": false,
+      "delete": false,
+      "reject": false,
+      "accept": false,
+      "download": false
+    },
+    "downloadCV": {
+      "view": false,
+      "create": false,
+      "update": false,
+      "delete": false,
+      "reject": false,
+      "accept": false,
+      "download": false
+    }
+  },
+  "isActive": true,
+  "createdBy": {
+    "$oid": "66fe2ea8025c97f8c08e97d9"
+  },
+  "createdAt": {
+    "$date": "2024-11-28T07:36:21.568Z"
+  },
+  "updatedAt": {
+    "$date": "2025-01-25T07:21:20.172Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67483c718285172ceb497b04"
+  },
+  "parentEmployerId": {
+    "$oid": "67076129c1a3901ad82d42a2"
+  },
+  "userId": {
+    "$oid": "67483c718285172ceb497b03"
+  },
+  "name": "Manish",
+  "email": "singhuumanish@gmail.com",
+  "phone": "9004086582",
+  "dashboardPermissions": {
+    "shortlistCandidatesviewCVs": {
+      "view": false,
+      "create": false,
+      "update": false,
+      "delete": false,
+      "reject": false,
+      "accept": false,
+      "download": false
+    },
+    "downloadCV": {
+      "view": false,
+      "create": false,
+      "update": false,
+      "delete": false,
+      "reject": false,
+      "accept": false,
+      "download": false
+    }
+  },
+  "isActive": true,
+  "createdBy": {
+    "$oid": "66fe2ea8025c97f8c08e97d9"
+  },
+  "createdAt": {
+    "$date": "2024-11-28T09:48:33.573Z"
+  },
+  "updatedAt": {
+    "$date": "2025-01-13T06:36:20.750Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "674da48a84ccf6ab9f7f29a4"
+  },
+  "parentEmployerId": {
+    "$oid": "67076129c1a3901ad82d42a2"
+  },
+  "userId": {
+    "$oid": "674da48a84ccf6ab9f7f29a3"
+  },
+  "name": "support",
+  "email": "info@markidentitiez.com",
+  "phone": "9004086582",
+  "dashboardPermissions": {
+    "shortlistCandidatesviewCVs": {
+      "view": false,
+      "create": false,
+      "update": false,
+      "delete": false,
+      "reject": false,
+      "accept": false,
+      "download": false
+    },
+    "downloadCV": {
+      "view": false,
+      "create": false,
+      "update": false,
+      "delete": false,
+      "reject": false,
+      "accept": false,
+      "download": false
+    }
+  },
+  "isActive": true,
+  "createdBy": {
+    "$oid": "66fe2ea8025c97f8c08e97d9"
+  },
+  "createdAt": {
+    "$date": "2024-12-02T12:14:02.192Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-09T05:14:30.583Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "676112052a54b2fa893e28f8"
+  },
+  "parentEmployerId": {
+    "$oid": "67610d9da0b8ef4ff741a2e7"
+  },
+  "userId": {
+    "$oid": "676112052a54b2fa893e28f7"
+  },
+  "name": "deepak",
+  "email": "jafec31322@kelenson.com",
+  "phone": "8080721003",
+  "dashboardPermissions": {
+    "shortlistCandidatesviewCVs": {
+      "view": false,
+      "create": false,
+      "update": false,
+      "delete": false,
+      "reject": false,
+      "accept": false,
+      "download": false
+    },
+    "downloadCV": {
+      "view": false,
+      "create": false,
+      "update": false,
+      "delete": false,
+      "reject": false,
+      "accept": false,
+      "download": false
+    }
+  },
+  "isActive": true,
+  "createdBy": {
+    "$oid": "67610cb42a54b2fa893e2779"
+  },
+  "createdAt": {
+    "$date": "2024-12-17T05:54:13.237Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-17T05:54:13.237Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "676daf8325178d5229bd12a9"
+  },
+  "parentEmployerId": {
+    "$oid": "6763280c71a189db5b077ca2"
+  },
+  "userId": {
+    "$oid": "676daf8325178d5229bd12a8"
+  },
+  "name": "ttt",
+  "department": "Data Science",
+  "email": "mebopiy256@evnft.com",
+  "phone": "8459784241",
+  "isActive": true,
+  "createdBy": {
+    "$oid": "676322075aab09fd1ea0cdbd"
+  },
+  "createdAt": {
+    "$date": "2024-12-26T19:33:23.769Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-28T10:43:49.842Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67723e9708fa712705c53162"
+  },
+  "parentEmployerId": {
+    "$oid": "6772387f08fa712705c52fc2"
+  },
+  "userId": {
+    "$oid": "67723e9708fa712705c53161"
+  },
+  "name": "Suman",
+  "department": "Marketing",
+  "email": "garanan378@gholar.com",
+  "phone": "8080721003",
+  "isActive": true,
+  "createdBy": {
+    "$oid": "677237f108fa712705c52f37"
+  },
+  "createdAt": {
+    "$date": "2024-12-30T06:32:55.330Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-30T06:32:55.330Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67723f5d0fc5c2bd19dadca8"
+  },
+  "parentEmployerId": {
+    "$oid": "6772387f08fa712705c52fc2"
+  },
+  "userId": {
+    "$oid": "67723f5d0fc5c2bd19dadca7"
+  },
+  "name": "Subemp1",
+  "department": "Marketing",
+  "email": "gimaro8488@matmayer.com",
+  "phone": "8080721003",
+  "isActive": true,
+  "createdBy": {
+    "$oid": "677237f108fa712705c52f37"
+  },
+  "createdAt": {
+    "$date": "2024-12-30T06:36:13.431Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-30T06:36:13.431Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "677240a908fa712705c53224"
+  },
+  "parentEmployerId": {
+    "$oid": "67722ecd0fc5c2bd19dad586"
+  },
+  "userId": {
+    "$oid": "677240a908fa712705c53223"
+  },
+  "name": "wdwdw",
+  "department": "Quality Assurance",
+  "email": "nedasec259@chansd.com",
+  "phone": "703955458",
+  "isActive": true,
+  "createdBy": {
+    "$oid": "67722d9908fa712705c52995"
+  },
+  "createdAt": {
+    "$date": "2024-12-30T06:41:45.163Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-30T06:41:45.163Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "677244e70fc5c2bd19dadd71"
+  },
+  "parentEmployerId": {
+    "$oid": "677244a30fc5c2bd19dadd4e"
+  },
+  "userId": {
+    "$oid": "677244e70fc5c2bd19dadd70"
+  },
+  "name": "Subemp1",
+  "department": "Engineering",
+  "email": "sinog61860@pixdd.com",
+  "phone": "7578542831",
+  "isActive": true,
+  "createdBy": {
+    "$oid": "6772432708fa712705c53285"
+  },
+  "createdAt": {
+    "$date": "2024-12-30T06:59:51.098Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-30T06:59:51.098Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6772475b08fa712705c533ab"
+  },
+  "parentEmployerId": {
+    "$oid": "677244a30fc5c2bd19dadd4e"
+  },
+  "userId": {
+    "$oid": "6772475b08fa712705c533aa"
+  },
+  "name": "Subemp2",
+  "department": "Human Resources",
+  "email": "siyamo3959@nongnue.com",
+  "phone": "7578542831",
+  "isActive": true,
+  "createdBy": {
+    "$oid": "6772432708fa712705c53285"
+  },
+  "createdAt": {
+    "$date": "2024-12-30T07:10:20.045Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-30T07:10:20.045Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67727c210fc5c2bd19daed35"
+  },
+  "parentEmployerId": {
+    "$oid": "67727b3e0fc5c2bd19daeccc"
+  },
+  "userId": {
+    "$oid": "67727c210fc5c2bd19daed34"
+  },
+  "name": "subemploye1",
+  "department": "Research & Development",
+  "email": "ralel76728@nongnue.com",
+  "phone": "7578542831",
+  "isActive": true,
+  "createdBy": {
+    "$oid": "6772777b0fc5c2bd19daeca5"
+  },
+  "createdAt": {
+    "$date": "2024-12-30T10:55:30.017Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-30T10:55:30.017Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6772df7508fa712705c5446f"
+  },
+  "parentEmployerId": {
+    "$oid": "6763280c71a189db5b077ca2"
+  },
+  "userId": {
+    "$oid": "6772df7508fa712705c5446e"
+  },
+  "name": "shiv",
+  "department": "Business Development",
+  "email": "mebopi2256@evnft.com",
+  "phone": "1234567890",
+  "isActive": true,
+  "createdBy": {
+    "$oid": "676322075aab09fd1ea0cdbd"
+  },
+  "createdAt": {
+    "$date": "2024-12-30T17:59:17.619Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-30T17:59:17.619Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67876097c8d070ab0b4d3f53"
+  },
+  "parentEmployerId": {
+    "$oid": "678757acc8d070ab0b4d3c10"
+  },
+  "userId": {
+    "$oid": "67876097c8d070ab0b4d3f52"
+  },
+  "name": "govind",
+  "department": "Marketing",
+  "email": "yemayin476@fenxz.com",
+  "phone": "08080721003",
+  "isActive": true,
+  "createdBy": {
+    "$oid": "678755fdc8d070ab0b4d3bed"
+  },
+  "createdAt": {
+    "$date": "2025-01-15T07:15:35.615Z"
+  },
+  "updatedAt": {
+    "$date": "2025-01-15T07:16:40.952Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6787afc41b18bd5c7d5c73bc"
+  },
+  "parentEmployerId": {
+    "$oid": "676a46ab74bc6f68e3603f1c"
+  },
+  "userId": {
+    "$oid": "6787afc41b18bd5c7d5c73bb"
+  },
+  "name": "Shakti Chauhan",
+  "department": "Operations",
+  "email": "tegeboj756@fenxz.com",
+  "phone": "07021456219",
+  "isActive": true,
+  "createdBy": {
+    "$oid": "6763ef71ef848e80f6e44bbd"
+  },
+  "createdAt": {
+    "$date": "2025-01-15T12:53:24.469Z"
+  },
+  "updatedAt": {
+    "$date": "2025-01-15T12:53:24.469Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6787b67ac8d070ab0b4d4b8e"
+  },
+  "parentEmployerId": {
+    "$oid": "67879cb21b18bd5c7d5c6e42"
+  },
+  "userId": {
+    "$oid": "6787b67ac8d070ab0b4d4b8d"
+  },
+  "name": "Ashish",
+  "department": "Legal",
+  "email": "yixin93425@pariag.com",
+  "phone": "8080721003",
+  "isActive": true,
+  "createdBy": {
+    "$oid": "676106e12a54b2fa893e256b"
+  },
+  "createdAt": {
+    "$date": "2025-01-15T13:22:02.751Z"
+  },
+  "updatedAt": {
+    "$date": "2025-01-15T13:22:02.751Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6789fe48958d4b95b74a2704"
+  },
+  "parentEmployerId": {
+    "$oid": "67614465a0b8ef4ff741a63c"
+  },
+  "userId": {
+    "$oid": "6789fe48958d4b95b74a2703"
+  },
+  "name": "Khushi",
+  "department": "Sales",
+  "email": "khushiyadav807070@gmail.com",
+  "phone": "8080803375",
+  "isActive": true,
+  "createdBy": {
+    "$oid": "676142532a54b2fa893e2b65"
+  },
+  "createdAt": {
+    "$date": "2025-01-17T06:52:56.852Z"
+  },
+  "updatedAt": {
+    "$date": "2025-01-17T06:54:40.104Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67908a06df6b21910046a75f"
+  },
+  "parentEmployerId": {
+    "$oid": "676388e23f33e3918f04781f"
+  },
+  "userId": {
+    "$oid": "67908a06df6b21910046a75e"
+  },
+  "name": "Test",
+  "department": "Operations",
+  "email": "test@gmail.com",
+  "phone": "08459784241",
+  "isActive": true,
+  "createdBy": {
+    "$oid": "67638816ef848e80f6e44ad7"
+  },
+  "createdAt": {
+    "$date": "2025-01-22T06:02:46.599Z"
+  },
+  "updatedAt": {
+    "$date": "2025-01-22T06:02:46.599Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "679b2525e7b9becd347d7d97"
+  },
+  "parentEmployerId": {
+    "$oid": "67076129c1a3901ad82d42a2"
+  },
+  "userId": {
+    "$oid": "679b2525e7b9becd347d7d96"
+  },
+  "name": "Gauri ",
+  "department": "Design",
+  "email": "tepopeg136@andinews.com",
+  "phone": "8080721003",
+  "isActive": true,
+  "createdBy": {
+    "$oid": "66fe2ea8025c97f8c08e97d9"
+  },
+  "createdAt": {
+    "$date": "2025-01-30T07:07:18.066Z"
+  },
+  "updatedAt": {
+    "$date": "2025-01-30T07:07:18.066Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "679c953578cea3364766a0b5"
+  },
+  "parentEmployerId": {
+    "$oid": "679c796ee7b9becd347d86f4"
+  },
+  "userId": {
+    "$oid": "679c953578cea3364766a0b4"
+  },
+  "name": "Tanishak",
+  "department": "Finance",
+  "email": "jatemo5666@eluxeer.com",
+  "phone": "7021786408",
+  "isActive": true,
+  "createdBy": {
+    "$oid": "679c75a3e7b9becd347d86ba"
+  },
+  "createdAt": {
+    "$date": "2025-01-31T09:17:41.859Z"
+  },
+  "updatedAt": {
+    "$date": "2025-01-31T09:17:41.859Z"
+  },
+  "__v": 0
+}]
