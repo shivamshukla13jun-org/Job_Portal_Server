@@ -12,7 +12,7 @@ import path from "path";
 import ForwardedCV from "@/models/portal/Forwarwardedcv.model";
 import Meeting from "@/models/portal/CreateMeetingLink.model";
 import { Application } from "@/models/candidate/application.model";
-import { FilterApplications } from "@/utils/ApplicationStats";
+import { candidateaddresslokup, FilterApplications } from "@/utils/ApplicationStats";
 import { postedatesCondition } from "@/utils/postedadate";
 
 class SubEmployerController {
@@ -348,6 +348,7 @@ class SubEmployerController {
             $lookup: {
               from: "candidates",
               localField: "candidate",
+              pipeline:candidateaddresslokup,
               foreignField: "_id",
               as: "candidate",
             },

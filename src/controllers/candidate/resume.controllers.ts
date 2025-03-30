@@ -111,14 +111,40 @@ const getResume = async (req: Request, res: Response, next: NextFunction) => {
 
         const resume = await Application.findById(id).populate({
             path: 'candidate',
-            populate: {
+            populate: [
+              {
                 path: 'employment',
                 model: 'Employment',
                 populate: {
-                    path: 'categories',
-                    model: 'JobCategory'
+                  path: 'categories',
+                  model: 'JobCategory'
                 }
-            }
+              },
+              {
+                path: 'contact.current_address.city',
+                model: 'City'  // Adjust this model name if needed
+              },
+              {
+                path: 'contact.current_address.state',
+                model: 'State'  // Adjust this model name if needed
+              },
+              {
+                path: 'contact.current_address.country',
+                model: 'Country'  // Adjust this model name if needed
+              },
+              {
+                path: 'contact.permanent_address.city',
+                model: 'City'  // Adjust this model name if needed
+              },
+              {
+                path: 'contact.permanent_address.state',
+                model: 'State'  // Adjust this model name if needed
+              },
+              {
+                path: 'contact.permanent_address.country',
+                model: 'Country'  // Adjust this model name if needed
+              }
+            ]
         }).lean();
         if (!resume) {
             throw new AppError('Failed to find data', 400);
@@ -147,7 +173,7 @@ const getResumeForCandidate = async (req: Request, res: Response, next: NextFunc
     try {
         const id = req.params.id;
 
-        const checkCandidate = await Candidate.findOne({ userId: id });
+        const checkCandidate = await Candidate.findOne({ userId: id })
         if (!checkCandidate) {
             throw new AppError("Failed to find candidate", 400)
         }

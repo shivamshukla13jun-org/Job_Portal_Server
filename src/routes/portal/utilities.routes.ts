@@ -1,22 +1,31 @@
 import { Router } from "express";
-
-import {  ApplicationOptions,allcandidatesOptions, ContactUs, getAllEmployers, getSalaryRnage ,Options} from "@/controllers/portal/utillities.controller";
+import {
+  ApplicationOptions,
+  allcandidatesOptions,
+  ContactUs,
+  getAllEmployers,
+  getSalaryRnage,
+  Options
+} from "@/controllers/portal/utillities.controller";
 
 const router = Router();
 
-
-
 router.route("/contactus")
-    .post( ContactUs)
+    .post(ContactUs);
+    
 router.route("/maxsalaryandexp")
-    .get( getSalaryRnage)
+    .get(getSalaryRnage);
+    
 router.route("/employers")
-    .get( getAllEmployers)
+    .get(getAllEmployers);
+    
 router.route("/options/:id/:type")
-    .get( Options)
+    .get(Options);
+    
 router.route("/applicationoptions/allcandidates/:type")
-    .get(allcandidatesOptions)
+    .get(allcandidatesOptions);
+    
 router.route("/applicationoptions/:id/:type")
-    .get(ApplicationOptions)
+    .get(ApplicationOptions);
 
 export default router;

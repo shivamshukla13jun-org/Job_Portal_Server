@@ -822,7 +822,7 @@ const AllCandidates = async (
     if (!id) {
       throw new AppError("Employer not Found", 400);
     }
-    const matchConditions: any = {};
+    const matchConditions: Record<string, any> = {};
 
     if (qualification) {
       matchConditions["candidate.education"] = {
@@ -852,25 +852,17 @@ const AllCandidates = async (
     if (location) {
       const trilocation=location.trim()
       matchConditions["$or"] = [
-        {'candidate.contact.current_address.city':createRegex(trilocation)},
+        {'candidate.contact.current_address.city.name':createRegex(trilocation)},
         {'candidate.contact.current_address.pin_code':createRegex(trilocation)},
       ]
     }
     if (category) {
       matchConditions["$or"] = [
         {
-          "candidate.employment": {
-            $elemMatch: {
-              categories: { $elemMatch: { label:createRegex(category) } },
-            },
-          },
-        },
-        {
-          "candidate.categories": {
-            $elemMatch: {
-              value: category
+          "candidate.employment.categories": {
+            $in: [new Types.ObjectId(category)]
             }
-          }
+          
         }
       ];
     }
@@ -884,7 +876,7 @@ const AllCandidates = async (
         matchConditions["candidate.experience"]["$lte"] = +experience_to;
       }
     }
-
+   console.log(matchConditions)
     const [results] = await Application.aggregate([
       {
       $lookup: {
@@ -901,6 +893,7 @@ const AllCandidates = async (
       $lookup: {
         from: "candidates",
         localField: "candidate",
+        pipeline:candidateaddresslokup,
         foreignField: "_id",
         as: "candidate",
       },

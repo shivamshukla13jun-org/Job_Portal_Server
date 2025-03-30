@@ -53,8 +53,7 @@ interface OptionsQuery {
 const Options = async (req: Request, res: Response, next: NextFunction) => {
   try {
     let { type, id } = req.params as OptionsQuery;
-    let data: any[] = [];
-
+    
     if (!type) {
       throw new AppError("Provide type", 400);
     }
@@ -63,32 +62,173 @@ const Options = async (req: Request, res: Response, next: NextFunction) => {
       employerId: new Types.ObjectId(id),
     };
 
-    // Base pipeline
+    // Base pipeline with match condition
     const pipeline: any[] = [{ $match: match }];
+    
+    // Process pipeline based on type
+    const result = await processOptionsPipeline(type, pipeline, Job);
+    
+    res.status(200).json({
+      success: true,
+      data: result,
+      message: "Data fetched successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
-    // Handle specific types
-    if (type === "personal_info.info.degree") {
-      type = "personal_info.assets.label";
-      pipeline.push(
-        { $unwind: "$personal_info" },
-        { $unwind: "$personal_info.assets" },
-        {
-          $match: {
-            "personal_info.info": "Degree and Specialisation",
-          },
+const ApplicationOptions = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    let { type, id } = req.params as OptionsQuery;
+    const status = req.query.status;
+    
+    if (!type) {
+      throw new AppError("Provide type", 400);
+    }
+
+    const match: Record<string, any> = {
+      employer: new Types.ObjectId(id),
+    };
+
+    if (status) {
+      match["status"] = status;
+    }
+
+    // Base pipeline with lookups
+    const pipeline: any[] = [
+      { $match: match },
+      {
+        $lookup: {
+          from: "candidates",
+          localField: "candidate",
+          foreignField: "_id",
+          as: "candidate",
         },
+      },
+      {
+        $unwind: "$candidate",
+      },
+    ];
+    
+    // Process pipeline based on type
+    const result = await processApplicationPipeline(type, pipeline, Application);
+    
+    res.status(200).json({
+      success: true,
+      data: result,
+      message: "Data fetched successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const allcandidatesOptions = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    let { type } = req.params as OptionsQuery;
+    const status = req.query.status;
+    
+    if (!type) {
+      throw new AppError("Provide type", 400);
+    }
+
+    const match: Record<string, any> = {};
+    
+    if (status) {
+      match["status"] = status;
+    }
+
+    // Base pipeline with lookups
+    const pipeline: any[] = [
+      { $match: match },
+      {
+        $lookup: {
+          from: "candidates",
+          localField: "candidate",
+          foreignField: "_id",
+          as: "candidate",
+        },
+      },
+      {
+        $unwind: "$candidate",
+      },
+    ];
+    
+    // Process pipeline based on type - reusing the same function as ApplicationOptions
+    const result = await processApplicationPipeline(type, pipeline, Application);
+    
+    res.status(200).json({
+      success: true,
+      data: result,
+      message: "Data fetched successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Helper functions to process pipelines based on type
+async function processOptionsPipeline(type: string, pipeline: any[], model: any) {
+  const pipelineProcessors: Record<string, (pipeline: any[]) => any[]> = {
+    "personal_info.info.degree": (pipeline) => {
+      return pipeline.concat([
+        { $unwind: "$degrees" },
         {
           $group: {
-            _id: `$${type}`,
+            _id: "$degrees",
             total: { $sum: 1 },
           },
         },
-        { $project: { _id: 0, value: "$_id", total: 1 } },
+        {
+          $lookup: {
+            from: "degrees",
+            localField: "_id",
+            foreignField: "_id",
+            as: "degree",
+          },
+        },
+        { $project: { _id: 0, value: "$degree._id",label: "$degree.label", total: 1 } },
         { $sort: { value: 1 } }
-      );
-    } else if (type === "categories.label") {
-      // type="categories.label"
-      pipeline.push(
+      ]);
+    },
+    "degrees": (pipeline) => {
+      return pipeline.concat([
+        { $unwind: "$degrees" },
+        {
+          $group: {
+            _id: "$degrees",
+            total: { $sum: 1 },
+          },
+        },
+        {
+          $lookup: {
+            from: "degrees",
+            localField: "_id",
+            foreignField: "_id",
+            as: "degree",
+          },
+        },
+        { $project: { _id: 0, value: "$degree._id",label: "$degree.label", total: 1 } },
+        { $sort: { value: 1 } }
+      ]);
+    },
+    "jobtype": (pipeline) => {
+      return pipeline.concat([
+        {
+          $group: {
+            _id: "$jobtype",
+            total: { $sum: 1 },
+          },
+        },
+        { $project: { _id: 0, value: "$_id",label: "$_id", total: 1 } },
+        { $sort: { value: 1 } }
+      ]);
+    },
+    
+    "categories.label": (pipeline) => {
+      return pipeline.concat([
+        { $unwind: "$categories" },
         {
           $group: {
             _id: "$categories",
@@ -107,16 +247,16 @@ const Options = async (req: Request, res: Response, next: NextFunction) => {
           $unwind: { path: "$category", preserveNullAndEmptyArrays: true },
         },
         {
-          $project: { value: "$category.value",label:"$category.label",_id:0, total: 1 },
+          $project: { value: "$category.value", label: "$category.label", _id: 0, total: 1 },
         },
         { $sort: { label: 1 } },
-      );
-    } else if (type === "salary_experience") {
-      // Add grouping stages for max and min salary and experience
-      pipeline.push(
+      ]);
+    },
+    "salary_experience": (pipeline) => {
+      return pipeline.concat([
         {
           $group: {
-            _id: null, // No grouping by fields, we want global max/min
+            _id: null,
             minSalary: { $min: "$candidate_requirement.salary_from" },
             maxSalary: { $max: "$candidate_requirement.salary_to" },
           },
@@ -128,13 +268,13 @@ const Options = async (req: Request, res: Response, next: NextFunction) => {
             minSalary: 1,
           },
         }
-      );
-    } else if (type === "experience") {
-      // Add grouping stages for max and min salary and experience
-      pipeline.push(
+      ]);
+    },
+    "experience": (pipeline) => {
+      return pipeline.concat([
         {
           $group: {
-            _id: null, // No grouping by fields, we want global max/min
+            _id: null,
             minExperience: { $min: "$candidate_requirement.experience" },
             maxExperience: { $max: "$candidate_requirement.experience" },
           },
@@ -146,9 +286,10 @@ const Options = async (req: Request, res: Response, next: NextFunction) => {
             maxExperience: 1,
           },
         }
-      );
-    } else {
-      pipeline.push(
+      ]);
+    },
+    "default": (pipeline) => {
+      return pipeline.concat([
         {
           $group: {
             _id: `$${type}`,
@@ -157,59 +298,27 @@ const Options = async (req: Request, res: Response, next: NextFunction) => {
         },
         { $project: { _id: 0, value: "$_id", total: 1 } },
         { $sort: { value: 1 } }
-      );
+      ]);
     }
-    if (type === "salary_experience" || type === "experience") {
-      [data] = await Job.aggregate(pipeline);
-    } else {
-      data = await Job.aggregate(pipeline);
-    }
-    res.status(200).json({
-      success: true,
-      data: data,
-      message: "Data fetched successfully",
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-const ApplicationOptions = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    let { type, id } = req.params as OptionsQuery;
-    const status = req.query.status;
-    let data: any[] = [];
+  };
 
-    if (!type) {
-      throw new AppError("Provide type", 400);
-    }
-    const match: Record<string, any> = {
-      employer: new Types.ObjectId(id),
-    };
-    if (status) {
-      match["status"] = status;
-    }
-    // Base pipeline
-    const pipeline: any[] = [
-      { $match: match },
-      {
-        $lookup: {
-          from: "candidates",
-          localField: "candidate",
-          foreignField: "_id",
-          as: "candidate",
-        },
-      },
-      {
-        $unwind: "$candidate",
-      },
-    ];
-    // Handle specific types
-    if (type === "degrees") {
-      pipeline.push(
+  // Get the appropriate processor function or default
+  const processor = pipelineProcessors[type] || pipelineProcessors["default"];
+  const processedPipeline = processor(pipeline);
+  
+  // Execute the query
+  if (type === "salary_experience" || type === "experience") {
+    const [data] = await model.aggregate(processedPipeline);
+    return data;
+  } else {
+    return await model.aggregate(processedPipeline);
+  }
+}
+
+async function processApplicationPipeline(type: string, pipeline: any[], model: any) {
+  const pipelineProcessors: Record<string, (pipeline: any[]) => any[]> = {
+    "degrees": (pipeline) => {
+      return pipeline.concat([
         { $unwind: "$candidate.education" },
         {
           $group: {
@@ -217,12 +326,25 @@ const ApplicationOptions = async (
             total: { $sum: 1 },
           },
         },
-        { $project: { _id: 0, value: "$_id", total: 1 } },
+        { $project: {  value: "$_id",label: "$_id", total: 1 } },
         { $sort: { value: 1 } }
-      );
-    } else if (type === "categories.label") {
-      // type="categories.label"
-      pipeline.push(
+      ]);
+    },
+    "personal_info.info.degree": (pipeline) => {
+      return pipeline.concat([
+        { $unwind: "$candidate.education" },
+        {
+          $group: {
+            _id: `$candidate.education.qualification`,
+            total: { $sum: 1 },
+          },
+        },
+        { $project: {  value: "$_id",label: "$_id", total: 1 } },
+        { $sort: { value: 1 } }
+      ]);
+    },
+    "categories.label": (pipeline) => {
+      return pipeline.concat([
         { $unwind: "$candidate.employment" },
         { $unwind: "$candidate.employment.categories" },
         {
@@ -243,16 +365,16 @@ const ApplicationOptions = async (
           $unwind: { path: "$category", preserveNullAndEmptyArrays: true },
         },
         {
-          $project: { value: "$category.value",label:"$category.label",_id:0, total: 1 },
+          $project: { value: "$category.value", label: "$category.label", _id: 0, total: 1 },
         },
         { $sort: { total: 1 } },
-      );
-    } else if (type === "salary_experience") {
-      // Add grouping stages for max and min salary and experience
-      pipeline.push(
+      ]);
+    },
+    "salary_experience": (pipeline) => {
+      return pipeline.concat([
         {
           $group: {
-            _id: null, // No grouping by fields, we want global max/min
+            _id: null,
             minSalary: { $min: "$candidate.currentsalary" },
             maxSalary: { $max: "$candidate.currentsalary" },
           },
@@ -264,13 +386,13 @@ const ApplicationOptions = async (
             minSalary: 1,
           },
         }
-      );
-    } else if (type === "experience") {
-      // Add grouping stages for max and min salary and experience
-      pipeline.push(
+      ]);
+    },
+    "experience": (pipeline) => {
+      return pipeline.concat([
         {
           $group: {
-            _id: null, // No grouping by fields, we want global max/min
+            _id: null,
             minExperience: { $min: "$candidate.experience" },
             maxExperience: { $max: "$candidate.experience" },
           },
@@ -282,9 +404,10 @@ const ApplicationOptions = async (
             maxExperience: 1,
           },
         }
-      );
-    } else {
-      pipeline.push(
+      ]);
+    },
+    "default": (pipeline) => {
+      return pipeline.concat([
         {
           $group: {
             _id: `$candidate.${type}`,
@@ -293,157 +416,22 @@ const ApplicationOptions = async (
         },
         { $project: { _id: 0, value: "$_id", total: 1 } },
         { $sort: { value: 1 } }
-      );
+      ]);
     }
-    if (type === "salary_experience" || type === "experience") {
-      [data] = await Application.aggregate(pipeline);
-    } else {
-      data = await Application.aggregate(pipeline);
-    }
-    res.status(200).json({
-      success: true,
-      data: data,
-      message: "Data fetched successfully",
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-const allcandidatesOptions = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    let { type } = req.params as OptionsQuery;
-    const status = req.query.status;
-    let data: any[] = [];
+  };
 
-    if (!type) {
-      throw new AppError("Provide type", 400);
-    }
-    const match: Record<string, any> = {
-    };
-    if (status) {
-      match["status"] = status;
-    }
-    // Base pipeline
-    const pipeline: any[] = [
-      { $match: match },
-      {
-        $lookup: {
-          from: "candidates",
-          localField: "candidate",
-          foreignField: "_id",
-          as: "candidate",
-        },
-      },
-      {
-        $unwind: "$candidate",
-      },
-    ];
-    // Handle specific types
-    if (type === "personal_info.info.degree") {
-      pipeline.push(
-        { $unwind: "$candidate.education" },
-        {
-          $group: {
-            _id: `$candidate.education.qualification`,
-            total: { $sum: 1 },
-          },
-        },
-        { $project: { _id: 0, value: "$_id", total: 1 } },
-        { $sort: { value: 1 } }
-      );
-    }  else if (type === "categories.label") {
-      // type="categories.label"
-      pipeline.push(
-        { $unwind: "$candidate.employment" },
-        { $unwind: "$candidate.employment.categories" },
-        {
-          $group: {
-            _id: `$candidate.employment.categories`,
-            total: { $sum: 1 },
-          },
-        },
-        {
-          $lookup: {
-            from: "jobcategories",
-            localField: "_id",
-            foreignField: "_id",
-            as: "category",
-          },
-        },
-        {
-          $unwind: { path: "$category", preserveNullAndEmptyArrays: true },
-        },
-        {
-          $project: { value: "$category.value",label:"$category.label",_id:0, total: 1 },
-        },
-        { $sort: { total: 1 } },
-      );
-    }  else if (type === "salary_experience") {
-      // Add grouping stages for max and min salary and experience
-      pipeline.push(
-        {
-          $group: {
-            _id: null, // No grouping by fields, we want global max/min
-            minSalary: { $min: "$candidate.currentsalary" },
-            maxSalary: { $max: "$candidate.currentsalary" },
-          },
-        },
-        {
-          $project: {
-            _id: 0,
-            maxSalary: 1,
-            minSalary: 1,
-          },
-        }
-      );
-    } else if (type === "experience") {
-      // Add grouping stages for max and min salary and experience
-      pipeline.push(
-        {
-          $group: {
-            _id: null, // No grouping by fields, we want global max/min
-            minExperience: { $min: "$candidate.experience" },
-            maxExperience: { $max: "$candidate.experience" },
-          },
-        },
-        {
-          $project: {
-            _id: 0,
-            minExperience: 1,
-            maxExperience: 1,
-          },
-        }
-      );
-    } else {
-      pipeline.push(
-        {
-          $group: {
-            _id: `$candidate.${type}`,
-            total: { $sum: 1 },
-          },
-        },
-        { $project: { _id: 0, value: "$_id", total: 1 } },
-        { $sort: { value: 1 } }
-      );
-    }
-    if (type === "salary_experience" || type === "experience") {
-      [data] = await Application.aggregate(pipeline);
-    } else {
-      data = await Application.aggregate(pipeline);
-    }
-    res.status(200).json({
-      success: true,
-      data: data,
-      message: "Data fetched successfully",
-    });
-  } catch (error) {
-    next(error);
+  // Get the appropriate processor function or default
+  const processor = pipelineProcessors[type] || pipelineProcessors["default"];
+  const processedPipeline = processor(pipeline);
+  
+  // Execute the query
+  if (type === "salary_experience" || type === "experience") {
+    const [data] = await model.aggregate(processedPipeline);
+    return data;
+  } else {
+    return await model.aggregate(processedPipeline);
   }
-};
+}
 const getAllEmployers = async (
   req: Request,
   res: Response,
