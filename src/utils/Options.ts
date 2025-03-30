@@ -68,9 +68,9 @@ export class OptionsQuery {
             },
             {
               $group: {
-                _id: "$categories.value",
+                _id: "$categoryInfo._id",
                 label: { $first: "$categoryInfo.label" },
-                value: { $first: "$categories.value" },
+                value: { $first: "$categoryInfo._id" },
               },
             },
             { $match: { _id: { $ne: null } } },
@@ -494,9 +494,9 @@ export class OptionsQuery {
             },
             {
               $group: {
-                _id: "$categories.value",
+                _id: "$categoryInfo._id",
                 label: { $first: "$categoryInfo.label" },
-                value: { $first: "$categories.value" },
+                value: { $first: "$categoryInfo._id" },
               },
             },
             { $match: { _id: { $ne: null } } },

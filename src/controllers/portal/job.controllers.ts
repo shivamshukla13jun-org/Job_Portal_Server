@@ -1,16 +1,13 @@
 import mongoose, { mongo, Types } from "mongoose";
 import { NextFunction, Request, Response } from "express";
-
 import Job, { IJob } from "@/models/portal/job.model";
 import { AppError } from "@/middlewares/error";
 import Employer from "@/models/portal/employer.model";
 import { validateJob } from "@/validations/job";
-import { generateToken } from "@/middlewares/auth";
-import { postedatesCondition } from "@/utils/postedadate";
 import { Subscription } from "@/models/portal/subscription.model";
 import { Application } from "@/models/candidate/application.model";
 import { SavedJobs } from "@/models/candidate/savedjobs";
-import { fromStringToJSON } from "@/libs";
+
 import { FilterJob } from "@/utils/FilterJobs";
 
 /**

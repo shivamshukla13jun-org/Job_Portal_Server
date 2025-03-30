@@ -16,6 +16,140 @@ export interface ApplicationQuery {
   EmployerId?:Types.ObjectId,
 
 }
+export const candidateaddresslokup=[
+  {
+    $lookup:{
+      from:"cities",
+      localField:"contact.current_address.city",
+      foreignField:"_id",
+      as:"contact.current_address.city"
+    }
+  },
+  {
+    $lookup:{
+      from:"states",
+      localField:"contact.current_address.state",
+      foreignField:"_id",
+      as:"contact.current_address.state"
+    }
+  },
+  {
+    $lookup:{
+      from:"countries",
+      localField:"contact.current_address.country",
+      foreignField:"_id",
+      as:"contact.current_address.country"
+    }
+  },
+  {
+    $lookup:{
+      from:"cities",
+      localField:"contact.permanent_address.city",
+      foreignField:"_id",
+      as:"contact.permanent_address.city"
+    }
+  },
+  {
+    $lookup:{
+      from:"states",
+      localField:"contact.permanent_address.state",
+      foreignField:"_id",
+      as:"contact.permanent_address.state"
+    }
+  },
+  {
+    $lookup:{
+      from:"countries",
+      localField:"contact.permanent_address.country",
+      foreignField:"_id",
+      as:"contact.permanent_address.country"
+    }
+  },
+  {
+    $unwind: { path: "$contact.current_address.city", preserveNullAndEmptyArrays: true }
+  },
+  {
+    $unwind: { path: "$contact.current_address.state", preserveNullAndEmptyArrays: true }
+  },
+  {
+    $unwind: { path: "$contact.current_address.country", preserveNullAndEmptyArrays: true }
+  },
+  {
+    $unwind: { path: "$contact.permanent_address.city", preserveNullAndEmptyArrays: true }
+  },
+  {
+    $unwind: { path: "$contact.permanent_address.state", preserveNullAndEmptyArrays: true }
+  },
+  {
+    $unwind: { path: "$contact.permanent_address.country", preserveNullAndEmptyArrays: true }
+  }
+]
+const ApplicationJOblookup=[
+  // job lookup
+  {
+    $lookup:{
+      from:"jobs",
+      localField:"job",
+      foreignField:"_id",
+      as:"job"
+    }
+  },
+  {
+    $unwind: { path: "$job", preserveNullAndEmptyArrays: true }
+  },
+  // category lookup
+  {
+    $lookup:{
+      from:"jobcategories",
+      localField:"job.categories",
+      foreignField:"_id",
+      as:"job.categories"
+    }
+  },
+  // location lookup
+  {
+    $lookup:{
+      from:"states",
+      localField:"job.location",
+      foreignField:"_id",
+      as:"job.location"
+    }
+  },
+  {
+    $unwind: { path: "$job.location", preserveNullAndEmptyArrays: true }
+  },
+  {
+    $lookup:{
+      from:"cities",
+      localField:"job.place",
+      foreignField:"_id",
+      as:"job.place"
+    }
+  },
+  {
+    $unwind: { path: "$job.place", preserveNullAndEmptyArrays: true }
+  },
+  {
+    $lookup:{
+      from:"industries",
+      localField:"job.industry",
+      foreignField:"_id",
+      as:"job.industry"
+    }
+  },
+  {
+    $lookup:{
+      from:"degrees",
+      localField:"job.degrees",
+      foreignField:"_id",
+      as:"job.degrees"
+    }
+  },
+  // unset
+  // {
+  //   $unset: ["job"]
+  // }
+]
 export const getApplicationStats = (statuses: string[]) => {
     const stats: Record<string, any[]> = {};
     statuses.forEach((status) => {
@@ -105,6 +239,6 @@ const FilterApplications=(req:Request)=>{
   }
   return {matchQueries}
 }
-export {Applicationsstats,ApplicationsstatsUnwindPath,FilterApplications}
+export {Applicationsstats,ApplicationsstatsUnwindPath,FilterApplications,ApplicationJOblookup}
 
   

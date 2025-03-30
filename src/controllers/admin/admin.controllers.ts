@@ -9,11 +9,13 @@ import Employer from "@/models/portal/employer.model";
 import Job from "@/models/portal/job.model";
 import { JobportalPlan } from "@/models/portal/plan.model";
 import SubEmployer from "@/models/portal/SubEmployer.model";
+import { candidateaddresslokup } from "@/utils/ApplicationStats";
 import {
   getDashboardstats,
   getNumericPercentageStats,
   getStringPercentageStats,
 } from "@/utils/DashboardStats";
+import { FilterAdminJob, FilterJob } from "@/utils/FilterJobs";
 import { OptionsQuery } from "@/utils/Options";
 import { postedatesCondition } from "@/utils/postedadate";
 import { NextFunction, Request, Response } from "express";
@@ -80,17 +82,28 @@ export const getAllLocations = async (
     const limit: number = parseInt(req.query.limit as string) || 10;
 
     const result = await Job.aggregate([
-      { $group: { _id: "$location" } },
-
+      { $group: { _id: "$place" } },
+      {
+        $lookup:{
+          from:"cities",
+          localField:"place",
+          foreignField:"_id",
+          as:"place"
+        }
+      },
+      {
+        $unwind: "$place"
+      },
       {
         $project: {
-          label: "$_id",
-          value: "$_id",
+          label: "$place.name",
+          value: "$place._id",
         },
       },
       {
         $facet: {
-          data: [{ $skip: (page - 1) * limit }, { $limit: limit }],
+          data:[],
+          // data: [{ $skip: (page - 1) * limit }, { $limit: limit }],
           totalCount: [{ $count: "count" }],
         },
       },
@@ -231,6 +244,7 @@ export const listUsers = async (
           as: "user",
         },
       },
+      ...candidateaddresslokup,
       { $unwind: { path: "$user", preserveNullAndEmptyArrays: true } },
       {
         $addFields: {
@@ -401,12 +415,9 @@ export const Employers = async (
 
     // Location filter (city, state, country)
     if (location) {
-      const locations = location.split(',').map(loc => loc.trim());
-      matchQueries.$or = [
-        { 'address.city': { $in: locations } },
-        { 'address.state': { $in: locations } },
-        { 'address.country': { $in: locations } },
-      ];
+      const locations = location.split(',').map(loc => new Types.ObjectId(loc));
+      matchQueries['address.city._id'] = { $in: locations };
+
     }
 
     // Keyword search (name or email)
@@ -419,14 +430,14 @@ export const Employers = async (
 
     // Employer categories filter
     if (categories) {
-      const categoriesList = categories.split(',');
-      matchQueries["categories.value"] = { $in: categoriesList };
+      const categoriesList = categories.split(',').map(cat => new Types.ObjectId(cat));
+      matchQueries["categories"] = { $in: categoriesList };
     }
 
     // Jobtype filter (jobs' categories)
     if (jobtype) {
       const jobtypeList = jobtype.split(',');
-      matchjobQueries["jobsPosted.categories.value"] = { $in: jobtypeList };
+      matchjobQueries["jobsPosted.jobtype"] = { $in: jobtypeList };
     }
 
     console.log("matchQueries", matchQueries);
@@ -434,6 +445,35 @@ export const Employers = async (
     console.log("matchjobQueries", matchjobQueries);
 
     const aggregationPipeline: any[] = [
+     
+      {
+        $lookup: {
+          from: "states",
+          localField: "address.state",
+          foreignField: "_id",
+          as: "address.state",
+        },
+      },
+      {
+        $lookup: {
+          from: "cities",
+          localField: "address.city",
+          foreignField: "_id",
+          as: "address.city",
+        },
+      },
+      {
+        $unwind: {
+          path: "$address.city",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $unwind: {
+          path: "$address.state",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
       { $match: matchQueries },
       ...(Object.keys(searchMatch).length ? [{ $match: searchMatch }] : []),
       {
@@ -591,6 +631,7 @@ export const getUserDetails = async (req: Request, res: Response) => {
           from: "candidates",
           localField: "candidateId",
           foreignField: "_id",
+          pipeline: [...candidateaddresslokup],
           as: "candidateDetails",
         },
       },
@@ -681,13 +722,8 @@ export const getJobs = async (
       fromdate,
       todate,
       limit: reqLimit,
-      createdAt,
-      experience_from,
-      experience_to,
-      ...queries
     } = req.query;
-    const today = new Date();
-
+   
     // Parse and set page and limit with fallback
     const page = parseInt(reqPage as string, 10) || 1; // Ensure page is at least 0
     const limit = parseInt(reqLimit as string, 10) || 10; // Ensure limit is at least 1
@@ -697,10 +733,8 @@ export const getJobs = async (
       skip: (page - 1) * limit,
       limit: limit,
     };
-    const matchQueries: Record<string, any> = {};
-    const createRegex = (value: string) =>
-      new RegExp(`.*${value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}.*`, "gi");
-    // Handle date filter
+    let matchQueries: Record<string, any> = {};
+   
     if (fromdate || todate) {
       matchQueries["createdAt"] = {};
     }
@@ -710,77 +744,8 @@ export const getJobs = async (
     if (todate) {
       matchQueries["createdAt"]["$lte"] = new Date(todate as string);
     }
-    for (let [key, value] of Object.entries(queries)) {
-      if (
-        typeof value === "string" &&
-        value !== "" &&
-        !["keyword", "sort", "location","status", "categories", "jobtype"].includes(key)
-      ) {
-        matchQueries[key] = createRegex(value);
-      }
-      if (typeof value === "string" && value !== "" && key === "keyword") {
-        matchQueries["$and"] = [
-          {
-            $or: [
-              {
-                title: createRegex(value),
-              },
-              {
-                "company.name": createRegex(value),
-              },
-              {
-                "employerId.keywords": createRegex(value),
-              },
-            ],
-          },
-        ];
-      }
-
-      if (typeof value === "string" && value !== "" && key === "location") {
-        matchQueries["$or"] = [
-          {
-            location: { $in: value.split(",") },
-          },
-          {
-            place: { $in: value.split(",")},
-          },
-        ];
-      }
-
-      if (typeof value === "string" && value !== "" && key === "categories") {
-        matchQueries["categories"] = {$elemMatch:{value:{ $in: value.split(",") }}};
-      }
-      if (typeof value === "string" && value !== "" && key === "status") {
-        matchQueries["isActive"] = value=="1"?true:false
-      }
-      if (typeof value === "string" && value !== "" && key === "jobtype") {
-        matchQueries["jobtype"] = { $in: value.split(",") };
-      }
-      // Salary range filter
-      if (key === "candidate_requirement.salary_from" && value) {
-        matchQueries["candidate_requirement.salary_from"] = {
-          $gte: parseInt(value as string),
-        };
-      }
-      if (key === "candidate_requirement.salary_to" && value) {
-        matchQueries["candidate_requirement.salary_to"] = {
-          $lte: parseInt(value as string),
-        };
-      }
-      if (key === "candidate_requirement.experience" && value) {
-        matchQueries["candidate_requirement.experience"] = {
-          $lte: parseInt(value as string),
-        };
-      }
-    }
-
-    if (experience_to && experience_from) {
-      matchQueries["candidate_requirement.experience"] = {
-        $gte: parseInt(experience_from as string),
-        $lte: parseInt(experience_to as string),
-      };
-    }
-
+    matchQueries = FilterAdminJob(req,matchQueries).matchQueries
+    console.log("matchQueries",matchQueries)
     const jobs = await Job.aggregate([
       {
         $match: {
@@ -793,6 +758,39 @@ export const getJobs = async (
           localField: "employerId",
           foreignField: "_id",
           as: "employerId",
+        },
+      },
+      {
+        $lookup: {
+          from: "states",
+          localField: "location",
+          foreignField: "_id",
+          as: "location",
+        },
+      },
+      {
+        $lookup: {
+          from: "cities",
+          localField: "place",
+          foreignField: "_id",
+          as: "place",
+        },
+      },
+      {
+        $unwind: {
+          path: "$place",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $unwind:{path:"$location",preserveNullAndEmptyArrays: true}
+      },
+      {
+        $lookup: {
+          from: "job_categories",
+          localField: "categories",
+          foreignField: "_id",
+          as: "categories",
         },
       },
       {
@@ -826,7 +824,6 @@ export const getJobs = async (
         },
       },
     ]);
-
     res.status(200).json({
       success: true,
       message: "Candidate fetched!",
@@ -895,6 +892,33 @@ export const getAllApplicants = async (
           from: "jobs",
           localField: "job",
           foreignField: "_id",
+          pipeline:[
+            {
+              $lookup: {
+                from: "states",
+                localField: "location",
+                foreignField: "_id",
+                as: "location",
+              },
+            },
+            {
+              $lookup: {
+                from: "cities",
+                localField: "place",
+                foreignField: "_id",
+                as: "place",
+              },
+            },
+            {
+              $unwind: {
+                path: "$place",
+                preserveNullAndEmptyArrays: true,
+              },
+            },
+            {
+              $unwind:{path:"$location",preserveNullAndEmptyArrays: true}
+            },
+          ],
           // let: { jobId: "$job" },
           // pipeline: [
           //   {

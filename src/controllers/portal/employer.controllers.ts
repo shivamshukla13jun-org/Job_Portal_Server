@@ -25,6 +25,7 @@ import { sendEmail } from "@/services/emails";
 import User from "@/models/admin/user.model";
 import { postedatesCondition } from "@/utils/postedadate";
 import { createRegex } from "@/libs";
+import { candidateaddresslokup } from "@/utils/ApplicationStats";
 
 /**
  @desc      Create an employer
@@ -470,7 +471,7 @@ const updateEmployer = async (
       }
       await User.updateOne(
         { _id: req.params.id },
-        { $set: { employer: newEmployer._id } }
+        { $set: { employerId: newEmployer._id } }
       );
 
       return res.status(201).json({
@@ -485,9 +486,14 @@ const updateEmployer = async (
       { $set: payload },
       { new: true, runValidators: true }
     );
+
     if (!employer) {
       throw new AppError("Failed to update employer", 400);
     }
+    await User.updateOne(
+      { _id: req.params.id },
+      { $set: { employerId: employer._id } }
+    );
 
     res.status(200).json({
       success: true,
@@ -621,6 +627,7 @@ const CandidatesForEmployer = async (
           from: "candidates",
           localField: "candidate",
           foreignField: "_id",
+          pipeline: candidateaddresslokup,
           as: "candidate",
         },
       },

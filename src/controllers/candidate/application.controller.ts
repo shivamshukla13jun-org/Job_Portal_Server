@@ -10,7 +10,7 @@ import { generateToken } from "@/middlewares/auth";
 import Employer, { IEmployer } from "@/models/portal/employer.model";
 import { postedatesCondition } from "@/utils/postedadate";
 import SubEmployer, { ISubEmployer } from "@/models/portal/SubEmployer.model";
-import { ApplicationQuery, Applicationsstats, ApplicationsstatsUnwindPath, FilterApplications } from "@/utils/ApplicationStats";
+import { ApplicationJOblookup, ApplicationQuery, Applicationsstats, ApplicationsstatsUnwindPath, candidateaddresslokup, FilterApplications } from "@/utils/ApplicationStats";
 import ForwardedCV, { ForwardingStatus } from "@/models/portal/Forwarwardedcv.model";
 import ejs from "ejs"
 import path from "path";
@@ -380,20 +380,15 @@ const getAllApplicants = async (
           },
         },
       },
-      {
-        $lookup: {
-          from: "jobs",
-          localField: "job",
-          foreignField: "_id",
-          as: "job",
-        },
-      },
-      { $unwind: { path: "$job", preserveNullAndEmptyArrays: true } },
+      ...ApplicationJOblookup,
       {
         $lookup: {
           from: "candidates",
           localField: "candidate",
           foreignField: "_id",
+          pipeline:[
+             ...candidateaddresslokup
+          ],
           as: "candidate",
         },
       },
@@ -520,6 +515,7 @@ const getAllShortlistApplicants = async (
                 },
               },
             },
+            ...candidateaddresslokup
           ],
           as: "candidate",
         },
@@ -645,6 +641,7 @@ const getApplicants = async (
                 },
               },
             },
+            ...candidateaddresslokup
           ],
           as: "candidate",
         },
@@ -789,6 +786,7 @@ const singleApplicant = async (
                 },
               },
             },
+            ...candidateaddresslokup
           ],
           as: "candidate",
         },
