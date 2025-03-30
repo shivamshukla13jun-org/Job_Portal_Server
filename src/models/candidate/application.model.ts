@@ -86,8 +86,8 @@ const applicationSchema: Schema<IApplication> = new Schema(
       timeDuration: { type: String },
       email: { type: String },
       phone: { type: String },
-      message: { type: String, default: '' },
-      meetingLink: { type: String, default: '' },
+      message: { type: String,  },
+      meetingLink: { type: String,  },
       createdBy: {
         type: Schema.Types.ObjectId,
         ref: 'User',

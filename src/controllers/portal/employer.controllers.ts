@@ -373,7 +373,6 @@ const ForwardCV = async (req: Request, res: Response, next: NextFunction) => {
     }
 
     // Prepare forwarding results
-    const forwardingResults: Array<ForwardingResult> = [];
     if (subEmployerIds && subEmployerIds.length > 0) {
       // Forwarding to multiple sub-employers
       for (const subEmployerId of subEmployerIds) {
