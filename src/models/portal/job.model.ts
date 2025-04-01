@@ -144,7 +144,7 @@ const jobSchema = new Schema<IJob>({
     subscription: {
         type: Schema.Types.ObjectId,
         ref: 'subscriptions',
-        unique: true,
+        // unique: true,
         required: [true, "Package is Required"]
     },
     updatedBy: {
