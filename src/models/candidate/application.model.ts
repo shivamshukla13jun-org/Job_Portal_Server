@@ -66,7 +66,6 @@ const applicationSchema: Schema<IApplication> = new Schema(
         subEmployerId: {
           type: Schema.Types.ObjectId,
           ref: 'SubEmployer',
-          unique: true,
         },
         status: {
           type: String,

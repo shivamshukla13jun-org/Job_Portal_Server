@@ -81,12 +81,6 @@ const forwardedCVSchema = new Schema<IForwardedCV>({
     timestamps: true,
 });
 // Create indexes after schema definition
-forwardedCVSchema.index({ 
-    applicationid: 1, 
-    toSubEmployerId: 1 
-}, { 
-    unique: true 
-});
 
 forwardedCVSchema.index({ fromEmployerId: 1 });
 forwardedCVSchema.index({ toSubEmployerId: 1 });
