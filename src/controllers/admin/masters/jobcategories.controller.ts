@@ -34,7 +34,7 @@ const createJobCategory = async (req: Request, res: Response, next: NextFunction
 **/
 const getJobCategories = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const jobCategories = await JobCategory.find().sort({ createdAt: -1 });
+    const jobCategories = await JobCategory.find().sort({ createdAt: 1 });
 
     res.status(200).json({ 
       success: true, 
